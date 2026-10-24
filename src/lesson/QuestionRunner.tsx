@@ -80,6 +80,7 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
       r = { correct: false, parseError: true };
     }
     if (r.parseError || r.almost) {
+      playSound('notice');
       setNotice(r.parseError ? 'parseError' : r.almost!);
       if (r.parseError) setHadParseError(true);
       setShakeN((n) => n + 1);

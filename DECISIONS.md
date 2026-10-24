@@ -125,6 +125,13 @@ Architectural choices and why. Add new entries at the end of a section.
   (`<html data-theme>`), set before the first paint by a tiny inline script in index.html. The
   sun/moon toggle is in the top bar of every main screen (and on the welcome screen), and in
   settings. "Automatic" (system) was removed — it made the app dark on dark-mode phones.
+- **Sounds are synthesized** with Web Audio (`src/ui/sound.ts`, no audio files: nothing to
+  download, no licences): bell "ding-ding" (correct), soft descending "bwomp" (wrong, never
+  harsh), neutral two-note nudge ("almost" / unreadable input), an encouraging phrase when a mini
+  test is not passed yet, a jingle for a finished lesson part and a brass-like fanfare with a
+  cymbal swell for a finished lesson / daily challenge (longer for a chapter or streak milestone).
+  A compressor on the master bus keeps overlapping sounds from clipping. On by default; mute
+  button in the lesson top bar, toggle + preview buttons in settings.
 - State version 2: v1 saves are migrated once — 'auto' → light, and sound → on (it was off by
   default before, so a stored `false` was not a real choice).
 

@@ -11,6 +11,7 @@ import { downloadProgress, resetProgress, setGrade, setNickname, setSetting } fr
 import { isStorageAvailable, useAppState, type Settings } from '../state/store';
 import { Dialog } from '../ui/Dialog';
 import { showToast } from '../ui/Toast';
+import { playSound } from '../ui/sound';
 import { navigate, routeToHash } from '../ui/router';
 import { ImportProgressButton } from './ImportProgress';
 import './screens.css';
@@ -121,6 +122,21 @@ export default function SettingsScreen() {
 
       <Section id="st-look" icon="🎨" title={t.settings.appearance}>
         <Toggle label={t.settings.sound} hint={t.settings.soundHint} checked={settings.sound} onChange={(v) => set('sound', v)} />
+        {settings.sound && (
+          <div className="st-sound-test">
+            {(
+              [
+                ['correct', t.settings.soundCorrect],
+                ['wrong', t.settings.soundWrong],
+                ['lessonComplete', t.settings.soundDone],
+              ] as const
+            ).map(([name, label]) => (
+              <button key={name} type="button" className="btn btn-small btn-soft" onClick={() => playSound(name)}>
+                ▶ {label}
+              </button>
+            ))}
+          </div>
+        )}
         <Toggle label={t.settings.reduceMotion} checked={settings.reduceMotion} onChange={(v) => set('reduceMotion', v)} />
         <div className="st-theme">
           <span className="st-toggle-label" id="st-theme-label">

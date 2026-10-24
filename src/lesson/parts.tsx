@@ -3,6 +3,7 @@
  */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { t } from '../i18n/hu';
+import { SoundToggle } from '../ui/SoundToggle';
 
 /** True if animations should be skipped (system setting or the app's "Kevesebb animáció"). */
 export function reducedMotion(): boolean {
@@ -27,6 +28,7 @@ export function LessonTopBar({ progress, onClose, label, children }: { progress:
         <div className="lesson-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={label ?? t.lesson.progressLabel}>
           <div className="lesson-progress-fill" style={{ width: `${pct}%` }} />
         </div>
+        <SoundToggle />
         {children}
       </div>
     </header>

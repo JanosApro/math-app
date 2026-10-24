@@ -4,7 +4,7 @@
  */
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { TopicIcon } from '../ui/TopicIcon';
-import { playSound } from '../ui/sound';
+import { playSound, type SoundName } from '../ui/sound';
 import { t } from '../i18n/hu';
 import { Confetti, CountUp, LessonFooter } from './parts';
 
@@ -24,6 +24,8 @@ export interface CelebrationProps {
   children?: ReactNode;
   /** Footer buttons, primary last. */
   actions: ReactNode;
+  /** Default: the chapter/streak fanfare for big celebrations, the lesson fanfare otherwise. */
+  sound?: SoundName;
 }
 
 /** Simple star medal in the topic color (no mascots). */
@@ -44,14 +46,14 @@ function StarMedal() {
   );
 }
 
-export function Celebration({ title, subtitle, xp, score, chapter, milestone, progress, streak, children, actions }: CelebrationProps) {
+export function Celebration({ title, subtitle, xp, score, chapter, milestone, progress, streak, children, actions, sound }: CelebrationProps) {
   const big = !!chapter || !!milestone;
   const played = useRef(false);
   useEffect(() => {
     if (played.current) return;
     played.current = true;
-    playSound('complete');
-  }, []);
+    playSound(sound ?? (chapter || milestone ? 'chapterComplete' : 'lessonComplete'));
+  }, [sound, chapter, milestone]);
   const pct = progress && progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
   return (
     <>

@@ -80,7 +80,7 @@ export function MiniTest({
     onProgress?.(1);
     if (result.passed) onPass(result);
     else {
-      playSound('wrong');
+      playSound('tryAgain');
       onFail?.(result);
       setFailed(result);
       window.scrollTo({ top: 0 });
