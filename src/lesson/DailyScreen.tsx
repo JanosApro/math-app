@@ -119,7 +119,7 @@ export default function DailyScreen({ grade }: { grade: number }) {
   } else if (phase === 'run') {
     const q = questions[index];
     body = (
-      <div className="lesson-stage" key={`${practice}:${index}`} style={q.color ? ({ '--topic': q.color } as CSSProperties) : undefined}>
+      <div className="lesson-stage" key={`${practice}:${index}`} style={q.color ? ({ '--topic-src': q.color } as CSSProperties) : undefined}>
         {practice && <div className="lesson-practice-banner">{t.daily.practiceMode}</div>}
         <QuestionRunner
           question={q.question}

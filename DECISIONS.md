@@ -178,6 +178,13 @@ Architectural choices and why. Add new entries at the end of a section.
   highlights. Allowed: gentle left → right gradients (backdrop, cards, bars, buttons) and the
   hard offset sticker shadow. Text and outlines are deep indigo, not black.
 - `scripts/dev/figure-preview.ts` reads the figure colors from theme.css (no second copy).
+- **Dark mode, the standard way** (teacher feedback: the saturated purple/green looked bad, and
+  hard shadows don't read on a dark background): near-neutral dark surfaces; elevation is shown
+  by lighter surfaces (bg → surface → surface-2 → surface-3 for popups) instead of shadows
+  (`--ink` is transparent, so the sticker shadows vanish); accents are lighter and roughly half
+  as saturated; chapter/badge colors are muted with gray (set inline as `--topic-src` /
+  `--badge-src`, the theme derives `--topic` / `--badge`). Text is near white in dark mode and
+  near black in light mode for readability.
 - **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
   `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
   confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star

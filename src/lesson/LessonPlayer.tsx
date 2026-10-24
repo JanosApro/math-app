@@ -161,7 +161,7 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
     else setQuitOpen(true);
   };
 
-  const style = color ? ({ '--topic': color } as CSSProperties) : undefined;
+  const style = color ? ({ '--topic-src': color } as CSSProperties) : undefined;
   let body: JSX.Element;
   switch (phase) {
     case 'overview':

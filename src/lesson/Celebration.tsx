@@ -64,7 +64,7 @@ export function Celebration({ title, subtitle, xp, score, chapter, milestone, pr
       <div className={`lesson-card lesson-celebrate${big ? ' is-big' : ''}${small ? ' is-part' : ''}`}>
         <div className="lesson-celebrate-art anim-boing">
           {chapter ? (
-            <div className="lesson-badge" style={{ '--badge': chapter.color } as CSSProperties}>
+            <div className="lesson-badge" style={{ '--badge-src': chapter.color } as CSSProperties}>
               <TopicIcon name={chapter.icon} size={64} />
             </div>
           ) : milestone ? (

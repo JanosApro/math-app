@@ -143,7 +143,7 @@ function TopicSection({
   const chapterDone = topicCompleted(topic, completed);
   const total = topic.subtopics.length;
   return (
-    <section className={`map-topic${chapterDone ? ' is-done' : ''}`} style={{ '--topic': topicColor(topics, topic) } as CSSProperties} aria-labelledby={`topic-${topic.id}`}>
+    <section className={`map-topic${chapterDone ? ' is-done' : ''}`} style={{ '--topic-src': topicColor(topics, topic) } as CSSProperties} aria-labelledby={`topic-${topic.id}`}>
       <header className="map-topic-head">
         <span className="map-topic-icon" aria-hidden="true">
           <TopicIcon name={topic.icon} size={30} />

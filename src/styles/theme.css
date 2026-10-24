@@ -32,15 +32,15 @@
   --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 60%);
   /* top bar, tab bar, lesson action bar */
   --bar-bg: linear-gradient(90deg, rgba(255, 255, 255, 0.92), color-mix(in srgb, var(--primary-soft) 88%, transparent));
-  --text: #271d4a;
-  --text-muted: #625f7e;
+  --text: #0f0e16;
+  --text-muted: #575568;
   --border: #dfdcea;
   --primary: #6c4bcc;
   --primary-strong: #5937af;
   --primary-soft: #e8e6ff;
   --on-primary: #ffffff;
-  --good: #008664;
-  --good-strong: #00694d;
+  --good: #268064;
+  --good-strong: #11644c;
   --good-bg: #dbf8ec;
   --bad: #bf3957;
   --bad-bg: #ffe8eb;
@@ -90,68 +90,72 @@
 }
 
 :root[data-theme='dark'] {
-  /* lighter outlines so cards keep their shape on the dark background; shadows stay black */
-  --outline: #635a93;
-  --ink: #000;
-  --bg: #0f0c1d;
-  --bg-pattern: rgba(170, 150, 255, 0.06);
-  --bg-art: linear-gradient(90deg, #0f0c1d 0%, #1d1a2c 55%, var(--primary-soft) 100%);
-  --surface: #1d1a2c;
-  --surface-2: #262339;
-  --surface-3: #322f48;
-  --card-bottom: #262339;
+  /*
+   * Dark mode, the standard way: near-neutral surfaces, elevation shown by lighter surfaces
+   * (bg → surface → surface-2) instead of shadows (--ink is transparent, so the sticker shadows
+   * disappear), desaturated lighter accents, near-white text.
+   */
+  --outline: #4f4f56;
+  --ink: transparent;
+  --bg: #0e0e11;
+  --bg-pattern: rgba(255, 255, 255, 0.035);
+  --bg-art: linear-gradient(90deg, #0e0e11 0%, #131318 100%);
+  --surface: #19191d;
+  --surface-2: #222227;
+  --surface-3: #2d2d32;
+  --card-bottom: #222227;
   --card-bg: linear-gradient(90deg, var(--surface) 0%, var(--surface) 35%, var(--card-bottom) 100%);
-  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 60%);
-  --bar-bg: linear-gradient(90deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--primary-soft) 90%, transparent));
-  --text: #eeedf8;
-  --text-muted: #adaac6;
-  --border: #353249;
-  --primary: #9e8cf4;
-  --primary-strong: #b0a2fe;
-  --primary-soft: #302951;
-  --on-primary: #12101c;
-  --good: #56c9a2;
-  --good-strong: #75dbb6;
-  --good-bg: #0e3629;
-  --bad: #f3798b;
-  --bad-bg: #472026;
-  --warn: #ebb25f;
-  --warn-bg: #3c2a0e;
-  --xp: #f4c352;
-  --xp-bg: #3c2e0f;
-  --on-xp: #2e1e01;
-  --streak: #f8875a;
-  --streak-bg: #432519;
-  --remember-bg: #372d0c;
-  --locked: #626079;
+  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 60%);
+  --bar-bg: linear-gradient(90deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-2) 96%, transparent));
+  --text: #f3f3f5;
+  --text-muted: #b0b0b6;
+  --border: #35353a;
+  --primary: #b0a8e4;
+  --primary-strong: #c3bdef;
+  --primary-soft: #2b2937;
+  --on-primary: #0f0f14;
+  --good: #93c8b0;
+  --good-strong: #aadbc4;
+  --good-bg: #1d2a24;
+  --bad: #e29b9d;
+  --bad-bg: #322222;
+  --warn: #e0c394;
+  --warn-bg: #2f281b;
+  --xp: #e9ca89;
+  --xp-bg: #312a1d;
+  --on-xp: #1b150b;
+  --streak: #e9aa8d;
+  --streak-bg: #34251f;
+  --remember-bg: #2d291b;
+  --locked: #68686f;
   --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 6px 20px rgba(0, 0, 0, 0.3);
   --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.5);
 
-  --fig-ink: #e7e6f5;
-  --fig-muted: #9896aa;
-  --fig-hi: #f080b8;
-  --fig-good: #56c9a2;
-  --fig-bad: #f3798b;
-  --fig-blue: #6e91e8;
-  --fig-green: #00beba;
-  --fig-orange: #fc956d;
-  --fig-purple: #9b87e4;
-  --fig-red: #f47a81;
-  --fig-teal: #00beba;
-  --fig-grid: #353344;
-  --fig-axis: #b7b5ca;
-  --fig-fill: #2b283e;
-  --fig-s1: #9b87e4;
-  --fig-s2: #fc956d;
-  --fig-s3: #00beba;
-  --fig-s4: #da76a4;
-  --fig-s5: #eaaf49;
-  --fig-s6: #6e91e8;
-  --fig-s7: #b874c3;
-  --fig-s8: #ed7f88;
+  --fig-ink: #ebebee;
+  --fig-muted: #97989d;
+  --fig-hi: #e19dbc;
+  --fig-good: #93c8b0;
+  --fig-bad: #e29b9d;
+  --fig-blue: #9bb1e2;
+  --fig-green: #76c1bd;
+  --fig-orange: #dba28c;
+  --fig-purple: #b1a9dd;
+  --fig-red: #e29b9d;
+  --fig-teal: #76c1bd;
+  --fig-grid: #323237;
+  --fig-axis: #b7b7bc;
+  --fig-fill: #28282f;
+  --fig-s1: #b1a9dd;
+  --fig-s2: #dba28c;
+  --fig-s3: #76c1bd;
+  --fig-s4: #d79eb6;
+  --fig-s5: #ccac7b;
+  --fig-s6: #9bb1e2;
+  --fig-s7: #c8a2ce;
+  --fig-s8: #dd9ea1;
 
   color-scheme: dark;
-  --primary-2: #c57eda;
+  --primary-2: #c7a2cf;
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -179,6 +183,31 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
+}
+
+/*
+ * Chapter / badge colors are set inline as --topic-src / --badge-src; the theme turns them into
+ * --topic / --badge — as they are in light mode, muted (mixed with gray) in dark mode, where
+ * saturated colors glare (standard dark-theme practice).
+ */
+/* dark mode: popups sit one elevation step higher (lighter) than cards */
+:root[data-theme='dark'] .dlg-panel,
+:root[data-theme='dark'] .toast {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+[style*='--topic-src'][style] {
+  --topic: var(--topic-src);
+}
+[style*='--badge-src'][style] {
+  --badge: var(--badge-src);
+}
+:root[data-theme='dark'] [style*='--topic-src'][style] {
+  --topic: color-mix(in oklch, var(--topic-src) 60%, #9c9ca6);
+}
+:root[data-theme='dark'] [style*='--badge-src'][style] {
+  --badge: color-mix(in oklch, var(--badge-src) 60%, #9c9ca6);
 }
 
 /* the colorful backdrop, fixed behind every screen (screens draw only the squared paper on top) */

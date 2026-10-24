@@ -181,7 +181,7 @@ export default function ProfileScreen() {
               <button
                 type="button"
                 className={`pf-badge${b.earned ? ' is-earned' : ''}${b.streak ? ' pf-badge-streak' : ''}`}
-                style={b.color ? ({ '--badge': b.color } as CSSProperties) : undefined}
+                style={b.color ? ({ '--badge-src': b.color } as CSSProperties) : undefined}
                 onClick={() => setBadgeOpen(b.key)}
                 aria-label={`${b.name} – ${b.earned ? t.profile.earned : t.profile.notEarned}`}
                 title={b.name}
@@ -205,7 +205,7 @@ export default function ProfileScreen() {
       >
         {open && (
           <div className="pf-badge-detail">
-            <span className={`pf-badge${open.earned ? ' is-earned' : ''}${open.streak ? ' pf-badge-streak' : ''}`} style={open.color ? ({ '--badge': open.color } as CSSProperties) : undefined}>
+            <span className={`pf-badge${open.earned ? ' is-earned' : ''}${open.streak ? ' pf-badge-streak' : ''}`} style={open.color ? ({ '--badge-src': open.color } as CSSProperties) : undefined}>
               <BadgeDisc b={open} />
             </span>
             <p>{open.earned ? t.profile.badgeEarned : open.streak ? t.profile.badgeStreakHow(open.streak) : t.profile.badgeChapterHow}</p>
