@@ -245,13 +245,14 @@ export function recordDaily(grade: number, date: string, correct: number, total:
 // ---------------------------------------------------------------------------------------------
 
 export interface ProgressFile {
-  app: 'matek-kaland';
+  /** 'matek-kaland' in files saved before the app was renamed (still accepted). */
+  app: 'zsebmatek' | 'matek-kaland';
   exportedAt: string;
   state: AppState;
 }
 
 export function exportProgressJson(): string {
-  const file: ProgressFile = { app: 'matek-kaland', exportedAt: new Date().toISOString(), state: getState() };
+  const file: ProgressFile = { app: 'zsebmatek', exportedAt: new Date().toISOString(), state: getState() };
   return JSON.stringify(file, null, 2);
 }
 
@@ -261,7 +262,7 @@ export function downloadProgress(): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `matek-kaland-mentes-${todayBelgrade()}.json`;
+  a.download = `zsebmatek-mentes-${todayBelgrade()}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -272,7 +273,8 @@ export function downloadProgress(): void {
 export function parseProgressFile(text: string): AppState | null {
   try {
     const data = JSON.parse(text) as unknown;
-    if (typeof data === 'object' && data !== null && (data as ProgressFile).app === 'matek-kaland') {
+    const app = typeof data === 'object' && data !== null ? (data as ProgressFile).app : undefined;
+    if (app === 'zsebmatek' || app === 'matek-kaland') {
       return sanitizeState((data as ProgressFile).state);
     }
     return sanitizeState(data); // a raw state object also works

@@ -1,4 +1,7 @@
-# Matek Kaland — handoff
+# Zsebmatek — handoff
+
+(First called "Matek Kaland"; renamed on 2026-10-24. Internal keys such as the localStorage key
+`matek-kaland:v1` keep the old name on purpose, so saved progress survives.)
 
 A "Duolingo-style" math practice web app for grades 5, 7 and 8 (Serbian curriculum, Hungarian
 language of instruction). Pure static site: React + Vite + TypeScript; progress is stored only on
@@ -37,6 +40,9 @@ Teacher feedback round (same day), done so far:
 - Visual refresh: bundled DynaPuff + Nunito fonts (Hungarian ő/ű checked), cartoon sticker style
   (ink outlines, hard offset shadows), popping effects (star burst, flying XP, exploding confetti,
   springy entrances). See DECISIONS "Look and feel". Checked at 360/375/1280, light and dark.
+- Renamed to **Zsebmatek** with a "Z" trail logo (`public/icon*.svg`, PNGs via
+  `node scripts/dev/icons.mjs`). Live site: **https://janosapro.github.io/math-app/** (GitHub
+  Pages, `.github/workflows/deploy-pages.yml`, deploys every push to `master`).
 - Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
   (default is reduced motion, which makes the e2e run fast and stable).
 
@@ -171,7 +177,14 @@ Add the ids of the lessons you have covered in class (ids are in `CONTENT_STATUS
 challenge only picks from these. An empty list means "every lesson that has content". Commit and
 push — the site redeploys automatically (see below).
 
-## Deployment (Cloudflare Pages, automatic on every push)
+## Deployment: GitHub Pages (set up, automatic on every push to master)
+Live at **https://janosapro.github.io/math-app/**. `.github/workflows/deploy-pages.yml` runs
+`npm ci`, `npm run check` and `npm run build`, then publishes `dist/`. A failing check stops the
+deploy, so broken content never goes live. One-time setup (already needed only once): repository
+Settings → Pages → Build and deployment → Source: **GitHub Actions**. Manual re-deploy: Actions →
+"Deploy to GitHub Pages" → Run workflow.
+
+### Alternative: Cloudflare Pages
 1. Push this repository to GitHub.
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → "Connect to Git" → pick the repo.
 3. Build settings: framework preset **None** (or Vite), build command **`npm run build`**,

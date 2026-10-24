@@ -179,6 +179,8 @@ Architectural choices and why. Add new entries at the end of a section.
   its contrast in dark mode, where the accents are lighter.
 
 ## Hosting
+- **GitHub Pages** via GitHub Actions (`.github/workflows/deploy-pages.yml`): free for a public
+  repository, deploys on every push to `master`, and runs `npm run check` first.
 - `base: './'` in vite.config.ts so `dist/` works under any path (GitHub Pages project sites,
   Cloudflare Pages). Cloudflare Pages: build command `npm run build`, output directory `dist`
   (see HANDOFF.md).

@@ -1,6 +1,6 @@
 {
-  "name": "Matek Kaland",
-  "short_name": "Matek Kaland",
+  "name": "Zsebmatek",
+  "short_name": "Zsebmatek",
   "description": "Játékos matekgyakorló 5., 7. és 8. osztályosoknak.",
   "lang": "hu",
   "start_url": "./",

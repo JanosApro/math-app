@@ -145,7 +145,7 @@ export default function DevScreen() {
   return (
     <div className="dev-page">
       <div className="dev-top">
-        <h1>Matek Kaland · fejlesztői oldal</h1>
+        <h1>Zsebmatek · fejlesztői oldal</h1>
         <div className="dev-links">
           <button type="button" className="btn btn-small btn-ghost" onClick={() => navigate({ name: 'devGallery' })}>
             Ábragaléria

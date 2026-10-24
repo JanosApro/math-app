@@ -5,6 +5,7 @@
  */
 import { useSyncExternalStore } from 'react';
 
+/** Kept from the app's first name (Matek Kaland) so saved progress survives the rename. */
 export const STORAGE_KEY = 'matek-kaland:v1';
 /**
  * 2: theme is 'light' | 'dark' (default light, the old 'auto' became light) and sound is on by

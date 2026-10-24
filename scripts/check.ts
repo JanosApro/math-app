@@ -115,7 +115,7 @@ function printIssues(issues: ValidationIssue[], indent: string): void {
 
 async function main(): Promise<number> {
   const t0 = performance.now();
-  console.log(`Matek Kaland — content check (seeds: ${SEEDS}${ONLY ? `, only: ${ONLY}` : ''})\n`);
+  console.log(`Zsebmatek — content check (seeds: ${SEEDS}${ONLY ? `, only: ${ONLY}` : ''})\n`);
   const allIssues: ValidationIssue[] = [];
 
   // --- catalog + modules ---

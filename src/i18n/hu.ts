@@ -5,7 +5,7 @@
  * Plain strings may contain RichText ($math$, **bold**) where they are rendered with <Rich>.
  */
 export const t = {
-  appName: 'Matek Kaland',
+  appName: 'Zsebmatek',
   tagline: 'Gyakorolj játékosan, minden nap egy kicsit!',
 
   common: {
@@ -35,7 +35,7 @@ export const t = {
 
   shell: {
     mainNav: 'Fő menü',
-    home: 'Matek Kaland – vissza a térképre',
+    home: 'Zsebmatek – vissza a térképre',
     streakAria: (n: number) => `Sorozat: ${n} nap`,
     streakTodo: 'A mai napi kihívás még hátravan.',
     xpAria: (n: number) => `Összes XP: ${n}`,
@@ -48,7 +48,7 @@ export const t = {
   },
 
   onboarding: {
-    welcome: 'Szia! Üdv a Matek Kalandban!',
+    welcome: 'Szia! Üdv a Zsebmatekben!',
     intro: 'Itt lépésről lépésre gyakorolhatod az év matekanyagát. Válaszd ki, hányadikos vagy!',
     pickGrade: 'Hányadik osztályba jársz?',
     nicknameLabel: 'Becenév (nem kötelező)',
@@ -291,7 +291,7 @@ export const t = {
     importBtn: 'Haladás visszatöltése fájlból',
     exportDone: 'A mentés elkészült. Tedd biztonságos helyre a fájlt!',
     importDone: 'A haladásod visszatöltve!',
-    importError: 'Ezt a fájlt nem sikerült beolvasni. Biztosan a Matek Kaland mentése?',
+    importError: 'Ezt a fájlt nem sikerült beolvasni. Biztosan a Zsebmatek mentése?',
     importConfirm: 'A betöltés felülírja a jelenlegi haladást ezen az eszközön. Folytatod?',
     storageWarning:
       'Fontos: a haladásod csak ebben a böngészőben van elmentve. Ha törlöd a böngészési adatokat, a haladás is elvész. Időnként mentsd el fájlba!',
