@@ -8,7 +8,7 @@
   padding: 0;
   border-radius: 50%;
   border: 2px solid var(--outline);
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--text);
   cursor: pointer;
   box-shadow: var(--pop-sm);

@@ -9,7 +9,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: max(1rem, env(safe-area-inset-top)) 1rem max(2rem, env(safe-area-inset-bottom));
-  background-color: var(--bg);
+  background-color: transparent; /* the colorful backdrop is on body::before */
   background-image: linear-gradient(var(--bg-pattern) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-pattern) 1px, transparent 1px);
   background-size: 26px 26px;
@@ -34,7 +34,7 @@
   margin: 0.25rem 0 0.25rem;
 }
 .onb-tagline {
-  margin: 0.1rem 0 0.75rem;
+  margin: 0 0 0.6rem;
   font-weight: 700;
   color: var(--text-muted);
 }
@@ -42,22 +42,18 @@
 .onb-card {
   width: 100%;
   max-width: 520px;
-  padding: 1.5rem 1.25rem 1.1rem;
+  padding: 1.2rem 1.1rem 0.9rem;
   border-radius: 26px;
 }
 .onb-title {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.9rem;
   text-wrap: balance;
-}
-.onb-intro {
-  margin: 0 0 1.2rem;
-  color: var(--text-muted);
 }
 .onb-fieldset {
   border: none;
-  margin: 0 0 1.2rem;
+  margin: 0 0 1rem;
   padding: 0;
   min-width: 0;
 }
@@ -84,11 +80,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.05rem;
-  min-height: 118px;
-  padding: 0.7rem 0.4rem;
+  min-height: 88px;
+  padding: 0.5rem 0.4rem;
   border: var(--line) solid var(--outline);
   border-radius: 22px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   cursor: pointer;
   overflow: hidden;
@@ -118,23 +114,23 @@
   transform: translate(3px, 4px);
   box-shadow: 0 0 0 var(--ink);
 }
-.onb-grade.tone-orange {
+.onb-grade.tone-coral {
   --tone: var(--fig-s2);
 }
 .onb-grade.tone-violet {
-  --tone: var(--fig-s5);
-}
-.onb-grade.tone-teal {
-  --tone: var(--fig-s6);
-}
-.onb-grade.tone-pink {
-  --tone: var(--fig-s8);
-}
-.onb-grade.tone-blue {
   --tone: var(--fig-s1);
 }
-.onb-grade.tone-green {
+.onb-grade.tone-teal {
   --tone: var(--fig-s3);
+}
+.onb-grade.tone-berry {
+  --tone: var(--fig-s4);
+}
+.onb-grade.tone-gold {
+  --tone: var(--fig-s5);
+}
+.onb-grade.tone-indigo {
+  --tone: var(--fig-s6);
 }
 .onb-grade-num {
   position: relative;
@@ -182,41 +178,31 @@
 }
 
 .onb-field {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+}
+.onb-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.5rem;
+}
+.onb-label-row .onb-label {
+  margin: 0;
 }
 .onb-go {
   margin-top: 0.25rem;
   min-height: 54px;
   font-size: 1.12rem;
 }
-.onb-pick-first {
-  margin: 0.4rem 0 0;
-  text-align: center;
-  font-size: 0.88rem;
-}
-.onb-privacy {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  margin: 1.1rem 0 0;
-  padding: 0.75rem 0.9rem;
-  border-radius: 14px;
-  background: var(--surface-2);
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-.onb-privacy-icon {
-  flex: none;
-}
 .onb-restore {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   text-align: center;
 }
 
 /* ---- illustration ---- */
 .wa {
   width: 100%;
-  max-width: 300px;
+  max-width: 210px;
   height: auto;
   overflow: visible;
 }

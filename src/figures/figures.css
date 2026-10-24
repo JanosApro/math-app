@@ -64,6 +64,9 @@
   border-radius: 12px;
   padding: 0.5rem 0.75rem;
 }
+.fig-step-caption:empty {
+  display: none;
+}
 .fig-step-caption p {
   margin: 0;
 }

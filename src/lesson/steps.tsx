@@ -1,6 +1,7 @@
 /**
  * One view per lesson step type: theory, example, explore, check, practice.
  * Every view renders its card(s) and its own footer, and calls `onNext` when done.
+ * No step-type labels: the card's own title and the top bar are enough (screens must fit a phone).
  */
 import { useMemo, useState } from 'react';
 import type { CheckStep, ExampleStep, ExploreStep, PracticeStep, Question, SubtopicModule, TheoryStep } from '../engine/types';
@@ -10,7 +11,7 @@ import { num } from '../engine/format';
 import { FigureView } from '../figures/FigureView';
 import { Rich, RichInline } from '../ui/Rich';
 import { t } from '../i18n/hu';
-import { LessonFooter, StepChip, useEnterKey } from './parts';
+import { LessonFooter, useEnterKey } from './parts';
 import { QuestionRunner, type QuestionResult } from './QuestionRunner';
 
 // ---------------------------------------------------------------------------------------------
@@ -20,7 +21,6 @@ export function TheoryView({ step, onNext }: { step: TheoryStep; onNext: () => v
   return (
     <>
       <div className="lesson-card">
-        <StepChip icon="📘">{t.lesson.theory}</StepChip>
         {step.title && (
           <h2 className="lesson-title">
             <RichInline text={step.title} />
@@ -30,9 +30,10 @@ export function TheoryView({ step, onNext }: { step: TheoryStep; onNext: () => v
         {step.figure && <FigureView figure={step.figure} />}
         {step.remember && (
           <div className="lesson-remember">
-            <div className="lesson-remember-title">
-              <span aria-hidden="true">★</span> {t.lesson.remember}
-            </div>
+            <span className="lesson-remember-icon" aria-hidden="true">
+              ★
+            </span>
+            <span className="sr-only">{t.lesson.remember}: </span>
             <Rich text={step.remember} />
           </div>
         )}
@@ -59,8 +60,7 @@ export function ExampleView({ step, onNext }: { step: ExampleStep; onNext: () =>
   useEnterKey(next);
   return (
     <>
-      <div className="lesson-card">
-        <StepChip icon="✏️">{t.lesson.example}</StepChip>
+      <div className={`lesson-card lesson-example${shown > 0 ? ' is-solving' : ''}`}>
         {step.title && (
           <h2 className="lesson-title">
             <RichInline text={step.title} />
@@ -72,8 +72,7 @@ export function ExampleView({ step, onNext }: { step: ExampleStep; onNext: () =>
         {figure && <FigureView figure={figure} />}
         {shown > 0 && (
           <div className="lesson-example-steps">
-            <div className="lesson-solution-title">{t.lesson.solution}</div>
-            <ol>
+            <ol aria-label={t.lesson.solution}>
               {step.steps.slice(0, shown).map((s, i) => (
                 <li key={i} className="anim-slide-up">
                   <Rich text={s.text} />
@@ -98,7 +97,7 @@ export function ExampleView({ step, onNext }: { step: ExampleStep; onNext: () =>
           </button>
         )}
         <button type="button" className="btn lesson-main-btn" onClick={next}>
-          {done ? t.common.continue : t.lesson.nextStep}
+          {t.common.continue}
           {!done && <span className="lesson-btn-count">{t.common.of(shown + 1, total)}</span>}
         </button>
       </LessonFooter>
@@ -121,8 +120,7 @@ export function ExploreView({ step, onNext }: { step: ExploreStep; onNext: () =>
   useEnterKey(onNext);
   return (
     <>
-      <div className="lesson-card">
-        <StepChip icon="🎚️">{t.lesson.explore}</StepChip>
+      <div className="lesson-card lesson-explore">
         {step.title && (
           <h2 className="lesson-title">
             <RichInline text={step.title} />
@@ -187,7 +185,6 @@ export function CheckView({
       question={step.question}
       seed={seed}
       mode="lesson"
-      header={<StepChip icon="❓">{t.lesson.check}</StepChip>}
       onChecked={(r) => onXp(r.xp)}
       onDone={onNext}
     />
@@ -250,19 +247,10 @@ export function PracticeView({
     } else onNext();
   };
 
-  const header = (
-    <StepChip icon="🏋️">
-      {t.lesson.practice}
-      <span className="lesson-chip-count">{t.common.of(pos + 1, queue.length)}</span>
-      {item.requeued && <span className="lesson-chip-again">↻ {t.lesson.again}</span>}
-    </StepChip>
-  );
-
   if ('error' in gen) {
     return (
       <>
         <div className="lesson-card">
-          {header}
           <p className="lesson-notice">{t.lesson.generatorError}</p>
           {import.meta.env.DEV && <pre className="lesson-dev-error">{gen.error}</pre>}
         </div>
@@ -280,7 +268,6 @@ export function PracticeView({
       question={gen.q}
       seed={seed}
       mode="lesson"
-      header={header}
       willRequeue={!item.requeued}
       onChecked={(r) => onXp(r.xp)}
       onDone={done}

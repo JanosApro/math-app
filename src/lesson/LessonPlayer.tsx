@@ -13,18 +13,19 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { GradeTopics, LessonStep, SubtopicModule, TopicMeta } from '../engine/types';
 import { seedOf } from '../engine/session';
-import { flatten, recommendedNext } from '../content/catalog';
-import { addXp, completedCount, isCompleted, recordPartDone, recordTestResult, streakOf, type PartOutcome, type TestOutcome } from '../state/progress';
+import { recommendedNext } from '../content/catalog';
+import { addXp, isCompleted, recordPartDone, recordTestResult, streakOf, type PartOutcome, type TestOutcome } from '../state/progress';
 import { getState, gradeProgress, useAppState } from '../state/store';
 import { XP } from '../state/xp';
 import { Dialog } from '../ui/Dialog';
+import { InfoButton } from '../ui/InfoButton';
 import { Rich, RichInline } from '../ui/Rich';
 import { TopicIcon } from '../ui/TopicIcon';
 import { navigate } from '../ui/router';
 import { t } from '../i18n/hu';
 import { Celebration } from './Celebration';
 import { MiniTest, ReviewList, type TestResult } from './MiniTest';
-import { LessonFooter, LessonTopBar, scrollTop, StepChip, useEnterKey } from './parts';
+import { LessonFooter, LessonTopBar, scrollTop, useEnterKey } from './parts';
 import { CheckView, ExampleView, ExploreView, PracticeView, TheoryView } from './steps';
 import './lesson.css';
 
@@ -88,6 +89,7 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
   useEffect(scrollTop, [phase, part, index]);
 
   const steps = parts[part]?.steps ?? [];
+  const testN = module.miniTest.items.length;
   const progress =
     phase === 'part'
       ? (index + sub) / Math.max(1, steps.length)
@@ -159,7 +161,7 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
     else setQuitOpen(true);
   };
 
-  const style = color ? ({ '--topic': color } as CSSProperties) : undefined;
+  const style = color ? ({ '--topic-src': color } as CSSProperties) : undefined;
   let body: JSX.Element;
   switch (phase) {
     case 'overview':
@@ -211,7 +213,6 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
         <div className="lesson-stage">
           <Celebration
             title={t.lesson.partDoneTitle(part + 1)}
-            subtitle={r.outcome.streakExtended ? <span className="lesson-today">🔥 {t.lesson.todayCounts}</span> : undefined}
             xp={r.xp}
             streak={r.outcome.streak.current > 0 ? r.outcome.streak : undefined}
             milestone={r.outcome.milestone}
@@ -258,6 +259,14 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
             <span className="lesson-top-part-of">/{parts.length}</span>
           </span>
         )}
+        {phase === 'test' && (
+          <span className="lesson-top-part" title={t.test.title}>
+            <span aria-hidden="true">📝 </span>
+            <span className="sr-only">{t.test.title}: </span>
+            {Math.min(testN, Math.round(testProgress * testN) + 1)}
+            <span className="lesson-top-part-of">/{testN}</span>
+          </span>
+        )}
         {topExtra}
       </LessonTopBar>
       <main className="lesson-main">{body}</main>
@@ -283,7 +292,6 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
           </>
         }
       >
-        <p>{t.lesson.quitConfirm}</p>
       </Dialog>
     </div>
   );
@@ -303,7 +311,6 @@ function PartDots({ count, done, current, completed }: { count: number; done: Se
       <span className={`lesson-partdot lesson-partdot-test${completed ? ' is-done' : ''}`} aria-hidden="true">
         📝
       </span>
-      <span className="lesson-partdots-text">{t.lesson.partsProgress(done.size, count)}</span>
     </div>
   );
 }
@@ -348,27 +355,24 @@ function Overview({
             {topic.title}
           </div>
         )}
-        <h1 className="lesson-start-title">{title}</h1>
+        <h1 className="lesson-start-title">
+          {title}
+          <InfoButton title={t.lesson.goals}>
+            <ul className="lesson-goals-list">
+              {module.goals.map((g, i) => (
+                <li key={i}>
+                  <Rich text={g} />
+                </li>
+              ))}
+            </ul>
+          </InfoButton>
+        </h1>
         {completed && (
           <div className="lesson-start-done">
             <span aria-hidden="true">✓</span> {t.lesson.completedBefore}
-            {bestPercent !== undefined && <span className="muted"> · {t.lesson.bestPercent(bestPercent)}</span>}
+            {bestPercent !== undefined && <> · {bestPercent}%</>}
           </div>
         )}
-        <div className="lesson-goals">
-          <div className="lesson-goals-title">{t.lesson.goals}</div>
-          <ul>
-            {module.goals.map((g, i) => (
-              <li key={i}>
-                <span className="lesson-goal-check" aria-hidden="true">
-                  ✓
-                </span>
-                <Rich text={g} />
-              </li>
-            ))}
-          </ul>
-        </div>
-        <p className="lesson-start-meta muted">{t.lesson.meta(parts.length, module.miniTest.items.length)}</p>
       </div>
 
       <ol className="lesson-partlist" aria-label={t.lesson.parts}>
@@ -386,7 +390,8 @@ function Overview({
                     <span className="sr-only">{t.lesson.part(i + 1)}: </span>
                     <RichInline text={p.title} />
                   </span>
-                  <span className="lesson-partrow-meta">
+                  <span className="sr-only">
+                    {' – '}
                     {t.lesson.partQuestions(partQuestionCount(p.steps))}
                     {isDone && <> · {t.lesson.partDone}</>}
                     {isNext && <> · {t.lesson.partNext}</>}
@@ -406,10 +411,7 @@ function Overview({
             </span>
             <span className="lesson-partrow-text">
               <span className="lesson-partrow-title">{t.test.title}</span>
-              <span className="lesson-partrow-meta">
-                {t.test.itemCount(module.miniTest.items.length)}
-                {bestPercent !== undefined && <> · {t.lesson.testBest(bestPercent)}</>}
-              </span>
+              {bestPercent !== undefined && <span className="lesson-partrow-meta">{t.lesson.testBest(bestPercent)}</span>}
             </span>
             <span className="lesson-partrow-go" aria-hidden="true">
               ›
@@ -432,15 +434,11 @@ function ToTest({ module, onStart }: { module: SubtopicModule; onStart: () => vo
   return (
     <div className="lesson-stage">
       <div className="lesson-card lesson-totest">
-        <StepChip icon="📝">
-          {t.test.title}
-          <span className="lesson-chip-count">{t.test.itemCount(module.miniTest.items.length)}</span>
-        </StepChip>
         <div className="lesson-result-emoji" aria-hidden="true">
           🎯
         </div>
         <h2 className="lesson-title">{t.lesson.toTest}</h2>
-        <p className="lesson-body">{pass === 80 ? t.lesson.toTestBody : t.test.intro(module.miniTest.items.length, pass)}</p>
+        <p className="lesson-body muted">{t.test.intro(module.miniTest.items.length, pass)}</p>
       </div>
       <LessonFooter>
         <button type="button" className="btn lesson-main-btn" onClick={onStart}>
@@ -472,7 +470,6 @@ function LessonDone({
 }) {
   const { result, outcome } = done;
   const s = getState();
-  const progress = grade !== undefined && topics ? { done: completedCount(s, grade), total: flatten(topics).length } : undefined;
   const streak = grade !== undefined ? streakOf(s, grade) : undefined;
   const nextSub = saving && grade !== undefined && topics ? recommendedNext(topics, (id) => isCompleted(s, grade, id)) : undefined;
   const chapter = outcome.chapterCompleted;
@@ -485,7 +482,6 @@ function LessonDone({
         milestone={chapter ? undefined : outcome.milestone}
         xp={outcome.xpGained}
         score={{ correct: result.correct, total: result.total, percent: result.percent }}
-        progress={progress}
         streak={streak && streak.current > 0 ? streak : undefined}
         actions={
           <>

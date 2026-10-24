@@ -165,12 +165,51 @@ Architectural choices and why. Add new entries at the end of a section.
   nodes. Pressing a button pushes it into its shadow. Deliberately *not* the Duolingo look: no
   colored bottom border, no green. In dark mode the outline is a light violet (black would vanish
   on dark cards) and the shadows stay black.
+- **Palette (teacher feedback, round 2): one color family, flat with left → right effects.**
+  Built in OKLCH (perceptually even) so all hues sit at the same chroma and look equally light:
+  brand violet (290) → plum for buttons; warm accents coral (42) and gold (80); a single cool
+  counterpoint, teal (192). Chapter colors (`TOPIC_PALETTE` + topics.json) and chart series
+  alternate warm/cool: violet, coral, teal, berry, gold, indigo, plum, rose. Status colors keep
+  their meaning but are tuned into the family: success teal-green, error raspberry, XP gold,
+  streak coral; the figure highlight is berry. The old blue/orange/green/red set was dropped
+  because its hues had very different lightness and saturation and clashed.
+  60-30-10: lavender neutrals, violet as the main color, small warm accents.
+- **No up/down shading** (it looked overdone): no vertical gradients, inner shades or top
+  highlights. Allowed: gentle left → right gradients (backdrop, cards, bars, buttons) and the
+  hard offset sticker shadow. Text and outlines are deep indigo, not black.
+- `scripts/dev/figure-preview.ts` reads the figure colors from theme.css (no second copy).
+- **Dark mode, the standard way** (teacher feedback: the saturated purple/green looked bad, and
+  hard shadows don't read on a dark background): near-neutral dark surfaces; elevation is shown
+  by lighter surfaces (bg → surface → surface-2 → surface-3 for popups) instead of shadows
+  (`--ink` is transparent, so the sticker shadows vanish); accents are lighter and roughly half
+  as saturated; chapter/badge colors are muted with gray (set inline as `--topic-src` /
+  `--badge-src`, the theme derives `--topic` / `--badge`). Text is near white in dark mode and
+  near black in light mode for readability.
 - **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
   `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
   confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star
   medal, staggered pop-in of map nodes and part rows, a hopping ▶ on the recommended lesson.
 - Effects that leave their box (burst, "+10") live in an effects layer of the feedback sheet,
   outside its scroll container, so they are not clipped.
+
+## Uncluttered screens (teacher feedback, 2026-10-24)
+- **Every screen fits a 375 × 740 phone without scrolling** (only the map path scrolls).
+  Checked with an automated pass over all main screens and every screen of the three gold
+  lessons (183 screens; a few remaining ones are within ~10 px, mostly the feedback sheet
+  overlapping its question).
+- **No small explanatory texts.** Removed: step-type chips ("Elmélet", "Gyakorlás 1/3"),
+  encouragement lines, "you'll get this again" notes, input hints ("Koppints…"), intro
+  paragraphs, the "keep going" line, stat explanations. Status that the UI already shows
+  (icons, progress bars, dots) is not repeated in words.
+- **Genuinely useful explanations sit behind ⓘ** (`src/ui/InfoButton.tsx`, a dialog): lesson
+  goals, the streak rule, privacy, the storage warning + backup advice, the year-goal marker,
+  about. Worked solutions and mini-test mistakes sit behind 🔍 (same component).
+- Layout tricks that keep questions on one screen: figures are capped by screen height
+  (`--fig-vh`: 32vh on cards, 20vh in question cards, 19vh once an example's steps appear),
+  the "how I read it" math preview sits inside the answer box, up to four special keys
+  (√ / π …) form a fifth keypad column instead of an extra row, the keypad disappears once the
+  answer is checked, and the feedback sheet shows only the verdict + the correct answer.
+- Lesson texts follow the length limits in CONTENT_GUIDE ("Short texts"); `npm run check` warns.
 
 ## PWA / offline
 - No PWA library: a ~60-line Vite plugin in `vite.config.ts` writes `dist/sw.js` with the list of

@@ -98,7 +98,7 @@ export function SoftLockDialog({
       }
     >
       {target && (
-        <div className="sl" style={{ '--topic': topicColor(topics, target.topic) } as CSSProperties}>
+        <div className="sl" style={{ '--topic-src': topicColor(topics, target.topic) } as CSSProperties}>
           <HopArt />
           <div className="sl-target">
             <span className="sl-target-icon">
@@ -109,7 +109,6 @@ export function SoftLockDialog({
               <span className="sl-target-title">{target.sub.title}</span>
             </span>
           </div>
-          <p className="sl-body">{t.softLock.body}</p>
           {shown.length > 0 && (
             <>
               <p className="sl-missing">{t.softLock.missing}</p>
@@ -119,7 +118,7 @@ export function SoftLockDialog({
                     <button
                       type="button"
                       className="sl-item"
-                      style={{ '--topic': topicColor(topics, f.topic) } as CSSProperties}
+                      style={{ '--topic-src': topicColor(topics, f.topic) } as CSSProperties}
                       onClick={() => pick(f.sub.id)}
                     >
                       <span className="sl-item-num" aria-hidden="true">

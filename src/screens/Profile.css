@@ -1,63 +1,75 @@
-/* Profile screen. Prefix: pf-. */
+/* Profile screen. Prefix: pf-. Fits one phone screen (only the badge row scrolls sideways). */
 
 .pf {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.6rem;
 }
 
+/* ---- name + level ---- */
 .pf-hero {
   display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+}
+.pf-hero-top {
+  display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 .pf-avatar {
   flex: none;
-  width: 64px;
-  height: 64px;
-  border-radius: 22px;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--primary), var(--fig-s8));
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
   color: #fff;
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 600;
   transform: rotate(-4deg);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop);
+  box-shadow: var(--pop-sm);
 }
 .pf-avatar.is-anon {
-  background: linear-gradient(135deg, var(--fig-s6), var(--primary));
+  background: linear-gradient(90deg, var(--fig-s3), var(--primary));
 }
 .pf-hero-text {
+  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
 }
 .pf-name {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   font-weight: 600;
+  line-height: 1.2;
   overflow-wrap: anywhere;
+}
+.pf-edit {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: -6px 0;
+  border-radius: 50%;
+  font-size: 1rem;
+  text-decoration: none;
+}
+.pf-edit:hover {
+  background: var(--surface-2);
 }
 .pf-grade {
   font-weight: 700;
   color: var(--text-muted);
-}
-.pf-edit {
-  min-height: 36px;
-  padding-left: 0;
-  font-size: 0.88rem;
-}
-
-/* level */
-.pf-level-head {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
 }
 .pf-level-badge {
   flex: none;
@@ -65,39 +77,29 @@
   height: 48px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
   background: var(--xp);
   color: var(--on-xp);
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 700;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
-.pf-level-text {
-  flex: 1;
-  min-width: 0;
+.pf-level-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
 }
-.pf-level-title {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
+.pf-level-bar {
+  flex: 1;
 }
-.pf-level-sub {
-  font-size: 0.86rem;
-  color: var(--text-muted);
-  font-weight: 600;
+.pf-level-bar .pbar-fill {
+  background: var(--xp);
 }
 .pf-xp {
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  background: var(--xp-bg);
-  border: 2px solid var(--outline);
+  gap: 0.25rem;
   font-family: var(--font-display);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -105,30 +107,29 @@
 .pf-xp .xp-icon {
   color: var(--xp);
 }
-.pf-level-bar .pbar-fill {
-  background: var(--xp);
+.pf-level-next {
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
 }
 
-/* stat tiles */
+/* ---- four small stats in one row ---- */
 .pf-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.7rem;
-}
-@media (min-width: 600px) {
-  .pf-stats {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
 }
 .pf-stat {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.85rem 0.9rem;
-  border-radius: var(--radius);
-  background: var(--surface);
+  align-items: center;
+  gap: 0;
+  padding: 0.5rem 0.25rem 0.45rem;
+  border-radius: 16px;
+  background: var(--card-bg);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop);
+  box-shadow: var(--pop-sm);
   animation: boing 0.55s ease-out backwards;
 }
 .pf-stat:nth-child(2) {
@@ -141,19 +142,27 @@
   animation-delay: 0.21s;
 }
 .pf-stat-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1rem;
   font-family: var(--font-display);
-  font-size: 1.7rem;
+  font-size: 1.35rem;
   font-weight: 600;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pf-stat-value > span[aria-hidden] {
+  font-size: 1rem;
 }
 .pf-stat-value small {
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-muted);
 }
 .pf-stat-label {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   color: var(--text-muted);
 }
 .pf-stat-streak {
@@ -163,11 +172,19 @@
   color: var(--streak);
 }
 
+.pf-cal-card,
+.pf-badges-card {
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+.pf .section-title {
+  margin-bottom: 0.55rem;
+}
+
 /* calendar */
 .pf-cal {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   max-width: 420px;
   margin: 0 auto;
 }
@@ -184,9 +201,8 @@
 }
 .pf-cal-day {
   position: relative;
-  aspect-ratio: 1;
-  min-height: 36px;
-  border-radius: 12px;
+  height: 30px;
+  border-radius: 10px;
   background: var(--surface-2);
   display: grid;
   place-items: center;
@@ -221,66 +237,74 @@
   color: var(--text);
 }
 
-/* badges */
-.pf-nobadges {
-  margin: 0 0 0.6rem;
+/* ---- badges: one row, swipe sideways ---- */
+.pf-badges-count {
+  margin-left: auto;
+  font-size: 0.95rem;
   color: var(--text-muted);
-}
-.pf-badges-sub {
-  margin: 0.8rem 0 0.6rem;
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 .pf-badges {
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 0.9rem 0.6rem;
+  display: flex;
+  gap: 0.55rem;
+  margin: 0 -0.9rem;
+  padding: 0.3rem 0.9rem 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.pf-badges::-webkit-scrollbar {
+  display: none;
+}
+.pf-badges li {
+  flex: none;
+  scroll-snap-align: start;
 }
 .pf-badge {
   --badge: var(--primary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  text-align: center;
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 .pf-badge-disc {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--surface-2);
   color: var(--locked);
   border: 3px dashed color-mix(in srgb, var(--outline) 35%, transparent);
+  transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
 }
 .pf-badge.is-earned .pf-badge-disc {
   background: var(--badge);
   color: #fff;
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop-sm), 0 0 0 7px color-mix(in srgb, var(--badge) 22%, transparent);
-  transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
+  box-shadow: var(--pop-sm);
 }
-.pf-badge.is-earned:hover .pf-badge-disc {
+.pf-badge:hover .pf-badge-disc,
+.pf-badge:focus-visible .pf-badge-disc {
   transform: rotate(-10deg) scale(1.08);
 }
 .pf-badge-lock {
   position: absolute;
   right: -4px;
   bottom: -4px;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--surface);
   color: var(--text-muted);
-  box-shadow: var(--shadow);
+  border: 2px solid color-mix(in srgb, var(--outline) 35%, transparent);
 }
 .pf-badge-streak {
   --badge: var(--streak);
@@ -291,7 +315,7 @@
   gap: 0;
 }
 .pf-badge-fire {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   line-height: 1;
 }
 .pf-badge:not(.is-earned) .pf-badge-fire {
@@ -299,20 +323,23 @@
   opacity: 0.5;
 }
 .pf-badge-num {
-  font-weight: 900;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
   line-height: 1.1;
 }
-.pf-badge-name {
-  font-size: 0.82rem;
-  font-weight: 750;
-  line-height: 1.2;
+.pf-badge-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
 }
-.pf-badge-state {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-muted);
+.pf-badge-detail .pf-badge-disc {
+  width: 84px;
+  height: 84px;
+  transform: scale(1);
 }
-.pf-badge.is-earned .pf-badge-state {
-  color: var(--good-strong);
+.pf-badge-detail p {
+  margin: 0;
 }

@@ -1,7 +1,8 @@
 /**
  * Onboarding: welcome, grade picker (data-driven from GRADES — a new grade appears
- * automatically), optional nickname (never a real name), privacy note → setGrade → map.
- * Also offers "restore from file" for students moving to a new device.
+ * automatically), optional nickname (never a real name) → setGrade → map. Fits one phone screen:
+ * the privacy note and the nickname advice are behind ⓘ buttons. Also offers "restore from
+ * file" for students moving to a new device.
  */
 import { useMemo, useState } from 'react';
 import { t } from '../i18n/hu';
@@ -11,6 +12,7 @@ import { setGrade, setNickname } from '../state/progress';
 import { useAppState } from '../state/store';
 import { navigate } from '../ui/router';
 import { Logo } from '../ui/AppShellIcons';
+import { InfoButton } from '../ui/InfoButton';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { WelcomeArt } from './WelcomeArt';
 import { ImportProgressButton } from './ImportProgress';
@@ -18,7 +20,7 @@ import './screens.css';
 import './Onboarding.css';
 
 /** A playful accent per grade tile (cycled for future grades). */
-const TILE_TONES = ['orange', 'violet', 'teal', 'pink', 'blue', 'green'];
+const TILE_TONES = ['coral', 'violet', 'teal', 'berry', 'gold', 'indigo'];
 
 export default function Onboarding() {
   const currentGrade = useAppState((s) => s.grade);
@@ -49,8 +51,12 @@ export default function Onboarding() {
       </div>
 
       <form className="onb-card card anim-slide-up" onSubmit={start}>
-        <h1 className="onb-title">{t.onboarding.welcome}</h1>
-        <p className="onb-intro">{t.onboarding.intro}</p>
+        <h1 className="onb-title">
+          {t.onboarding.welcome}
+          <InfoButton title={t.onboarding.privacyTitle}>
+            <p>{t.onboarding.privacy}</p>
+          </InfoButton>
+        </h1>
 
         <fieldset className="onb-fieldset">
           <legend className="onb-label">{t.onboarding.pickGrade}</legend>
@@ -68,7 +74,7 @@ export default function Onboarding() {
                 >
                   <span className="onb-grade-num">{g.grade}.</span>
                   <span className="onb-grade-label">{g.label.replace(/^\d+\.\s*/, '')}</span>
-                  <span className="onb-grade-sub">{t.onboarding.gradeLessons(lessonCounts.get(g.grade) ?? 0)}</span>
+                  <span className="sr-only">{t.onboarding.gradeLessons(lessonCounts.get(g.grade) ?? 0)}</span>
                   <span className="onb-grade-check" aria-hidden="true">
                     ✓
                   </span>
@@ -79,9 +85,14 @@ export default function Onboarding() {
         </fieldset>
 
         <div className="onb-field">
-          <label className="onb-label" htmlFor="onb-nick">
-            {t.onboarding.nicknameLabel}
-          </label>
+          <div className="onb-label-row">
+            <label className="onb-label" htmlFor="onb-nick">
+              {t.onboarding.nicknameLabel}
+            </label>
+            <InfoButton title={t.onboarding.nicknameLabel}>
+              <p>{t.onboarding.nicknameHint}</p>
+            </InfoButton>
+          </div>
           <input
             id="onb-nick"
             className="text-input"
@@ -92,25 +103,12 @@ export default function Onboarding() {
             spellCheck={false}
             placeholder={t.onboarding.nicknamePlaceholder}
             onChange={(e) => setNick(e.target.value)}
-            aria-describedby="onb-nick-hint"
           />
-          <p id="onb-nick-hint" className="field-hint">
-            <span aria-hidden="true">🙈 </span>
-            {t.onboarding.nicknameHint}
-          </p>
         </div>
 
         <button type="submit" className="btn btn-block onb-go" disabled={grade === null}>
           {t.onboarding.go}
         </button>
-        {grade === null && <p className="onb-pick-first muted">{t.onboarding.pickFirst}</p>}
-
-        <p className="onb-privacy">
-          <span className="onb-privacy-icon" aria-hidden="true">
-            🔒
-          </span>
-          {t.onboarding.privacy}
-        </p>
 
         <div className="onb-restore">
           <ImportProgressButton

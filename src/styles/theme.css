@@ -10,7 +10,7 @@
   --font-display: 'DynaPuff Variable', 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
 
   /* cartoon "sticker" look: ink outlines + hard offset shadows (never a colored bottom border) */
-  --outline: #2b2347;
+  --outline: #31245e;
   /* color of the hard shadows (= the outline in light mode, pure black in dark mode) */
   --ink: var(--outline);
   --line: 2.5px;
@@ -18,32 +18,41 @@
   --pop-sm: 2px 2.5px 0 var(--ink);
   --pop-lg: 5px 6px 0 var(--ink);
 
-  --bg: #f5f3ff;
-  --bg-pattern: #ebe7ff;
+  --bg: #f1eefe;
+  --bg-pattern: rgba(108, 84, 200, 0.08);
+  /* backdrop behind the squared paper: lavender → violet → peach, left to right */
+  --bg-art: linear-gradient(90deg, #f1eefe 0%, #e8e6ff 55%, #ffe9df 100%);
   --surface: #ffffff;
-  --surface-2: #f1effb;
-  --surface-3: #e6e2f7;
-  --text: #1c1a2e;
-  --text-muted: #5f5a78;
-  --border: #e1ddf2;
-  --primary: #5a4ff3;
-  --primary-strong: #4237d6;
+  --surface-2: #f4f2fc;
+  --surface-3: #e5e2f3;
+  /* cards: a gentle left → right tint (no up/down shading) */
+  --card-bottom: #f4f2fc;
+  --card-bg: linear-gradient(90deg, var(--surface) 0%, var(--surface) 35%, var(--card-bottom) 100%);
+  /* a soft left-lit sheen over colored buttons and chips */
+  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 60%);
+  /* top bar, tab bar, lesson action bar */
+  --bar-bg: linear-gradient(90deg, rgba(255, 255, 255, 0.92), color-mix(in srgb, var(--primary-soft) 88%, transparent));
+  --text: #0f0e16;
+  --text-muted: #575568;
+  --border: #dfdcea;
+  --primary: #6c4bcc;
+  --primary-strong: #5937af;
   --primary-soft: #e8e6ff;
   --on-primary: #ffffff;
-  --good: #198a4b;
-  --good-strong: #13703c;
-  --good-bg: #dff6e8;
-  --bad: #cf3d3d;
-  --bad-bg: #fde6e6;
-  --warn: #b86e00;
-  --warn-bg: #fff1d6;
-  --xp: #e6a200;
-  --xp-bg: #fff4cf;
-  --on-xp: #3d2a00;
-  --streak: #f2611d;
-  --streak-bg: #ffe9dc;
-  --remember-bg: #fff6c2;
-  --locked: #a6a1bf;
+  --good: #268064;
+  --good-strong: #11644c;
+  --good-bg: #dbf8ec;
+  --bad: #bf3957;
+  --bad-bg: #ffe8eb;
+  --warn: #a56217;
+  --warn-bg: #fff1d2;
+  --xp: #eab444;
+  --xp-bg: #fff2ca;
+  --on-xp: #54360b;
+  --streak: #d05320;
+  --streak-bg: #ffe9df;
+  --remember-bg: #fff7d5;
+  --locked: #a4a2b7;
   --shadow: 0 2px 0 rgba(40, 30, 120, 0.06), 0 6px 20px rgba(40, 30, 120, 0.08);
   --shadow-strong: 0 10px 30px rgba(40, 30, 120, 0.18);
   --radius: 18px;
@@ -51,91 +60,102 @@
   --topic: var(--primary);
 
   /* figure colors (see src/figures/scene.ts COLOR) */
-  --fig-ink: #1f2430;
-  --fig-muted: #8a90a0;
+  --fig-ink: #271d4a;
+  --fig-muted: #858397;
   --fig-accent: var(--topic);
-  --fig-hi: #e0452b;
-  --fig-good: #1f9d55;
-  --fig-bad: #d64545;
-  --fig-blue: #2f6fde;
-  --fig-green: #2e9e58;
-  --fig-orange: #f08c1a;
-  --fig-purple: #8a4fd0;
-  --fig-red: #d63c3c;
-  --fig-teal: #159a9c;
-  --fig-grid: #e3e6ee;
-  --fig-axis: #4a5060;
+  --fig-hi: #bc3a83;
+  --fig-good: #008664;
+  --fig-bad: #bf3957;
+  --fig-blue: #4c6dc0;
+  --fig-green: #009895;
+  --fig-orange: #d27049;
+  --fig-purple: #7763bc;
+  --fig-red: #c74955;
+  --fig-teal: #009895;
+  --fig-grid: #e1e0ed;
+  --fig-axis: #4c4a62;
   --fig-paper: var(--surface);
-  --fig-fill: #eef1f7;
-  --fig-s1: #2f6fde;
-  --fig-s2: #f08c1a;
-  --fig-s3: #2e9e58;
-  --fig-s4: #d63c3c;
-  --fig-s5: #8a4fd0;
-  --fig-s6: #159a9c;
-  --fig-s7: #d9a400;
-  --fig-s8: #d1488f;
+  --fig-fill: #eeedfb;
+  --fig-s1: #7763bc;
+  --fig-s2: #d27049;
+  --fig-s3: #009895;
+  --fig-s4: #b15180;
+  --fig-s5: #c28914;
+  --fig-s6: #4c6dc0;
+  --fig-s7: #92509d;
+  --fig-s8: #c35a64;
 
   color-scheme: light;
+  --primary-2: #9b46b4;
 }
 
 :root[data-theme='dark'] {
-  /* lighter outlines so cards keep their shape on the dark background; shadows stay black */
-  --outline: #5d5694;
-  --ink: #000;
-  --bg: #13111d;
-  --bg-pattern: #1a1728;
-  --surface: #1e1b2d;
-  --surface-2: #29253d;
-  --surface-3: #343050;
-  --text: #f2f0fb;
-  --text-muted: #aaa5c6;
-  --border: #393352;
-  --primary: #8d86ff;
-  --primary-strong: #a29cff;
-  --primary-soft: #2e2a52;
-  --on-primary: #12101c;
-  --good: #52c886;
-  --good-strong: #6ad89a;
-  --good-bg: #173627;
-  --bad: #ff7d7d;
-  --bad-bg: #3e1d23;
-  --warn: #ffb547;
-  --warn-bg: #3a2b12;
-  --xp: #ffc83d;
-  --xp-bg: #3a3014;
-  --on-xp: #2b1e00;
-  --streak: #ff8a4c;
-  --streak-bg: #3c2416;
-  --remember-bg: #3a3518;
-  --locked: #5f5a7c;
+  /*
+   * Dark mode, the standard way: near-neutral surfaces, elevation shown by lighter surfaces
+   * (bg → surface → surface-2) instead of shadows (--ink is transparent, so the sticker shadows
+   * disappear), desaturated lighter accents, near-white text.
+   */
+  --outline: #4f4f56;
+  --ink: transparent;
+  --bg: #0e0e11;
+  --bg-pattern: rgba(255, 255, 255, 0.035);
+  --bg-art: linear-gradient(90deg, #0e0e11 0%, #131318 100%);
+  --surface: #19191d;
+  --surface-2: #222227;
+  --surface-3: #2d2d32;
+  --card-bottom: #222227;
+  --card-bg: linear-gradient(90deg, var(--surface) 0%, var(--surface) 35%, var(--card-bottom) 100%);
+  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 60%);
+  --bar-bg: linear-gradient(90deg, color-mix(in srgb, var(--surface) 96%, transparent), color-mix(in srgb, var(--surface-2) 96%, transparent));
+  --text: #f3f3f5;
+  --text-muted: #b0b0b6;
+  --border: #35353a;
+  --primary: #b0a8e4;
+  --primary-strong: #c3bdef;
+  --primary-soft: #2b2937;
+  --on-primary: #0f0f14;
+  --good: #93c8b0;
+  --good-strong: #aadbc4;
+  --good-bg: #1d2a24;
+  --bad: #e29b9d;
+  --bad-bg: #322222;
+  --warn: #e0c394;
+  --warn-bg: #2f281b;
+  --xp: #e9ca89;
+  --xp-bg: #312a1d;
+  --on-xp: #1b150b;
+  --streak: #e9aa8d;
+  --streak-bg: #34251f;
+  --remember-bg: #2d291b;
+  --locked: #68686f;
   --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 6px 20px rgba(0, 0, 0, 0.3);
   --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.5);
 
-  --fig-ink: #e8eaf0;
-  --fig-muted: #9aa0b0;
-  --fig-hi: #ff7a5c;
-  --fig-good: #4cc27e;
-  --fig-bad: #ff6b6b;
-  --fig-blue: #6f9cff;
-  --fig-green: #5cc982;
-  --fig-orange: #ffab4a;
-  --fig-purple: #b78cff;
-  --fig-red: #ff6b6b;
-  --fig-teal: #3cc6c8;
-  --fig-grid: #343b4a;
-  --fig-axis: #c0c4d0;
-  --fig-fill: #2a3040;
-  --fig-s1: #6f9cff;
-  --fig-s2: #ffab4a;
-  --fig-s3: #5cc982;
-  --fig-s4: #ff6b6b;
-  --fig-s5: #b78cff;
-  --fig-s6: #3cc6c8;
-  --fig-s7: #f2c94c;
-  --fig-s8: #f07ab5;
+  --fig-ink: #ebebee;
+  --fig-muted: #97989d;
+  --fig-hi: #e19dbc;
+  --fig-good: #93c8b0;
+  --fig-bad: #e29b9d;
+  --fig-blue: #9bb1e2;
+  --fig-green: #76c1bd;
+  --fig-orange: #dba28c;
+  --fig-purple: #b1a9dd;
+  --fig-red: #e29b9d;
+  --fig-teal: #76c1bd;
+  --fig-grid: #323237;
+  --fig-axis: #b7b7bc;
+  --fig-fill: #28282f;
+  --fig-s1: #b1a9dd;
+  --fig-s2: #dba28c;
+  --fig-s3: #76c1bd;
+  --fig-s4: #d79eb6;
+  --fig-s5: #ccac7b;
+  --fig-s6: #9bb1e2;
+  --fig-s7: #c8a2ce;
+  --fig-s8: #dd9ea1;
 
   color-scheme: dark;
+  --primary-2: #c7a2cf;
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -163,6 +183,41 @@ body {
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
+}
+
+/*
+ * Chapter / badge colors are set inline as --topic-src / --badge-src; the theme turns them into
+ * --topic / --badge — as they are in light mode, muted (mixed with gray) in dark mode, where
+ * saturated colors glare (standard dark-theme practice).
+ */
+/* dark mode: popups sit one elevation step higher (lighter) than cards */
+:root[data-theme='dark'] .dlg-panel,
+:root[data-theme='dark'] .toast {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+[style*='--topic-src'][style] {
+  --topic: var(--topic-src);
+}
+[style*='--badge-src'][style] {
+  --badge: var(--badge-src);
+}
+:root[data-theme='dark'] [style*='--topic-src'][style] {
+  --topic: color-mix(in oklch, var(--topic-src) 60%, #9c9ca6);
+}
+:root[data-theme='dark'] [style*='--badge-src'][style] {
+  --badge: color-mix(in oklch, var(--badge-src) 60%, #9c9ca6);
+}
+
+/* the colorful backdrop, fixed behind every screen (screens draw only the squared paper on top) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-art);
+  pointer-events: none;
 }
 
 button,
@@ -202,7 +257,7 @@ a {
   padding: 0.6em 1.4em;
   border: var(--line) solid var(--outline);
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--gloss), linear-gradient(90deg, var(--primary), var(--primary-2));
   color: var(--on-primary);
   font-family: var(--font-display);
   font-weight: 600;
@@ -215,7 +270,7 @@ a {
   touch-action: manipulation;
 }
 .btn:hover {
-  background: var(--primary-strong);
+  background: var(--gloss), linear-gradient(90deg, var(--primary-strong), var(--primary-2));
   transform: translate(-1px, -1px);
   box-shadow: 4px 5px 0 var(--ink);
 }
@@ -234,35 +289,35 @@ a {
   width: 100%;
 }
 .btn-ghost {
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--primary);
 }
 .btn-ghost:hover {
-  background: var(--primary-soft);
+  background: var(--gloss), var(--primary-soft);
 }
 .btn-soft {
-  background: var(--primary-soft);
+  background: var(--gloss), var(--primary-soft);
   color: var(--primary);
   border-width: 2px;
   box-shadow: var(--pop-sm);
 }
 .btn-soft:hover {
-  background: var(--surface-3);
+  background: var(--gloss), var(--surface-3);
   box-shadow: 3px 3.5px 0 var(--ink);
 }
 .btn-good {
-  background: var(--good);
+  background: var(--gloss), var(--good);
   color: var(--on-primary);
 }
 .btn-good:hover {
-  background: var(--good-strong);
+  background: var(--gloss), var(--good-strong);
 }
 .btn-bad {
-  background: var(--bad);
+  background: var(--gloss), var(--bad);
   color: var(--on-primary);
 }
 .btn-bad:hover {
-  background: color-mix(in srgb, var(--bad) 85%, var(--text));
+  background: var(--gloss), color-mix(in srgb, var(--bad) 85%, var(--text));
 }
 .btn-small {
   min-height: 40px;
@@ -300,7 +355,7 @@ a {
 
 /* ---- Cards ---- */
 .card {
-  background: var(--surface);
+  background: var(--card-bg);
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
   box-shadow: var(--pop);

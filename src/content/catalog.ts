@@ -106,7 +106,11 @@ export function topicCompleted(topic: TopicMeta, completed: (id: string) => bool
 }
 
 /** Default topic colors, used when topics.json has no `color`. */
-export const TOPIC_PALETTE = ['#3b6fe0', '#f0750f', '#2f9e44', '#d6336c', '#7950f2', '#1098ad', '#c92a2a', '#8c6d1f'];
+/**
+ * Chapter colors: one OKLCH family (equal chroma, lightness tuned per hue) — violet, coral, teal,
+ * berry, gold, indigo, plum, rose; warm and cool alternate so neighbouring chapters differ.
+ */
+export const TOPIC_PALETTE = ['#7763bc', '#d27049', '#009895', '#b15180', '#c28914', '#4c6dc0', '#92509d', '#c35a64'];
 
 export function topicColor(grade: GradeTopics, topic: TopicMeta): string {
   return topic.color ?? TOPIC_PALETTE[grade.topics.indexOf(topic) % TOPIC_PALETTE.length];

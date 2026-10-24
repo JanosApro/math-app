@@ -54,9 +54,9 @@ function stateLabel(n: TrailNode): string {
   }
 }
 
+/** Only the parts progress is written out; the other states show as the node's icon. */
 function visibleStatus(n: TrailNode): string | null {
-  if (n.state === 'done') return t.map.completed;
-  if (n.state === 'soon') return t.map.soon;
+  if (n.state === 'done' || n.state === 'soon') return null;
   if (n.inProgress) return n.parts?.total ? t.map.partsStatus(n.parts.done.length, n.parts.total) : t.map.inProgress;
   return null;
 }

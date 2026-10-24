@@ -1,10 +1,9 @@
 /**
  * The on-screen keypad (no OS keyboard on phones). Layout:
  *
- *   [type-specific keys: / ␣ √ x y ^ ( ) + · ° ′ …]
- *   1 2 3 ⌫
- *   4 5 6 ⌫
- *   7 8 9 ⌫
+ *   1 2 3 ⌫  [√]        up to 4 type-specific keys (/ ␣ √ π …) form a 5th column, so the
+ *   4 5 6 ⌫  [/]        keypad stays 4 rows high; with more (x y ^ ( ) + · …) they form a
+ *   7 8 9 ⌫             row above the digits
  *   − 0 , C
  */
 import { t } from '../../i18n/hu';
@@ -29,9 +28,10 @@ function Key({ def, onKey, disabled, className }: { def: KeyDef; onKey: (a: KeyA
 
 export function Keypad({ specials, onKey, disabled }: { specials: KeyDef[]; onKey: (a: KeyAction) => void; disabled?: boolean }) {
   const d = (n: string) => DIGIT_KEYS.find((k) => k.label === n)!;
+  const side = specials.length > 0 && specials.length <= 4;
   return (
-    <div className={`kp${disabled ? ' kp-disabled' : ''}`} role="group" aria-label={t.input.keypad}>
-      {specials.length > 0 && (
+    <div className={`kp${disabled ? ' kp-disabled' : ''}${side ? ' kp-with-side' : ''}`} role="group" aria-label={t.input.keypad}>
+      {specials.length > 0 && !side && (
         <div className="kp-specials">
           {specials.map((k, i) => (
             <Key key={i} def={k} onKey={onKey} disabled={disabled} />
@@ -51,6 +51,13 @@ export function Keypad({ specials, onKey, disabled }: { specials: KeyDef[]; onKe
         <Key def={COMMA_KEY} onKey={onKey} disabled={disabled} />
         <Key def={CLEAR_KEY} onKey={onKey} disabled={disabled} />
       </div>
+      {side && (
+        <div className="kp-side">
+          {specials.map((k, i) => (
+            <Key key={i} def={k} onKey={onKey} disabled={disabled} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ import { gradeStreak } from '../state/progress';
 import { schoolYearProgress, todayBelgrade } from '../state/dates';
 import { gradeProgress, useAppState, type GradeProgress } from '../state/store';
 import { FlagIcon, TrophyIcon } from '../ui/AppShellIcons';
+import { InfoButton } from '../ui/InfoButton';
 import { SoftLockDialog } from '../ui/SoftLockDialog';
 import { TopicIcon } from '../ui/TopicIcon';
 import { showToast } from '../ui/Toast';
@@ -37,6 +38,10 @@ function YearGoal({ done, total, today }: { done: number; total: number; today: 
         <h2 id="map-goal-title" className="map-card-title">
           {t.map.yearGoal}
         </h2>
+        <InfoButton title={t.map.yearGoal}>
+          <p>{allDone ? t.map.yearGoalDone : t.map.yearGoalPace(expected)}</p>
+          <p>{t.map.yearGoalMarkerInfo}</p>
+        </InfoButton>
         <span className="map-goal-count">{t.map.yearGoalText(done, total)}</span>
       </div>
       <div className="map-goal-bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={t.map.yearGoal}>
@@ -45,7 +50,6 @@ function YearGoal({ done, total, today }: { done: number; total: number; today: 
           <span className="map-goal-marker" style={{ left: `${plan * 100}%` }} title={t.map.yearGoalMarker} aria-hidden="true" />
         )}
       </div>
-      <p className="map-goal-note">{allDone ? t.map.yearGoalDone : t.map.yearGoalPace(expected)}</p>
     </section>
   );
 }
@@ -63,9 +67,8 @@ function DailyCard({ gp, today }: { gp: GradeProgress; today: string }) {
         <h2 id="map-daily-title" className="map-card-title">
           {t.daily.title}
         </h2>
-        <p className="map-daily-text">
-          <span className="sr-only">{t.shell.streakAria(streak.current)}. </span>
-          {rec ? t.daily.todayResult(rec.correct, rec.total) : t.shell.dailyPending}
+        <p className="sr-only">
+          {t.shell.streakAria(streak.current)}. {rec ? t.daily.todayResult(rec.correct, rec.total) : t.shell.dailyPending}
         </p>
         <a className={`btn btn-small${rec ? ' btn-soft' : ''}`} href={routeToHash({ name: 'daily' })}>
           {rec ? `↻ ${t.daily.practiceAgain}` : t.daily.start}
@@ -140,7 +143,7 @@ function TopicSection({
   const chapterDone = topicCompleted(topic, completed);
   const total = topic.subtopics.length;
   return (
-    <section className={`map-topic${chapterDone ? ' is-done' : ''}`} style={{ '--topic': topicColor(topics, topic) } as CSSProperties} aria-labelledby={`topic-${topic.id}`}>
+    <section className={`map-topic${chapterDone ? ' is-done' : ''}`} style={{ '--topic-src': topicColor(topics, topic) } as CSSProperties} aria-labelledby={`topic-${topic.id}`}>
       <header className="map-topic-head">
         <span className="map-topic-icon" aria-hidden="true">
           <TopicIcon name={topic.icon} size={30} />

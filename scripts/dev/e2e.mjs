@@ -73,7 +73,7 @@ async function demoLesson() {
   await page.locator('.dev-preview-toggle').click();
   await page.locator('.dev-preview-jumps .btn', { hasText: 'Minidolgozat' }).click();
   // wait for the test itself (the practice card that was on screen also matches .lesson-qcard)
-  await page.waitForFunction(() => /feladat \//.test(document.querySelector('.lesson-chip')?.textContent ?? ''));
+  await page.waitForFunction(() => /Minidolgozat/.test(document.querySelector('.lesson-top-part')?.textContent ?? ''));
   await playTest(page, 3);
   check((await page.locator('.lesson-review-item').count()) === 3, 'mini test with 3 wrong answers fails and lists them');
   await clickMain(page);

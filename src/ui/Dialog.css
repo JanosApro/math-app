@@ -25,7 +25,7 @@
   max-height: min(88dvh, 720px);
   overflow: auto;
   overscroll-behavior: contain;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   border-radius: 24px;
   border: var(--line) solid var(--outline);

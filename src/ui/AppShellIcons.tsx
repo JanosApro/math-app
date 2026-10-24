@@ -132,16 +132,16 @@ export function Logo({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false" className="app-logo">
       <defs>
-        <linearGradient id="mk-logo-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6c5cff" />
-          <stop offset="1" stopColor="#4433d1" />
+        <linearGradient id="mk-logo-bg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#6c4bcc" />
+          <stop offset="1" stopColor="#9b46b4" />
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="18" fill="url(#mk-logo-bg)" />
       <path d="M15 19H47L18 45H42" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="15" cy="19" r="5" fill="#ff8a4c" stroke="#fff" strokeWidth="2.5" />
-      <circle cx="32.5" cy="32" r="4.5" fill="#3cc6c8" stroke="#fff" strokeWidth="2.5" />
-      <path d="M51 38.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8z" fill="#ffd23f" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="15" cy="19" r="5" fill="#d27049" stroke="#fff" strokeWidth="2.5" />
+      <circle cx="32.5" cy="32" r="4.5" fill="#009895" stroke="#fff" strokeWidth="2.5" />
+      <path d="M51 38.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8z" fill="#eab444" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
     </svg>
   );
 }
