@@ -7,7 +7,7 @@
  * `preview` (dev) disables every write to the progress store (step, XP, test result).
  * `initialStep` skips the start screen (dev preview: jump to a step or straight to the test).
  */
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { GradeTopics, SubtopicModule, TopicMeta } from '../engine/types';
 import { seedOf } from '../engine/session';
 import { flatten, recommendedNext } from '../content/catalog';
@@ -41,6 +41,8 @@ export interface LessonPlayerProps {
   onExit: () => void;
   /** Skip the start screen and open this step (or the mini test). */
   initialStep?: number | 'test';
+  /** Extra content at the right end of the top bar (dev preview tools). */
+  topExtra?: ReactNode;
 }
 
 type Phase = 'start' | 'steps' | 'toTest' | 'test' | 'done';
@@ -51,7 +53,7 @@ interface Done {
   lessonXp: number;
 }
 
-export function LessonPlayer({ module, title, grade, topics, topic, color, preview, onExit, initialStep }: LessonPlayerProps) {
+export function LessonPlayer({ module, title, grade, topics, topic, color, preview, onExit, initialStep, topExtra }: LessonPlayerProps) {
   const steps = module.steps;
   const saving = !preview && grade !== undefined;
   const saved = grade !== undefined && !preview ? gradeProgress(getState(), grade).subtopics[module.id] : undefined;
@@ -182,7 +184,9 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
 
   return (
     <div className="lesson" style={style}>
-      <LessonTopBar progress={progress} onClose={askQuit} />
+      <LessonTopBar progress={progress} onClose={askQuit}>
+        {topExtra}
+      </LessonTopBar>
       <main className="lesson-main">{body}</main>
       <Dialog
         open={quitOpen}

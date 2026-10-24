@@ -4,6 +4,7 @@
  *
  *   <QuestionView question={q} seed={seed} draft={draft} onDraft={setDraft} locked={checked} verdict="wrong" />
  */
+import type { ReactNode } from 'react';
 import type { Question } from '../engine/types';
 import { FigureView } from '../figures/FigureView';
 import { Rich } from '../ui/Rich';
@@ -23,9 +24,13 @@ export interface QuestionViewProps {
   verdict?: Verdict;
   /** Extra class for the answer area (e.g. a shake animation). */
   answerClassName?: string;
+  /** Shown between the figure and the answer (the hint box). */
+  beforeAnswer?: ReactNode;
+  /** "Simplify it" / "I don't understand" notice: right under the display of typed answers. */
+  notice?: ReactNode;
 }
 
-export function QuestionView({ question, seed, draft, onDraft, locked, verdict, answerClassName }: QuestionViewProps) {
+export function QuestionView({ question, seed, draft, onDraft, locked, verdict, answerClassName, beforeAnswer, notice }: QuestionViewProps) {
   const spec = question.answer;
   let input: JSX.Element | null = null;
   switch (spec.type) {
@@ -35,7 +40,15 @@ export function QuestionView({ question, seed, draft, onDraft, locked, verdict, 
     case 'expression':
       if (draft.type === 'text')
         input = (
-          <TextAnswer spec={spec} inputLabel={question.inputLabel} text={draft.text} onChange={(text) => onDraft({ type: 'text', text })} locked={locked} verdict={verdict} />
+          <TextAnswer
+            spec={spec}
+            inputLabel={question.inputLabel}
+            text={draft.text}
+            onChange={(text) => onDraft({ type: 'text', text })}
+            locked={locked}
+            verdict={verdict}
+            notice={notice}
+          />
         );
       break;
     case 'numbers':
@@ -48,6 +61,7 @@ export function QuestionView({ question, seed, draft, onDraft, locked, verdict, 
             onChange={(texts, focus) => onDraft({ type: 'fields', texts, focus })}
             locked={locked}
             verdict={verdict}
+            notice={notice}
           />
         );
       break;
@@ -75,12 +89,14 @@ export function QuestionView({ question, seed, draft, onDraft, locked, verdict, 
         <Rich text={question.prompt} />
       </div>
       {question.figure && <FigureView figure={question.figure} />}
+      {beforeAnswer}
       {!typed && question.inputLabel && (
         <div className="lesson-input-label">
           <Rich text={question.inputLabel} />
         </div>
       )}
       <div className={`lesson-answer${answerClassName ? ` ${answerClassName}` : ''}`}>{input}</div>
+      {!typed && notice}
     </div>
   );
 }

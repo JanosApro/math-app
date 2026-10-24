@@ -8,7 +8,7 @@ after every change, and commit after each task (`git commit`). Then tick the tas
 | # | Task | Status |
 |---|------|--------|
 | 01 | [App shell, onboarding, map, soft-lock dialog, profile, settings, PWA](01-app-shell.md) | todo (placeholders exist) |
-| 02 | [Lesson player, answer inputs + keypad, mini test, celebrations, daily challenge, dev preview](02-lesson-player.md) | todo (placeholders exist) |
+| 02 | [Lesson player, answer inputs + keypad, mini test, celebrations, daily challenge, dev preview](02-lesson-player.md) | done |
 | 03 | [`/dev` page, figure gallery screen, `npm run check`, `npm run status`](03-dev-tools.md) | done |
 | 04 | [Figures: 3D solids and nets](04-figures-solids.md) | todo (stubs throw) |
 | 05 | [Figures: charts, pictogram, table](05-figures-charts.md) | todo (stubs throw) |

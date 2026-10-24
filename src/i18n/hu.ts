@@ -152,6 +152,7 @@ export const t = {
     fractionKey: 'törtvonal',
     rootKey: 'gyökjel',
     mixedKey: 'vegyes szám (szóköz)',
+    spaceLabel: 'szóköz',
     powerKey: 'hatvány',
     preview: 'Így értem:',
     // task 02 (keypad + pick inputs)

@@ -189,8 +189,9 @@ async function main(): Promise<number> {
   if (catalog.demoLesson) {
     const issues: ValidationIssue[] = [];
     validateModule(catalog.demoLesson.module, undefined, issues);
+    if (!ONLY || ONLY === catalog.demoLesson.module.id) issues.push(...stressTestModule(catalog.demoLesson.module, Math.min(SEEDS, 200)));
     allIssues.push(...issues);
-    console.log(`  ${countIssues(issues).errors ? CROSS : CHECK} src/dev/demoLesson.ts — ${catalog.demoLesson.module.id} (demo)`);
+    console.log(`  ${countIssues(issues).errors ? CROSS : CHECK} src/dev/demoLesson.ts — ${catalog.demoLesson.module.id} (demo, stress ${Math.min(SEEDS, 200)} seeds)`);
     printIssues(issues, '    ');
   }
   const moduleCountWithIssues = summaryRows.length; // one row per loaded module

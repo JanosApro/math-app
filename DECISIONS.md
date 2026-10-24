@@ -64,6 +64,23 @@ Architectural choices and why. Add new entries at the end of a section.
   lesson content, so changing them is a content edit.
 - Constructions are a figure type with step captions; the figure player animates each new step.
 
+## Lesson player
+- **Nothing that contains a `position: fixed` element may keep a `transform`** (or filter,
+  backdrop-filter, will-change: transform): it becomes the containing block and the "fixed" action
+  bar / feedback sheet / dialog scrolls with it. So the step transition animates the *cards*
+  (`.lesson-stage > .lesson-card`), not the stage, and `.shell-view` animates without fill-mode.
+- The correct-answer green flash is an `::after` overlay on the card, so it never restarts the
+  card's own slide-in animation.
+- On phones the keypad often starts below the fixed action bar, so: the "simplify it" / "I don't
+  understand" notice is rendered between the display and the keypad, the hint above the answer
+  area, and the answer area scrolls into view on the first key press (`scroll-margin-bottom`
+  keeps it above the bar). Figures are at most 340 px tall (`FigureView`), so a tall thin triangle
+  cannot push the answer off the screen.
+- `src/dev/demoLesson.ts` (`dev-demo`) is a developer lesson that uses every step and answer type;
+  `npm run check` validates and stress-tests it like real content. Choice/order/match buttons carry
+  `data-index` / `data-left` / `data-right` attributes for browser automation (dev scripts read the
+  current question from `window.__mkQuestion`, dev builds only).
+
 ## Progress, streak, daily challenge
 - localStorage key `matek-kaland:v1`, versioned and sanitised on load/import; every access in
   try/catch; in-memory fallback with a visible notice. Tabs stay in sync via the `storage` event.

@@ -56,6 +56,7 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
   const [shakeN, setShakeN] = useState(0);
   const [flash, setFlash] = useState(false);
   const hintRef = useRef<HTMLDivElement>(null);
+  const noticeRef = useRef<HTMLDivElement>(null);
   const answer = useMemo(() => draftToAnswer(spec, draft), [spec, draft]);
 
   useEffect(() => {
@@ -98,6 +99,11 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
 
   useEnterKey(() => (result ? onDone(result) : check()), true);
 
+  // keep the notice visible (it sits between the display and the keypad)
+  useEffect(() => {
+    if (notice) noticeRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [notice, shakeN]);
+
   const openHint = () => {
     setHintOpen(true);
     requestAnimationFrame(() => hintRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
@@ -109,20 +115,32 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
     <>
       <div className={`lesson-card lesson-qcard${flash ? ' lesson-flash-good' : ''}`} onAnimationEnd={(e) => e.target === e.currentTarget && setFlash(false)}>
         {header}
-        <QuestionView question={question} seed={seed} draft={draft} onDraft={onDraft} locked={!!result} verdict={verdict} answerClassName={shakeClass} />
-        {notice && (
-          <div className="lesson-notice" role="status">
-            <span aria-hidden="true">✎</span> {t.feedback[notice]}
-          </div>
-        )}
-        {hintOpen && (
-          <div className="lesson-hint anim-slide-up" ref={hintRef}>
-            <div className="lesson-hint-title">
-              <span aria-hidden="true">💡</span> {t.lesson.hintTitle}
-            </div>
-            <Rich text={question.hint} />
-          </div>
-        )}
+        <QuestionView
+          question={question}
+          seed={seed}
+          draft={draft}
+          onDraft={onDraft}
+          locked={!!result}
+          verdict={verdict}
+          answerClassName={shakeClass}
+          beforeAnswer={
+            hintOpen && (
+              <div className="lesson-hint anim-slide-up" ref={hintRef}>
+                <div className="lesson-hint-title">
+                  <span aria-hidden="true">💡</span> {t.lesson.hintTitle}
+                </div>
+                <Rich text={question.hint} />
+              </div>
+            )
+          }
+          notice={
+            notice && (
+              <div className="lesson-notice" role="status" ref={noticeRef}>
+                <span aria-hidden="true">✎</span> {t.feedback[notice]}
+              </div>
+            )
+          }
+        />
       </div>
       {!result && (
         <LessonFooter>
@@ -136,12 +154,7 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
           </button>
         </LessonFooter>
       )}
-      {result && (
-        <>
-          <div className="lesson-sheet-spacer" aria-hidden="true" />
-          <FeedbackSheet question={question} seed={seed} result={result} mode={mode} willRequeue={willRequeue} onContinue={() => onDone(result)} />
-        </>
-      )}
+      {result && <FeedbackSheet question={question} seed={seed} result={result} mode={mode} willRequeue={willRequeue} onContinue={() => onDone(result)} />}
     </>
   );
 }
@@ -178,48 +191,59 @@ export function FeedbackSheet({
 }) {
   const [showSolution, setShowSolution] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLDivElement>(null);
+  // the spacer keeps the question scrollable above the (fixed) sheet, whatever its height
+  const [sheetH, setSheetH] = useState<number | null>(null);
   useEffect(() => {
     btn.current?.focus({ preventScroll: true });
+    const el = sheet.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => setSheetH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
   const good = result.correct;
   return (
-    <div className={`lesson-sheet ${good ? 'lesson-sheet-good' : 'lesson-sheet-bad'}`} role="status" aria-live="polite">
-      <div className="lesson-sheet-inner">
-        <div className="lesson-sheet-scroll">
-          <div className="lesson-sheet-head">
-            <span className={`lesson-sheet-icon${good ? ' anim-pop' : ''}`} aria-hidden="true">
-              {good ? '✓' : '✗'}
-            </span>
-            <strong className="lesson-sheet-title">{good ? pickPhrase(t.feedback.correct, seed) : t.feedback.wrong}</strong>
-            {good && result.xp > 0 && mode === 'lesson' && (
-              <span className="lesson-xp-pill anim-pop">
-                +<CountUp value={result.xp} duration={600} /> {t.common.xp}
+    <>
+      <div className="lesson-sheet-spacer" aria-hidden="true" style={sheetH !== null ? { height: sheetH + 16 } : undefined} />
+      <div ref={sheet} className={`lesson-sheet ${good ? 'lesson-sheet-good' : 'lesson-sheet-bad'}`} role="status" aria-live="polite">
+        <div className="lesson-sheet-inner">
+          <div className="lesson-sheet-scroll">
+            <div className="lesson-sheet-head">
+              <span className={`lesson-sheet-icon${good ? ' anim-pop' : ''}`} aria-hidden="true">
+                {good ? '✓' : '✗'}
               </span>
+              <strong className="lesson-sheet-title">{good ? pickPhrase(t.feedback.correct, seed) : t.feedback.wrong}</strong>
+              {good && result.xp > 0 && mode === 'lesson' && (
+                <span className="lesson-xp-pill anim-pop">
+                  +<CountUp value={result.xp} duration={600} /> {t.common.xp}
+                </span>
+              )}
+            </div>
+            {!good && (
+              <>
+                <p className="lesson-sheet-text">{pickPhrase(t.feedback.wrongEncourage, seed >>> 3)}</p>
+                <div className="lesson-sheet-answer">
+                  <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(question.answer)} className="lesson-inline-rich" />
+                </div>
+                {willRequeue && <p className="lesson-sheet-note">↻ {t.feedback.tryAgainLater}</p>}
+                <Solution steps={question.solution} />
+              </>
+            )}
+            {good && (
+              <>
+                {showSolution && <Solution steps={question.solution} />}
+                <button type="button" className="lesson-link-btn" onClick={() => setShowSolution((s) => !s)}>
+                  {showSolution ? t.feedback.hideSolution : t.feedback.showSolution}
+                </button>
+              </>
             )}
           </div>
-          {!good && (
-            <>
-              <p className="lesson-sheet-text">{pickPhrase(t.feedback.wrongEncourage, seed >>> 3)}</p>
-              <div className="lesson-sheet-answer">
-                <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(question.answer)} className="lesson-inline-rich" />
-              </div>
-              {willRequeue && <p className="lesson-sheet-note">↻ {t.feedback.tryAgainLater}</p>}
-              <Solution steps={question.solution} />
-            </>
-          )}
-          {good && (
-            <>
-              {showSolution && <Solution steps={question.solution} />}
-              <button type="button" className="lesson-link-btn" onClick={() => setShowSolution((s) => !s)}>
-                {showSolution ? t.feedback.hideSolution : t.feedback.showSolution}
-              </button>
-            </>
-          )}
+          <button ref={btn} type="button" className={`btn btn-block ${good ? 'btn-good' : ''}`} onClick={onContinue}>
+            {t.common.continue}
+          </button>
         </div>
-        <button ref={btn} type="button" className={`btn btn-block ${good ? 'btn-good' : ''}`} onClick={onContinue}>
-          {t.common.continue}
-        </button>
       </div>
-    </div>
+    </>
   );
 }

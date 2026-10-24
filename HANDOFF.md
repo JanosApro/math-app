@@ -30,7 +30,7 @@ passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 
 | task | done | still to do |
 |---|---|---|
-| 02 lesson player | `src/lesson/`: LessonScreen, LessonPlayer, steps.tsx, QuestionRunner, QuestionView, parts.tsx, MiniTest, Celebration, DailyScreen, inputs/ (Keypad, keys, TextAnswer, PickAnswers, draft, keypad.css) — type-checks | **lesson CSS** (`src/lesson/lesson.css`, prefix `lesson-`; only keypad.css exists), `src/dev/demoLesson.ts`, `src/dev/PreviewScreen.tsx` (still placeholder), browser verification (spec's "Verify") |
+| 02 lesson player | **done** (cloud session): lesson.css, demoLesson (`#/dev/preview/dev-demo`), PreviewScreen with 🛠 jump panel, verified in Chromium at 375/1280, light/dark | — |
 | 01 app shell | AppShell, TopicIcon (real icons), Onboarding (+ WelcomeArt, Onboarding.css), MapTrail.tsx (path component), ImportProgress.tsx (shared import UI), screens.css, devFlags.ts | **MapScreen** (placeholder; use MapTrail), **SoftLockDialog**, **ProfileScreen**, **SettingsScreen** (placeholders), **PWA** (manifest, icon, sw plugin in vite.config.ts), verification |
 | 04 solids | `solids.ts` + `solids-common.ts`: all solids render (the cylinder lesson validates) | **nets** (`solids-net.ts` is a stub that throws), galleries `src/dev/gallery/solids.ts` + `nets.ts`, visual review (light/dark), CONTENT_GUIDE figure rows |
 | 05 charts | `charts.ts`, `charts-common.ts`, `charts-pie.ts`, `charts-table.ts`; gallery `charts.ts` (30 entries, 0 errors) | visual review of gallery page 2+ (light/dark), CONTENT_GUIDE figure rows |
@@ -93,7 +93,9 @@ Milestone 1 — engine and app shell
 - [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
 - [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects
 - [ ] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA → task 01
-- [ ] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
+- [x] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
+      (`src/lesson/**` + `lesson.css`, `src/dev/demoLesson.ts` = every step/answer type,
+      `src/dev/PreviewScreen.tsx`; verified with Playwright at 375×740 and 1280×800, light/dark)
 - [x] `/dev` page, gallery screen, `npm run check`, `npm run status` → task 03
       (`src/dev/validate.ts` + `scripts/check.ts` + `scripts/status.ts` + `src/dev/DevScreen.tsx` +
       `GalleryScreen.tsx` + `dev.css`; verified at 1280/375 px, no console errors, no horizontal

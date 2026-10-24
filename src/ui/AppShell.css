@@ -240,8 +240,10 @@
 .shell-main .page {
   padding-bottom: 2.5rem;
 }
+/* no fill-mode: a transform kept after the animation would make .shell-view the containing
+   block of position: fixed descendants (dialogs, bars) */
 .shell-view {
-  animation: shell-view-in 0.28s ease-out both;
+  animation: shell-view-in 0.28s ease-out;
 }
 @keyframes shell-view-in {
   from {

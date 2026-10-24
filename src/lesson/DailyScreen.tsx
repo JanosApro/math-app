@@ -191,7 +191,7 @@ export default function DailyScreen({ grade }: { grade: number }) {
 
 function StreakHero({ streak }: { streak: number }) {
   return (
-    <div className="lesson-streak-hero">
+    <div className={`lesson-streak-hero${streak === 0 ? ' is-zero' : ''}`}>
       <span className="lesson-streak-fire" aria-hidden="true">
         🔥
       </span>

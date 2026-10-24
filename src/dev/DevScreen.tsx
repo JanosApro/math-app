@@ -150,12 +150,8 @@ export default function DevScreen() {
           <button type="button" className="btn btn-small btn-ghost" onClick={() => navigate({ name: 'devGallery' })}>
             Ábragaléria
           </button>
-          <button
-            type="button"
-            className="btn btn-small btn-ghost"
-            onClick={() => state.modules[0] && navigate({ name: 'devPreview', subtopicId: state.modules[0].module.id })}
-          >
-            Lecke-előnézet
+          <button type="button" className="btn btn-small btn-ghost" onClick={() => navigate({ name: 'devPreview', subtopicId: 'dev-demo' })}>
+            Demó lecke
           </button>
           <button type="button" className="btn btn-small btn-ghost" onClick={() => navigate({ name: 'map' })}>
             ← App

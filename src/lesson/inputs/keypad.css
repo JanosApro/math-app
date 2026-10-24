@@ -8,6 +8,12 @@
   flex-direction: column;
   gap: 0.6rem;
   width: 100%;
+  /* scrollIntoView keeps the keypad above the fixed action bar of the lesson */
+  scroll-margin-top: calc(70px + env(safe-area-inset-top));
+  scroll-margin-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+.kp-text-answer .lesson-notice {
+  margin: 0;
 }
 
 .kp-answer-row {
@@ -131,6 +137,9 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+.kp-field .kp-label {
+  white-space: nowrap;
 }
 .kp-display-field {
   flex: 0 1 6.5rem;
@@ -503,4 +512,12 @@
   .kp {
     max-width: 400px;
   }
+}
+
+/* inline math (fractions!) is small at text size inside the big buttons */
+.kp-choice-text .katex,
+.kp-order-text .katex,
+.kp-match-text .katex,
+.kp-seq-chip .katex {
+  font-size: 1.22em;
 }
