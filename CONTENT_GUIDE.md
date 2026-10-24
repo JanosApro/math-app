@@ -26,11 +26,16 @@ read the one closest to your topic completely before you start:
 2. Find its entry in `src/content/grade-N/topics.json`: `id` (e.g. `g7-pitagorasz-02`), topic
    `folder` (e.g. `pitagorasz`) and `file` (e.g. `02-szerkesztesek`).
 3. Create `src/content/grade-N/<folder>/<file>.ts` (copy the structure below).
-4. Run `npm run check -- --only=<id>` until it prints no errors or warnings.
-5. Open it in the browser: `npm run dev`, then `http://localhost:5173/#/dev/preview/<id>`.
-   Play it through. Check the math by hand on a few seeds (the /dev page has a sample viewer).
-6. Set `"status": "draft"` in topics.json (it becomes visible to students!) and, after the
-   checklist below, `"done"`. Run `npm run status` to refresh `CONTENT_STATUS.md`.
+4. Run `npm run check -- --only=<id>` until it prints **no errors and no warnings**.
+5. Run `npm run samples -- <id>` and **read every printed question like a teacher would**: is
+   the answer right (recompute it yourself), do the prompt, figure labels, units, hint and
+   solution steps all agree with each other and with the answer? Fix and repeat.
+6. Set `"status": "draft"` in topics.json and run `npm run status` (refreshes CONTENT_STATUS.md).
+7. `npm run check` and `npm run build` must pass. Commit (one subtopic per commit).
+8. The teacher plays it in the browser: `npm run dev`, then
+   `http://localhost:5173/#/dev/preview/<id>`. **Only after their OK** it is pushed to GitHub —
+   a push to `master` publishes it to students within ~2 minutes (draft lessons are visible).
+   After the review the status becomes `"done"`.
 
 ## Module structure (annotated minimal example)
 
@@ -253,7 +258,10 @@ lesson only depends on specific lessons, add to its entry in topics.json:
 - [ ] Theory → checks → examples → practice L1 → L2 → L3; mini test 5–8 items with mixed levels.
 - [ ] Every generator has levels, hint, solution; answers computed by code; figures follow the numbers.
 - [ ] Distractors are typical mistakes, no duplicates.
-- [ ] Math verified **by hand** on at least 3 seeds per generator and level (/dev sample viewer).
+- [ ] Math verified **by hand** on at least 3 seeds per generator and level (`npm run samples -- <id>`).
+- [ ] Prompt, figure labels, units, hint, solution steps and answer agree in every sample.
+- [ ] Hungarian suffixes after variable numbers use the helpers (`suffix`, `harmony`, `article`)
+      — never "a(z)" or "-val/-vel" written by hand next to a computed number.
 - [ ] Played through in the browser at phone width (`#/dev/preview/<id>`), light and dark mode.
 - [ ] Natural Hungarian, decimal comma, short sentences, no textbook text copied.
 - [ ] `npm run status` run, CONTENT_STATUS.md updated; one commit for this subtopic.

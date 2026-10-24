@@ -11,24 +11,26 @@ the student's device (localStorage). Original brief: `PROMPT.md`.
 > `docs/tasks/00-README.md` — it lists the remaining build tasks in order, each with a full spec.
 
 ## Handing off to OpenCode (or another model)
-Open OpenCode in this folder and give it:
-> Read AGENTS.md and HANDOFF.md, then do the tasks in docs/tasks/ in the order given in
-> docs/tasks/00-README.md. Commit after each task and tick it off in HANDOFF.md.
+See **`docs/OPENCODE_HANDOFF.md`**: one-time setup (fresh clone or update of the old local
+folder, `npm install`, GitHub login for pushing), the exact prompt to give OpenCode, and the
+per-lesson workflow. The build tasks in `docs/tasks/` are all done.
 
-For content only (after tasks 01–03 exist):
-> Read AGENTS.md and CONTENT_GUIDE.md. Write the next `todo` subtopic from CONTENT_STATUS.md,
-> following the gold-standard lesson src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts.
-
-GitHub: https://github.com/JanosApro/math-app (private, remote `origin`, branch `master`). For a cloud
-session on claude.ai/code use the prompt in `docs/tasks/CLOUD_PROMPT.md`.
+GitHub: https://github.com/JanosApro/math-app (public, remote `origin`, branch `master`; a push
+to `master` publishes the site). For a cloud session on claude.ai/code use
+`docs/tasks/CLOUD_PROMPT.md`.
 
 Git: this repository has a local git identity (`git config user.name onam`,
 `user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
 `git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
 
-## ▶ RESUME HERE — 2026-10-24, cloud session: ALL BUILD TASKS DONE
-Tasks 01–08 are finished (rows below). The architecture is complete; what remains is lesson
-content: write the next `todo` subtopic from CONTENT_STATUS.md following CONTENT_GUIDE.md.
+## ▶ RESUME HERE — the app is finished; next: lesson content with OpenCode
+Everything below is built, merged to `master` and live at https://janosapro.github.io/math-app/.
+What remains is lesson content (104 `todo` subtopics). **Read `docs/OPENCODE_HANDOFF.md`**: setup
+on the teacher's computer, the prompt for OpenCode (start with a 3-lesson pilot), the per-lesson
+workflow (`npm run check -- --only=<id>`, `npm run samples -- <id>`, local commit, teacher review,
+then push = publish).
+
+Tasks 01–08 are finished (rows below).
 
 Teacher feedback round (same day), done so far:
 - Light mode by default + sun/moon toggle in every top bar (DECISIONS "Theme and sound").
@@ -213,7 +215,8 @@ src/
   dev/         /dev page (DevScreen) + figure gallery (GalleryScreen) + validate.ts (the engine
                behind npm run check, also runs in the browser) + gallery sections in dev/gallery/
   styles/      theme.css (design tokens, light/dark, buttons, animations)
-scripts/       check.ts (npm run check), status.ts (npm run status), dev/figure-preview.ts
+scripts/       check.ts (npm run check), status.ts (npm run status), samples.ts (npm run samples:
+               a lesson's questions + answers as text), dev/figure-preview.ts
                (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser automation),
                dev/drive.mjs + dev/e2e.mjs (Playwright: plays the lessons, 30 checks)
 docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
