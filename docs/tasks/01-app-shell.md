@@ -62,3 +62,8 @@ Brief: `PROMPT.md` §1, §3, §5, §6.
 Dev server + screenshots at 375 px and 1280 px, light and dark (see `00-README.md` tools). Fake
 progress via localStorage to see every node state. Test: onboarding → map; soft-lock flow;
 export → reset → import restores progress; theme switch; no console errors; `npm run build`.
+
+## Progress log
+- 2026-10-24 (Claude, task 01 agent) — started. Plan: TopicIcon set → AppShell (top bar, bottom
+  nav / desktop rail) → Onboarding → MapScreen + SoftLockDialog → Profile → Settings (+ shared
+  import component) → PWA (manifest, icons, sw plugin, pwa.ts update flow) → screenshots/tests.

@@ -33,3 +33,9 @@ Brief: `PROMPT.md` §4a ("Data and statistics").
   tint, column widths from `textWidth`.
 - Invalid params (series length ≠ categories, negative pie values, yMax ≤ 0 …) → clear Error.
 - 0 validation errors in the gallery; good at phone width and in dark mode (`--dark`).
+
+## Progress log
+- 2026-10-24 — started (Claude Code agent). Read the spec, types.ts (charts section), scene.ts,
+  coordinate.ts, format.ts, the gallery format and the preview script. Plan: `charts.ts` (entry +
+  bar/line), `charts-common.ts` (validation, nice axis, legend, wrapping, symbols),
+  `charts-pie.ts`, `charts-table.ts` (pictogram + table); gallery `src/dev/gallery/charts.ts`.

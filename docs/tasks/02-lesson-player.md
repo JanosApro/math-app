@@ -79,3 +79,11 @@ Drive `#/dev/preview/dev-demo` and `#/lesson/g7-pitagorasz-01` with `scripts/dev
 (incl. an `almost` case and a parse error), keypad by tapping, fail then pass the mini test,
 celebration, daily challenge (needs a draft/done subtopic: Pythagoras), replay of the daily.
 Look at the screenshots. No console errors.
+
+## Progress log
+- 2026-10-24 (Claude, task 02 agent): read docs + engine/state/content code. Plan:
+  `src/lesson/` = LessonScreen, LessonPlayer, QuestionView (+ `inputs/`: Keypad, TextAnswer,
+  NumbersAnswer, Choice, TrueFalse, Order, Match, draft helpers), QuestionRunner (check →
+  feedback sheet), steps (theory/example/explore/check/practice), MiniTest, Celebration
+  (+ confetti), DailyScreen; `src/dev/demoLesson.ts`, `src/dev/PreviewScreen.tsx`.
+  CSS: `src/lesson/lesson.css` (prefix `lesson-`), `src/lesson/inputs/keypad.css` (prefix `kp-`).

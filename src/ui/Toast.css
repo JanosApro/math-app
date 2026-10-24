@@ -1,21 +1,30 @@
 .toast-host {
   position: fixed;
   left: 50%;
-  bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  bottom: calc(5.25rem + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   z-index: 120;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.4rem;
-  width: min(92vw, 420px);
+  width: min(calc(100vw - 2rem), 420px);
   pointer-events: none;
 }
+@media (min-width: 900px) {
+  .toast-host {
+    bottom: 2rem;
+  }
+}
 .toast {
+  max-width: 100%;
   background: var(--text);
   color: var(--surface);
-  border-radius: var(--radius-small);
-  padding: 0.7rem 1rem;
+  border-radius: 16px;
+  padding: 0.7rem 1.1rem;
   box-shadow: var(--shadow-strong);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.35;
   text-align: center;
 }

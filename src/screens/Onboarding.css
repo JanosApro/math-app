@@ -1,0 +1,335 @@
+/* Onboarding / welcome screen */
+
+.onb {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(2rem, env(safe-area-inset-bottom));
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--bg-pattern) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-pattern) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -1px -1px;
+}
+
+.onb-hero {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.onb-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0.25rem 0 0.25rem;
+}
+.onb-tagline {
+  margin: 0.1rem 0 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.onb-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 1.5rem 1.25rem 1.1rem;
+  border-radius: 26px;
+}
+.onb-title {
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.4rem;
+  text-wrap: balance;
+}
+.onb-intro {
+  margin: 0 0 1.2rem;
+  color: var(--text-muted);
+}
+.onb-fieldset {
+  border: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  min-width: 0;
+}
+.onb-label {
+  display: block;
+  font-weight: 800;
+  font-size: 1.02rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+}
+
+/* grade tiles */
+.onb-grades {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 0.6rem;
+}
+.onb-grade {
+  --tone: var(--fig-s1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+  min-height: 118px;
+  padding: 0.7rem 0.4rem;
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  touch-action: manipulation;
+}
+.onb-grade::before {
+  /* a big soft blob in the corner, different per tone */
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  right: -22px;
+  top: -24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone) 16%, transparent);
+  transition: transform 0.25s ease;
+}
+.onb-grade:hover::before {
+  transform: scale(1.25);
+}
+.onb-grade:active {
+  transform: scale(0.96);
+}
+.onb-grade.tone-orange {
+  --tone: var(--fig-s2);
+}
+.onb-grade.tone-violet {
+  --tone: var(--fig-s5);
+}
+.onb-grade.tone-teal {
+  --tone: var(--fig-s6);
+}
+.onb-grade.tone-pink {
+  --tone: var(--fig-s8);
+}
+.onb-grade.tone-blue {
+  --tone: var(--fig-s1);
+}
+.onb-grade.tone-green {
+  --tone: var(--fig-s3);
+}
+.onb-grade-num {
+  position: relative;
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--tone) 72%, var(--text));
+}
+.onb-grade-label {
+  position: relative;
+  font-weight: 800;
+  font-size: 0.98rem;
+}
+.onb-grade-sub {
+  position: relative;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.onb-grade-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone) 80%, var(--text));
+  color: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 900;
+  transform: scale(0);
+  transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.onb-grade.is-selected {
+  border-color: color-mix(in srgb, var(--tone) 80%, var(--text));
+  background: color-mix(in srgb, var(--tone) 10%, var(--surface));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone) 22%, transparent);
+}
+.onb-grade.is-selected .onb-grade-check {
+  transform: scale(1);
+}
+
+.onb-field {
+  margin-bottom: 1.25rem;
+}
+.onb-go {
+  margin-top: 0.25rem;
+  min-height: 54px;
+  font-size: 1.12rem;
+}
+.onb-pick-first {
+  margin: 0.4rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+}
+.onb-privacy {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 1.1rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background: var(--surface-2);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.onb-privacy-icon {
+  flex: none;
+}
+.onb-restore {
+  margin-top: 0.4rem;
+  text-align: center;
+}
+
+/* ---- illustration ---- */
+.wa {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  overflow: visible;
+}
+.wa-trail {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 3.5;
+  stroke-dasharray: 1 10;
+  stroke-linecap: round;
+  opacity: 0.6;
+  animation: wa-march 5s linear infinite;
+}
+@keyframes wa-march {
+  to {
+    stroke-dashoffset: -110;
+  }
+}
+.wa-node {
+  stroke: var(--surface);
+  stroke-width: 4;
+}
+.wa-shape {
+  opacity: 0.92;
+}
+.wa-c-blue {
+  fill: var(--fig-s1);
+}
+.wa-c-orange {
+  fill: var(--fig-s2);
+}
+.wa-c-green {
+  fill: var(--fig-s3);
+}
+.wa-c-violet {
+  fill: var(--fig-s5);
+}
+.wa-c-teal {
+  fill: var(--fig-s6);
+}
+.wa-c-yellow {
+  fill: var(--fig-s7);
+}
+.wa-c-pink {
+  fill: var(--fig-s8);
+}
+.wa-line {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.wa-dot {
+  fill: var(--surface);
+}
+.wa-glyph {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+.wa-star {
+  fill: var(--xp);
+  stroke: var(--surface);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.wa-float {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wa-float 4.2s ease-in-out infinite;
+}
+.wa-d1 {
+  animation-delay: -1.1s;
+}
+.wa-d2 {
+  animation-delay: -2.3s;
+}
+.wa-d3 {
+  animation-delay: -3.1s;
+}
+.wa-d4 {
+  animation-delay: -0.5s;
+}
+@keyframes wa-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-7px) rotate(4deg);
+  }
+}
+
+/* ---- desktop: illustration left, form right ---- */
+@media (min-width: 900px) {
+  .onb {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem 3rem;
+    max-width: none;
+  }
+  .onb-hero {
+    justify-self: end;
+    max-width: 460px;
+  }
+  .onb-brand {
+    font-size: 1.8rem;
+  }
+  .wa {
+    max-width: 440px;
+  }
+  .onb-tagline {
+    font-size: 1.1rem;
+  }
+  .onb-card {
+    padding: 2rem 1.75rem 1.25rem;
+  }
+}

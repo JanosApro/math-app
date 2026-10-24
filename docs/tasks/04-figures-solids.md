@@ -42,3 +42,11 @@ Brief: `PROMPT.md` §4a. Style: `docs/materials-grade-8.md` (how the textbook dr
 - Invalid params (non-positive sizes, missing fields, n < 3) → clear English Error naming the field.
 - Every gallery entry: 0 validation errors; looks good at ~300 units wide and in dark mode.
 - Document the exact parameter semantics in `CONTENT_GUIDE.md` (figure section).
+
+## Progress log
+- 2026-10-24 (Claude Code, task 04 agent): read the spec, types, scene/geometry/shapes and the
+  grade-8 style notes. Plan: `src/figures/solids-common.ts` (validation + 3D helpers),
+  `src/figures/solids.ts` (solids), `src/figures/solids-net.ts` (nets), galleries
+  `src/dev/gallery/solids.ts` + `nets.ts`. Note: `g8-henger-kup-gomb-03` already uses
+  `{ type: 'solid', shape: 'cylinder', labels: { r | d, h }, highlight }` (r 2–9, H 2–12) — must
+  render without label collisions. Next: implement solids.

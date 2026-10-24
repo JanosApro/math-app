@@ -32,3 +32,22 @@ Brief: `PROMPT.md` §4a (constructions; fractions for grade 5).
   at the screenshots, fix what looks wrong in your own files. If a shared file (scene.ts,
   geometry.ts) needs a fix, keep it minimal and re-run every gallery section.
 - Document the parameter semantics in `CONTENT_GUIDE.md` (figure section).
+
+## Progress log
+- 2026-10-24 (Claude, task 06 agent): read the docs + figure core (types, scene, geometry, shapes,
+  coordinate, FigureView, gallery format). Plan: construction.ts → fraction.ts (fractionModel +
+  barModel) → gallery sections (construction, fraction, shapes, coordinate, numberline) → visual
+  review + fixes in shapes.ts / coordinate.ts (incl. the triangle `squares` label collisions of the
+  Pythagoras lesson) → CONTENT_GUIDE / README / HANDOFF.
+- construction.ts done: one viewBox for all steps, prims tagged step 0 (given) / i + 1; additive
+  types: `intersections` (computed circle/line intersection points, `pick`/`near`), `compass` items
+  (arc through given points or full circle), `numberLine` (number line in figure units, for √2).
+  Gallery `src/dev/gallery/construction.ts`: segment bisector, angle bisector, perpendicular from a
+  point, √2 on the number line, SSS triangle, 60° angle on a grid — 0 errors, steps verified via
+  `layoutFigure(...).steps` + per-step item counts.
+- fraction.ts done: fractionModel (circle/bar/rect, improper → several wholes, '3/4' and '1 3/4'
+  labels stacked) and barModel (proportional rows, colors blue/red/green/…, unknown pieces dashed,
+  'a/b' labels stacked inside, too-long labels above, braces with levels, `total` shorthand).
+  Gallery `src/dev/gallery/fraction.ts` (20 entries) — 0 errors, light + dark checked.
+- scene.ts (shared): `sceneToSvg` now writes `fill-opacity`/`stroke-dasharray` for circles (PNG
+  previews showed every filled circle opaque; the React renderer was already right).

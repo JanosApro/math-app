@@ -33,6 +33,16 @@ export const t = {
     settings: 'Beállítások',
   },
 
+  shell: {
+    mainNav: 'Fő menü',
+    home: 'Matek Kaland – vissza a térképre',
+    streakAria: (n: number) => `Sorozat: ${n} nap`,
+    streakTodo: 'A mai napi kihívás még hátravan.',
+    xpAria: (n: number) => `Összes XP: ${n}`,
+    dailyPending: 'A mai kihívás még vár rád!',
+    skipToContent: 'Ugrás a tartalomhoz',
+  },
+
   onboarding: {
     welcome: 'Szia! Üdv a Matek Kalandban!',
     intro: 'Itt lépésről lépésre gyakorolhatod az év matekanyagát. Válaszd ki, hányadikos vagy!',
@@ -42,6 +52,9 @@ export const t = {
     nicknamePlaceholder: 'pl. Matekzseni',
     go: 'Indulás!',
     privacy: 'Az eredményeid csak ezen az eszközön tárolódnak. Nem kell regisztrálni, és semmilyen adatot nem küldünk el.',
+    gradeLessons: (n: number) => `${n} lecke`,
+    pickFirst: 'Előbb válaszd ki az osztályodat!',
+    haveBackup: 'Van már mentésed? Töltsd vissza fájlból!',
   },
 
   map: {
@@ -58,6 +71,12 @@ export const t = {
     topicProgress: (done: number, total: number) => `${done}/${total} lecke`,
     topicDone: 'Fejezet kész!',
     noContentYet: 'Ehhez a leckéhez még készül a tananyag.',
+    chapterLabel: (n: number) => `${n}. fejezet`,
+    yearGoalMarker: 'A terv szerint itt tartanánk most',
+    yearGoalDone: 'Minden lecke kész – szuper év!',
+    noLessonsYet: 'Ebben az osztályban még készülnek a leckék. Nézz vissza hamarosan!',
+    softLockedShort: 'Előreugrás',
+    chapterGoal: 'Fejezet célja: minden lecke kész',
   },
 
   softLock: {
@@ -93,6 +112,16 @@ export const t = {
     toTestBody: 'Ügyes vagy! Most egy rövid minidolgozat következik, segítség nélkül. 80%-tól sikeres.',
     loadError: 'Ezt a leckét nem sikerült betölteni.',
     notReady: 'Ez a lecke még készül. Nézz vissza később!',
+    // task 02 (lesson player)
+    quitTitle: 'Kilépsz a leckéből?',
+    stay: 'Maradok',
+    progressLabel: 'Haladás a leckében',
+    again: 'még egyszer',
+    generatorError: 'Ezt a feladatot most nem sikerült elkészíteni. Lépj tovább!',
+    completedBefore: 'Ezt a leckét már teljesítetted',
+    bestPercent: (p: number) => `legjobb eredmény: ${p}%`,
+    meta: (steps: number, testItems: number) => `${steps} lépés, a végén ${testItems} feladatos minidolgozat`,
+    resumeAt: (i: number, n: number) => `Legutóbb itt tartottál: ${i}. lépés / ${n}`,
   },
 
   feedback: {
@@ -125,6 +154,19 @@ export const t = {
     mixedKey: 'vegyes szám (szóköz)',
     powerKey: 'hatvány',
     preview: 'Így értem:',
+    // task 02 (keypad + pick inputs)
+    keypad: 'Számbillentyűzet',
+    minusKey: 'mínusz',
+    commaKey: 'tizedesvessző',
+    plusKey: 'plusz',
+    timesKey: 'szorzás',
+    openParenKey: 'nyitó zárójel',
+    closeParenKey: 'záró zárójel',
+    unitKey: (u: string) => `${u} – tovább a következő mezőre`,
+    nextField: 'Következő mező',
+    undo: 'Visszavonás',
+    markCorrect: 'jó',
+    markWrong: 'hibás',
   },
 
   test: {
@@ -139,6 +181,9 @@ export const t = {
     review: 'Nézzük át a hibákat:',
     retry: 'Újrapróbálom',
     backToMap: 'Vissza a térképre',
+    // task 02
+    needed: (pass: number) => `${pass}% kell a sikerhez`,
+    itemCount: (n: number) => `${n} feladat`,
   },
 
   celebrate: {
@@ -150,6 +195,8 @@ export const t = {
     streakMilestone: (n: number) => `${n} napos sorozat! 🔥`,
     keepGoing: 'Csak így tovább!',
     next: 'Tovább',
+    // task 02
+    nextLesson: 'Következő lecke',
   },
 
   daily: {
@@ -164,6 +211,11 @@ export const t = {
     streakKept: 'A sorozatod megmaradt!',
     noContent: 'Még nincs elég tananyag a napi kihíváshoz ebben az osztályban.',
     practiceMode: 'Gyakorló mód – ezért nem jár XP',
+    // task 02
+    complete: 'Napi kihívás teljesítve!',
+    todayResult: (c: number, n: number) => `A mai eredményed: ${c} / ${n} helyes.`,
+    quitTitle: 'Abbahagyod a napi kihívást?',
+    quitBody: 'Ha most kilépsz, a mai kihívást elölről kell kezdened. A sorozatod csak akkor nő, ha végigcsinálod.',
   },
 
   streak: {
@@ -172,6 +224,8 @@ export const t = {
     current: 'Jelenlegi sorozat',
     best: 'Leghosszabb sorozat',
     calendar: 'Teljesített napok',
+    today: 'ma',
+    dayDone: 'teljesítve',
     explain: 'A sorozat akkor nő, ha minden nap teljesíted a napi kihívást.',
     weekdays: ['H', 'K', 'Sze', 'Cs', 'P', 'Szo', 'V'],
   },
@@ -184,6 +238,13 @@ export const t = {
     noBadges: 'Még nincs jelvényed – teljesíts egy fejezetet vagy egy 7 napos sorozatot!',
     lessonsDone: 'Kész leckék',
     chaptersDone: 'Kész fejezetek',
+    anonymous: 'Névtelen felfedező',
+    xpToNext: (n: number) => `Még ${n} XP a következő szintig`,
+    chapterBadges: 'Fejezetjelvények',
+    streakBadges: 'Sorozatjelvények',
+    earned: 'megszerezve',
+    notEarned: 'még nincs meg',
+    editNickname: 'Becenév módosítása',
   },
 
   badges: {
@@ -221,6 +282,15 @@ export const t = {
     about: 'Névjegy',
     aboutText: 'Gyakorló alkalmazás 5., 7. és 8. osztályos tanulóknak. Nincs regisztráció, nincs adatgyűjtés.',
     version: 'Verzió',
+    saved: 'Mentve ✓',
+    nicknameSave: 'Mentés',
+    appearance: 'Hang és megjelenés',
+    dataHint: 'Ha új telefonra vagy gépre váltasz, mentsd el a haladásodat fájlba, és ott töltsd vissza.',
+    importPick: 'Fájl kiválasztása',
+    devPage: 'Fejlesztői oldal',
+    importConfirmBtn: 'Igen, betöltöm',
+    importSummary: (lessons: number, xp: number) => `A mentésben: ${lessons} kész lecke, ${xp} XP.`,
+    resetConfirmBtn: 'Igen, mindent törlök',
   },
 
   figure: {

@@ -648,21 +648,97 @@ export interface FractionModelFigure extends FigureBase {
 // 8. Constructions (compass and straightedge, step by step)
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * A compass arc (constructions only): the circle around `center` with the given radius, drawn
+ * as an arc that covers the `through` points (plus `extend` degrees at both ends), or as a full
+ * circle when `through` is omitted. Grey ('muted') like a pencil line unless `color` is given.
+ *
+ *   { kind: 'compass', center: 'A', through: ['P', 'Q'] }      // arc around A through P and Q
+ *   { kind: 'compass', center: 'B', radius: 'A' }               // full circle around B through A
+ *   { kind: 'compass', center: 'O', radius: 2, through: ['X'] } // short arc of radius 2 across ray OX
+ */
+export interface CompassArc {
+  kind: 'compass';
+  center: PointRef;
+  /**
+   * A number, or a point the circle passes through (radius = its distance from `center`).
+   * Default: the distance from `center` to `through[0]`.
+   */
+  radius?: number | PointRef;
+  /**
+   * Points (or directions) the arc must cover: the arc spans the directions center → point, the
+   * shortest way round, so ['P', 'Q'] above and below draws the arc between them.
+   */
+  through?: PointRef[];
+  /** Extra degrees added at both ends (default 15; with a single `through` point: ±15°). */
+  extend?: number;
+  color?: FigColor;
+  dashed?: boolean;
+}
+
+/** Anything a construction step can draw: every geometry item, plus compass arcs. */
+export type ConstructionItem = GeoItem | CompassArc;
+
+/** A circle for intersections: [center, radius] — radius is a number or a point on the circle. */
+export type ConstructionCircle = [PointRef, number | PointRef];
+
+/**
+ * A point computed by the construction (so authors never compute intersections by hand).
+ * Where there are two intersections, `pick` chooses one: 'above' (default; larger y), 'below',
+ * 'left', 'right' — or `near`: the one closer to that point.
+ *
+ *   P: { circles: [['A', 3], ['B', 3]] }                    // upper intersection of two circles
+ *   Q: { circles: [['A', 3], ['B', 3]], pick: 'below' }
+ *   M: { lines: [['A', 'B'], ['P', 'Q']] }                  // intersection of lines AB and PQ
+ *   X: { circle: ['O', 2], line: ['O', 'K'], near: 'K' }   // where the circle crosses ray OK
+ */
+export type ConstructionPoint = (
+  | { circles: [ConstructionCircle, ConstructionCircle] }
+  | { lines: [[PointRef, PointRef], [PointRef, PointRef]] }
+  | { circle: ConstructionCircle; line: [PointRef, PointRef] }
+) & { pick?: 'above' | 'below' | 'left' | 'right'; near?: PointRef };
+
 export interface ConstructionStep {
   /** What happens in this step (RichText, Hungarian), e.g. 'Körzővel kört rajzolunk A középponttal.' */
   caption: string;
-  /** Items added in this step (shown highlighted, earlier steps are shown normally). */
-  items: GeoItem[];
+  /** Items added in this step (animated when the step is shown; earlier steps stay visible). */
+  items: ConstructionItem[];
 }
 
-/** A step-by-step construction. The student taps through the steps. */
+/**
+ * A step-by-step compass-and-straightedge construction. The student taps through the steps;
+ * the figure is scaled once so that every step fits (nothing jumps between steps).
+ *
+ *   { type: 'construction',
+ *     points: { A: [0, 0], B: [5, 0] },
+ *     intersections: { P: { circles: [['A', 3.5], ['B', 3.5]] }, Q: { circles: [['A', 3.5], ['B', 3.5]], pick: 'below' } },
+ *     given: [{ kind: 'segment', from: 'A', to: 'B' }, { kind: 'point', at: 'A' }, { kind: 'point', at: 'B' }],
+ *     steps: [
+ *       { caption: 'Körzővel ívet rajzolunk $A$ körül…', items: [{ kind: 'compass', center: 'A', through: ['P', 'Q'] }] },
+ *       { caption: '…ugyanakkora sugárral $B$ körül is.', items: [{ kind: 'compass', center: 'B', through: ['P', 'Q'] }] },
+ *       { caption: 'Az ívek metszéspontjai $P$ és $Q$.', items: [{ kind: 'point', at: 'P' }, { kind: 'point', at: 'Q' }] },
+ *       { caption: 'A $PQ$ egyenes a felezőmerőleges.', items: [{ kind: 'line', through: ['P', 'Q'], label: 'f', color: 'accent' }] },
+ *     ] }
+ */
 export interface ConstructionFigure extends FigureBase {
   type: 'construction';
+  /** Named points with coordinates (the given ones and any you want to place yourself). */
   points: Record<string, XY>;
-  /** Items visible from the start (e.g. the given segment). */
-  given?: GeoItem[];
+  /**
+   * Named points computed from earlier ones (intersections of circles and lines), evaluated in
+   * order, so later entries may use earlier ones. Usable everywhere a point name is.
+   */
+  intersections?: Record<string, ConstructionPoint>;
+  /** Items visible from the start (e.g. the given segment or angle). */
+  given?: ConstructionItem[];
   steps: ConstructionStep[];
   grid?: boolean | number;
+  /**
+   * A number line along the x axis (y = 0) in the same units as the points, drawn as given:
+   * ticks at every `step` (default 1) from `min` to `max`, numbers under them, arrow at the right.
+   * For constructions like √2 on the number line.
+   */
+  numberLine?: { min: number; max: number; step?: number };
 }
 
 // ---------------------------------------------------------------------------------------------

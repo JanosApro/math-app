@@ -802,10 +802,14 @@ export function sceneToSvg(scene: Scene): string {
         `<path d="${it.d}" fill="${it.fill ?? 'none'}"${it.fillOpacity !== undefined ? ` fill-opacity="${it.fillOpacity}"` : ''}${it.stroke ? ` stroke="${it.stroke}" stroke-width="${it.sw ?? 2}"` : ''}${it.dash ? ` stroke-dasharray="${it.dash}"` : ''}/>`,
       );
     } else if (it.k === 'circle') {
-      parts.push(`<circle cx="${fmt(it.cx)}" cy="${fmt(it.cy)}" r="${fmt(it.r)}" fill="${it.fill ?? 'none'}"${it.stroke ? ` stroke="${it.stroke}" stroke-width="${it.sw ?? 2}"` : ''}/>`);
+      parts.push(
+        `<circle cx="${fmt(it.cx)}" cy="${fmt(it.cy)}" r="${fmt(it.r)}" fill="${it.fill ?? 'none'}"${it.fillOpacity !== undefined ? ` fill-opacity="${it.fillOpacity}"` : ''}${it.stroke ? ` stroke="${it.stroke}" stroke-width="${it.sw ?? 2}"` : ''}${it.dash ? ` stroke-dasharray="${it.dash}"` : ''}/>`,
+      );
     } else {
       const runs = it.runs.map((r) => (r.italic ? `<tspan font-style="italic">${esc(r.text)}</tspan>` : esc(r.text))).join('');
-      parts.push(`<text x="${fmt(it.x)}" y="${fmt(it.y)}" font-size="${it.size}" text-anchor="${it.anchor}" dominant-baseline="central" fill="${it.fill}">${runs}</text>`);
+      // bold / rotate as in FigureView.tsx (added for the charts: table headers, vertical names)
+      const extra = `${it.bold ? ' font-weight="700"' : ''}${it.rotate ? ` transform="rotate(${-it.rotate} ${fmt(it.x)} ${fmt(it.y)})"` : ''}`;
+      parts.push(`<text x="${fmt(it.x)}" y="${fmt(it.y)}" font-size="${it.size}" text-anchor="${it.anchor}" dominant-baseline="central" fill="${it.fill}"${extra}>${runs}</text>`);
     }
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${fmt(vb.x)} ${fmt(vb.y)} ${fmt(vb.w)} ${fmt(vb.h)}">${parts.join('')}</svg>`;
