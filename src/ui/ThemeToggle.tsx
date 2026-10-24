@@ -5,7 +5,6 @@
 import { t } from '../i18n/hu';
 import { setSetting } from '../state/progress';
 import { useAppState } from '../state/store';
-import { playSound } from './sound';
 import './ThemeToggle.css';
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -16,10 +15,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <button
       type="button"
       className={`theme-toggle${dark ? ' is-dark' : ''}${className ? ` ${className}` : ''}`}
-      onClick={() => {
-        setSetting('theme', dark ? 'light' : 'dark');
-        playSound('tap');
-      }}
+      onClick={() => setSetting('theme', dark ? 'light' : 'dark')}
       aria-label={label}
       title={label}
       aria-pressed={dark}

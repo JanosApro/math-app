@@ -151,7 +151,7 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
               <span aria-hidden="true">💡</span> {t.lesson.hint}
             </button>
           )}
-          <button type="button" className="btn lesson-main-btn" disabled={!answer} onClick={check}>
+          <button type="button" className="btn lesson-main-btn" disabled={!answer} onClick={check} data-sound="off">
             {t.common.check}
           </button>
         </LessonFooter>

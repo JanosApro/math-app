@@ -23,8 +23,8 @@ export interface TrailNode {
   state: NodeState;
   /** Some lesson parts are done, the mini test is not passed yet. */
   inProgress: boolean;
-  /** Finished parts / all parts (total known once the lesson module is loaded). */
-  parts?: { done: number; total?: number };
+  /** Finished part indexes / number of parts (known once the lesson module is loaded). */
+  parts?: { done: number[]; total?: number };
   /** Bubble text above the recommended node ("Kezdd itt!" / "Folytasd!"). */
   bubble?: string;
 }
@@ -57,25 +57,42 @@ function stateLabel(n: TrailNode): string {
 function visibleStatus(n: TrailNode): string | null {
   if (n.state === 'done') return t.map.completed;
   if (n.state === 'soon') return t.map.soon;
-  if (n.inProgress) return n.parts?.total ? t.map.partsStatus(n.parts.done, n.parts.total) : t.map.inProgress;
+  if (n.inProgress) return n.parts?.total ? t.map.partsStatus(n.parts.done.length, n.parts.total) : t.map.inProgress;
   return null;
 }
 
-/** Segmented ring around a node: one arc per lesson part, finished ones filled. */
-function PartRing({ done, total }: { done: number; total: number }) {
-  const r = 46;
-  const gap = total > 1 ? 9 : 0; // degrees between segments
-  const arc = (i: number) => {
+/**
+ * Segmented ring around a started lesson: one sticker-style arc per part (ink outline + hard
+ * shadow), finished parts yellow, the next one blinking. It sits *outside* the node button, so the
+ * button's bounce / hover / press animations never move it.
+ */
+function PartRing({ done, total }: { done: number[]; total: number }) {
+  const r = 43;
+  const gap = total > 1 ? 16 : 0; // degrees between segments
+  const next = Array.from({ length: total }, (_, i) => i).find((i) => !done.includes(i));
+  const arcs = Array.from({ length: total }, (_, i) => {
     const a0 = ((i * 360) / total + gap / 2 - 90) * (Math.PI / 180);
     const a1 = (((i + 1) * 360) / total - gap / 2 - 90) * (Math.PI / 180);
     const p = (a: number) => `${(50 + r * Math.cos(a)).toFixed(2)} ${(50 + r * Math.sin(a)).toFixed(2)}`;
     return `M${p(a0)}A${r} ${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}`;
-  };
+  });
   return (
     <svg className="node-ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      {Array.from({ length: total }, (_, i) => (
-        <path key={i} d={arc(i)} className={i < done ? 'is-on' : undefined} style={{ animationDelay: `${0.15 + i * 0.12}s` }} />
-      ))}
+      <g className="node-ring-shadow">
+        {arcs.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </g>
+      <g className="node-ring-ink">
+        {arcs.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </g>
+      <g className="node-ring-fill">
+        {arcs.map((d, i) => (
+          <path key={i} d={d} className={done.includes(i) ? 'is-on' : i === next ? 'is-next' : undefined} style={{ '--k': i } as CSSProperties} />
+        ))}
+      </g>
     </svg>
   );
 }
@@ -150,17 +167,22 @@ export function MapTrail({ nodes, chapterDone, onOpen }: { nodes: TrailNode[]; c
         {nodes.map((n, i) => {
           const x = XS[n.globalIndex % XS.length];
           const status = visibleStatus(n);
+          const ring = n.inProgress && n.state !== 'done' && !!n.parts?.total;
           return (
-            <li key={n.id} className={`trail-row side-${x < 0.5 ? 'left' : 'right'} st-${n.state}${n.inProgress ? ' is-progress' : ''}`} style={{ '--x': x, '--i': i } as CSSProperties}>
+            <li key={n.id} className={`trail-row side-${x < 0.5 ? 'left' : 'right'} st-${n.state}${n.inProgress ? ' is-progress' : ''}${ring ? ' has-ring' : ''}`} style={{ '--x': x, '--i': i } as CSSProperties}>
               <button type="button" className="node" data-node-id={n.id} onClick={() => onOpen(n.id)}>
-                <span className="node-dot" data-dot="" data-done={n.state === 'done' ? '1' : '0'}>
+                {/* the ring and the bubble stay still; only the dot bounces */}
+                <span className="node-dot-wrap">
+                  {ring && <PartRing done={n.parts!.done} total={n.parts!.total!} />}
+                  <span className="node-dot" data-dot="" data-done={n.state === 'done' ? '1' : '0'}>
+                    <Glyph n={n} />
+                    {n.inProgress && n.state !== 'done' && !ring && <span className="node-badge" aria-hidden="true" />}
+                  </span>
                   {n.bubble && (
                     <span className="node-bubble" aria-hidden="true">
                       {n.bubble}
                     </span>
                   )}
-                  <Glyph n={n} />
-                  {n.inProgress && n.state !== 'done' && (n.parts?.total ? <PartRing done={n.parts.done} total={n.parts.total} /> : <span className="node-badge" aria-hidden="true" />)}
                 </span>
                 <span className="node-label">
                   <span className="node-title">{n.title}</span>

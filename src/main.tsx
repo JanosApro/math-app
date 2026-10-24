@@ -5,6 +5,7 @@ import './styles/fonts.css';
 import './styles/theme.css';
 import { App } from './App';
 import { registerServiceWorker } from './pwa';
+import { installClickSounds } from './ui/sound';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,3 +14,4 @@ createRoot(document.getElementById('root')!).render(
 );
 
 registerServiceWorker();
+installClickSounds();

@@ -1,13 +1,20 @@
 /**
- * Synthesized sound effects (Web Audio, no files): a bell "ding-ding" for a correct answer, a
- * soft "bwomp" for a wrong one, a short jingle for a finished lesson part and a fanfare for a
- * finished lesson, chapter or daily challenge. On by default; the mute buttons are in the lesson
- * top bar and in settings. Every call is safe: it does nothing if audio is unavailable.
+ * Synthesized sound effects (Web Audio, no files): a soft "pop" for every button press (a tick
+ * for keypad keys, a "plip" for answer tiles — see installClickSounds), a bell "ding-ding" for a
+ * correct answer, a soft "bwomp" for a wrong one, a short jingle for a finished lesson part and a
+ * fanfare for a finished lesson, chapter or daily challenge. On by default; the mute buttons are
+ * in the lesson top bar and in settings. Every call is safe: it does nothing if audio is
+ * unavailable.
  */
 import { getState } from '../state/store';
 
 export type SoundName =
+  /** any button */
   | 'tap'
+  /** a keypad key */
+  | 'key'
+  /** an answer tile (choice, true/false, order, match) */
+  | 'select'
   | 'correct'
   | 'wrong'
   /** "almost" / could not read the answer: a neutral nudge, not a mistake */
@@ -125,6 +132,32 @@ function noise(ac: AudioContext, start: number, dur: number, freq: number, vol: 
   src.stop(t0 + dur + 0.05);
 }
 
+/** Elements that make a sound when clicked, and which sound. */
+const CLICKABLE = 'button, a[href], [role="button"], input[type="checkbox"], summary';
+function clickSound(el: Element): SoundName {
+  if (el.closest('.kp-key')) return 'key';
+  if (el.closest('.kp-choice, .kp-tf, .kp-order-item, .kp-match-item')) return 'select';
+  return 'tap';
+}
+
+/**
+ * One listener for every button press in the app (so new buttons get the sound for free).
+ * A button that plays its own sound instead carries `data-sound="off"` (e.g. "Ellenőrzés", whose
+ * result sound follows at once, and the sound previews in settings).
+ */
+export function installClickSounds(): void {
+  if (typeof document === 'undefined') return;
+  document.addEventListener(
+    'click',
+    (e) => {
+      const el = e.target instanceof Element ? e.target.closest(CLICKABLE) : null;
+      if (!el || el.closest('[data-sound="off"]') || (el as HTMLButtonElement).disabled) return;
+      playSound(clickSound(el));
+    },
+    true,
+  );
+}
+
 const C5 = 523.25;
 const E5 = 659.25;
 const G5 = 783.99;
@@ -139,7 +172,16 @@ export function playSound(name: SoundName): void {
   try {
     switch (name) {
       case 'tap':
-        note(ac, 700, 0, 0.06, { type: 'triangle', vol: 0.07 });
+        // a soft bubbly "pop": quick downward glide + a tiny click
+        note(ac, 880, 0, 0.09, { type: 'sine', vol: 0.16, attack: 0.003, glideTo: 440 });
+        note(ac, 1760, 0, 0.03, { type: 'triangle', vol: 0.03, attack: 0.002 });
+        break;
+      case 'key':
+        note(ac, 1250, 0, 0.045, { type: 'triangle', vol: 0.06, attack: 0.002, glideTo: 1050 });
+        break;
+      case 'select':
+        // "plip": a short upward glide
+        note(ac, 620, 0, 0.1, { type: 'sine', vol: 0.15, attack: 0.004, glideTo: 990 });
         break;
       case 'correct':
         bell(ac, E6, 0, 0.35, 0.14);
