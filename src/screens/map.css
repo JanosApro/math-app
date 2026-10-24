@@ -466,41 +466,80 @@
 .is-progress .node-status {
   color: var(--warn);
 }
-/* started lesson: one ring segment per part around the dot */
+/* the dot's frame: holds the part ring and the bubble, which stay still while the dot bounces */
+.node-dot-wrap {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--dot);
+  height: var(--dot);
+}
+/* started lesson: one sticker-style ring segment per part, around (not on) the dot */
+.has-ring .node {
+  gap: 1.35rem; /* the ring reaches ~20 px beyond the dot */
+}
+.has-ring.st-recommended {
+  margin-top: 3rem;
+}
 .node-ring {
   position: absolute;
-  inset: -11px;
-  width: calc(100% + 22px);
-  height: calc(100% + 22px);
+  inset: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
   overflow: visible;
   pointer-events: none;
+  animation: boing 0.6s calc(0.05s * var(--i, 0) + 0.25s) ease-out backwards;
 }
 .node-ring path {
   fill: none;
-  stroke: color-mix(in srgb, var(--topic) 22%, var(--surface-3));
-  stroke-width: 7;
   stroke-linecap: round;
 }
-.node-ring path.is-on {
+.node-ring-shadow path {
+  stroke: var(--ink);
+  stroke-width: 10;
+  transform: translate(1.6px, 2px);
+}
+.node-ring-ink path {
+  stroke: var(--outline);
+  stroke-width: 10;
+}
+.node-ring-fill path {
+  stroke: var(--surface);
+  stroke-width: 5.5;
+}
+.node-ring-fill path.is-on {
   stroke: var(--xp);
-  animation: node-seg-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  animation: node-seg-fill 0.45s calc(0.05s * var(--i, 0) + 0.55s + 0.12s * var(--k, 0)) ease-out backwards;
 }
-@keyframes node-seg-in {
+@keyframes node-seg-fill {
   from {
-    opacity: 0;
-    stroke-width: 0;
+    stroke: var(--surface);
   }
 }
-.is-progress.st-recommended .node-dot {
-  box-shadow: var(--pop-lg);
+/* the part that comes next blinks softly */
+.node-ring-fill path.is-next {
+  animation: node-seg-next 1.6s 1.2s ease-in-out infinite;
 }
-@media (prefers-reduced-motion: reduce) {
-  .node-ring path.is-on {
-    animation: none;
+@keyframes node-seg-next {
+  50% {
+    stroke: color-mix(in srgb, var(--xp) 55%, var(--surface));
   }
 }
-:root.reduce-motion .node-ring path.is-on {
-  animation: none;
+/* the ring replaces the halo, the pulse and the big shadow (they would clash with it) */
+.has-ring .node-dot {
+  box-shadow: var(--pop-sm);
+}
+.has-ring.st-recommended .node-dot::after {
+  display: none;
+}
+@media (hover: hover) {
+  .has-ring .node:hover .node-dot {
+    transform: scale(1.06) rotate(-6deg);
+  }
+}
+.has-ring .node-bubble {
+  bottom: calc(100% + 26px);
 }
 
 /* "Kezdd itt!" bubble above the recommended node */

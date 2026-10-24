@@ -121,17 +121,26 @@ export default function SettingsScreen() {
       </Section>
 
       <Section id="st-look" icon="🎨" title={t.settings.appearance}>
-        <Toggle label={t.settings.sound} hint={t.settings.soundHint} checked={settings.sound} onChange={(v) => set('sound', v)} />
+        <Toggle
+          label={t.settings.sound}
+          hint={t.settings.soundHint}
+          checked={settings.sound}
+          onChange={(v) => {
+            set('sound', v);
+            if (v) setTimeout(() => playSound('tap'), 0); // audible confirmation
+          }}
+        />
         {settings.sound && (
           <div className="st-sound-test">
             {(
               [
+                ['tap', t.settings.soundTap],
                 ['correct', t.settings.soundCorrect],
                 ['wrong', t.settings.soundWrong],
                 ['lessonComplete', t.settings.soundDone],
               ] as const
             ).map(([name, label]) => (
-              <button key={name} type="button" className="btn btn-small btn-soft" onClick={() => playSound(name)}>
+              <button key={name} type="button" className="btn btn-small btn-soft" onClick={() => playSound(name)} data-sound="off">
                 ▶ {label}
               </button>
             ))}

@@ -92,7 +92,10 @@ Architectural choices and why. Add new entries at the end of a section.
   once every part is done (and can be opened from the overview any time). There is no mid-part
   resume: a part is ~5 minutes, restarting it is cheap and keeps the state simple. The map shows
   a started lesson with a ring of part segments ("2/4 rész kész"); the part count comes from the
-  lazily loaded module of started lessons only (module chunks stay lazy).
+  lazily loaded module of started lessons only (module chunks stay lazy). The ring and the
+  "Folytasd!" bubble live in `.node-dot-wrap`, *outside* the animated dot, so the dot's bounce /
+  hover / press never scale or tilt them; the ring is wide enough to clear the dot's shadow and
+  replaces the recommended node's pulse and halo (they clashed with it).
 - `src/dev/demoLesson.ts` (`dev-demo`) is a developer lesson that uses every step and answer type;
   `npm run check` validates and stress-tests it like real content. Choice/order/match buttons carry
   `data-index` / `data-left` / `data-right` attributes for browser automation (dev scripts read the
@@ -142,7 +145,10 @@ Architectural choices and why. Add new entries at the end of a section.
   harsh), neutral two-note nudge ("almost" / unreadable input), an encouraging phrase when a mini
   test is not passed yet, a jingle for a finished lesson part and a brass-like fanfare with a
   cymbal swell for a finished lesson / daily challenge (longer for a chapter or streak milestone).
-  A compressor on the master bus keeps overlapping sounds from clipping. On by default; mute
+  A compressor on the master bus keeps overlapping sounds from clipping. Every button press
+  makes a soft "pop" (keypad keys a tick, answer tiles a "plip") through **one** capture-phase
+  click listener (`installClickSounds` in sound.ts), so new buttons get it automatically; a button
+  whose action plays its own sound opts out with `data-sound="off"` ("Ellenőrzés", the previews). On by default; mute
   button in the lesson top bar, toggle + preview buttons in settings.
 - State version 2: v1 saves are migrated once — 'auto' → light, and sound → on (it was off by
   default before, so a stored `false` was not a real choice).

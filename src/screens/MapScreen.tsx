@@ -123,8 +123,8 @@ function TopicSection({
   const nodes: TrailNode[] = topic.subtopics.map((sub, i) => {
     const state = nodeState(topics, sub.id, completed, acknowledged);
     const p = gp.subtopics[sub.id];
-    const doneParts = p?.parts?.length ?? 0;
-    const inProgress = !p?.completedAt && doneParts > 0 && state !== 'soon';
+    const doneParts = p?.parts ?? [];
+    const inProgress = !p?.completedAt && doneParts.length > 0 && state !== 'soon';
     return {
       id: sub.id,
       title: sub.title,
