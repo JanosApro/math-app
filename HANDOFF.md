@@ -23,7 +23,11 @@ Git: this repository has a local git identity (`git config user.name onam`,
 `user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
 `git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
 
-## ▶ RESUME HERE — session notes, 2026-10-24 evening (Claude Code, lead)
+## ▶ RESUME HERE — 2026-10-24, cloud session: ALL BUILD TASKS DONE
+Tasks 01–08 are finished (rows below). The architecture is complete; what remains is lesson
+content: write the next `todo` subtopic from CONTENT_STATUS.md following CONTENT_GUIDE.md.
+
+### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
 is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`
 passes (0 errors, 7 warnings). Exact state per task — continue each from here:
@@ -36,7 +40,7 @@ passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 | 05 charts | **done** (cloud session): all 30 gallery entries reviewed light/dark, 2 fixes, CONTENT_GUIDE rows; `npm run check` 0 warnings | — |
 | 06 constructions etc. | **done** (cloud session): galleries `coordinate.ts` (15) + `numberline.ts` (14), shapes/coordinate/number-line review light/dark, square-label collisions fixed (Pythagoras: 0 warnings), CONTENT_GUIDE rows | — |
 | 07 gold lessons | **done** (cloud session): all three played through at 375 px and set to `done` | — |
-| 08 verification | — | whole flow in a browser, final docs |
+| 08 verification | **done** (cloud session): full flow at 375/1280, light/dark; production build + offline; `node scripts/dev/e2e.mjs` added | — |
 
 Each task file `docs/tasks/0X-*.md` has the full spec (and a short progress log). Work in the
 order 02 → 01 → 04 → 06 → 05 → 07 → 08; commit after each.
@@ -117,7 +121,8 @@ Milestone 3 — gold-standard lessons → task 07
 
 Milestone 4–6
 - [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`
-- [ ] Browser verification of the full flow → task 08
+- [x] Browser verification of the full flow → task 08 (repeat it any time: `npm run dev`, then
+      `node scripts/dev/e2e.mjs [--width=1280] [--dark]` — about a minute, exit code 1 on failure)
 
 ### Known issues / open questions
 - **Grade 8 solid notation** (r, H, B, M, P, V) is inferred — the teacher should confirm (see DECISIONS.md).

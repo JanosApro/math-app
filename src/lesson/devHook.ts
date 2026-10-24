@@ -20,6 +20,11 @@ export function setCurrentQuestion(q: CurrentQuestion | null): void {
   for (const l of listeners) l();
 }
 
+/** Clears the hook only if it still shows `q` (a late cleanup must not wipe a newer question). */
+export function clearCurrentQuestion(q: CurrentQuestion): void {
+  if (current === q) setCurrentQuestion(null);
+}
+
 export function useCurrentQuestion(): CurrentQuestion | null {
   return useSyncExternalStore(
     (cb) => {

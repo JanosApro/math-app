@@ -18,7 +18,7 @@ import { pickPhrase, t } from '../i18n/hu';
 import { QuestionView } from './QuestionView';
 import { draftToAnswer, emptyDraft, type AnswerDraft } from './inputs/draft';
 import { CountUp, LessonFooter, useEnterKey } from './parts';
-import { setCurrentQuestion } from './devHook';
+import { clearCurrentQuestion, setCurrentQuestion } from './devHook';
 
 export type RunnerMode = 'lesson' | 'test' | 'daily';
 
@@ -60,8 +60,9 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
   const answer = useMemo(() => draftToAnswer(spec, draft), [spec, draft]);
 
   useEffect(() => {
-    setCurrentQuestion({ question, seed });
-    return () => setCurrentQuestion(null);
+    const cur = { question, seed };
+    setCurrentQuestion(cur);
+    return () => clearCurrentQuestion(cur);
   }, [question, seed]);
 
   const onDraft = (d: AnswerDraft) => {

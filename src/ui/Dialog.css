@@ -60,6 +60,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
+  /* the buttons stay visible when a long dialog scrolls (small phones) */
+  position: sticky;
+  bottom: -1.25rem; /* into the panel's bottom padding */
+  margin: 0 -1.25rem -1.25rem;
+  padding: 0.75rem 1.25rem 1.25rem;
+  background: var(--surface);
 }
 .dlg-actions > .btn {
   width: 100%;

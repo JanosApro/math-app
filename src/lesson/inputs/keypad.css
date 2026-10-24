@@ -520,3 +520,16 @@
 .kp-match-text .katex {
   font-size: 1.12em;
 }
+
+/*
+ * KaTeX positions fraction parts with tall invisible struts that reach outside the visible
+ * glyphs — into the button above. The texts must not catch taps: the button that was hit gets it.
+ */
+.kp-choice-text,
+.kp-order-text,
+.kp-match-text,
+.kp-badge,
+.kp-radio,
+.kp-mark {
+  pointer-events: none;
+}
