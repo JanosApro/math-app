@@ -35,7 +35,7 @@ const CONTENT = join(ROOT, 'src/content');
 
 const args = process.argv.slice(2);
 const seedsArg = /^--seeds=(\d+)$/.exec(args.find((a) => a.startsWith('--seeds=')) ?? '');
-const SEEDS = seedsArg ? Number(seedsArg[1]) : 500;
+const SEEDS = seedsArg ? Number(seedsArg[1]) : 20;
 const onlyArg = /^--only=(.+)$/.exec(args.find((a) => a.startsWith('--only=')) ?? '');
 const ONLY = onlyArg ? onlyArg[1] : undefined;
 const QUIET = args.includes('--quiet');

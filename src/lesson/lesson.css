@@ -613,6 +613,7 @@
 .lesson-sheet-scroll {
   flex: 1 1 auto;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -644,6 +645,10 @@
   margin-left: auto;
   width: 34px;
   height: 34px;
+}
+/* 34 px + 2 × 5 px = 44 px hit area; -10 px would overflow the scroll box */
+.lesson-sheet-solution::after {
+  inset: -5px;
 }
 .lesson-xp-pill + .lesson-sheet-solution {
   margin-left: 0.5rem;

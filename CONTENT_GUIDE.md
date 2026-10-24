@@ -239,6 +239,11 @@ legs "befogó", hypotenuse "átfogó"; height m; area T; perimeter K; rhombus di
 circle center O, radius r; solids (grade 8): r, H (height of the solid), B (base area),
 M (lateral surface), P (surface area), V (volume) — see `DECISIONS.md`.
 
+Operation properties: write the Latin name first with the Hungarian name in brackets, and use the
+same pair in multiple-choice options so either wording is accepted:
+**kommutativitás (felcserélhetőség)**, **asszociativitás (csoportosíthatóság)**,
+**disztributivitás (széttagolhatóság)**.
+
 ## Prerequisites
 By default a subtopic requires every earlier subtopic of its topic and every subtopic of the
 earlier topics (a topic can narrow that with its own `prerequisites` list of topic ids). If a
