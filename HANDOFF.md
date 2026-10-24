@@ -7,6 +7,19 @@ the student's device (localStorage). Original brief: `PROMPT.md`.
 > **Start here if you are an AI model continuing the work:** read `AGENTS.md`, this file, then
 > `docs/tasks/00-README.md` — it lists the remaining build tasks in order, each with a full spec.
 
+## Handing off to OpenCode (or another model)
+Open OpenCode in this folder and give it:
+> Read AGENTS.md and HANDOFF.md, then do the tasks in docs/tasks/ in the order given in
+> docs/tasks/00-README.md. Commit after each task and tick it off in HANDOFF.md.
+
+For content only (after tasks 01–03 exist):
+> Read AGENTS.md and CONTENT_GUIDE.md. Write the next `todo` subtopic from CONTENT_STATUS.md,
+> following the gold-standard lesson src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts.
+
+Git: this repository has a local git identity (`git config user.name onam`,
+`user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
+`git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
+
 ## Current state (2026-10-24)
 
 The **foundation is done and type-checks** (`npx tsc --noEmit -p .` passes); the **screens are
@@ -20,6 +33,9 @@ Milestone 1 — engine and app shell
 - [x] Rich text (`$math$`, bold, lists) parser + React renderer (`src/engine/richtext.ts`, `src/ui/Rich.tsx`)
 - [x] Figure library core: fitting, label placement, validation, React renderer, SVG export (`src/figures/scene.ts`, `FigureView.tsx`)
 - [x] Figures ready: `geometry`, `triangle`, `quadrilateral`, `regularPolygon`, `circle`, `coordinate`, `numberLine`
+      (`geometry` was visually reviewed. The other six were written by an agent that was cut off: they render the
+      examples in CONTENT_GUIDE.md and the Pythagoras lesson without validation errors, but have NOT been visually
+      reviewed and have no gallery sections yet — task 06 adds the galleries; look at the screenshots and fix what looks off.)
 - [ ] Figures missing (stubs throw): `solid`, `net` → task 04 · charts/pictogram/table → task 05 · `construction`, `fractionModel`, `barModel` + galleries → task 06
 - [x] Progress store, streak/XP, export/import, Belgrade dates (`src/state/`)
 - [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
@@ -46,6 +62,11 @@ Milestone 4–6
 - Grade 5 "Szögek 05" and "Tengelyes tükrözés 04" need degree–minute answers: use the
   `numbers` answer type with units `°` and `′`.
 - `g5-termeszetes-szamok-1-01` and a few grade 8 lessons have very broad scopes; they may be split later.
+- Textbook-vs-curriculum differences and naming traps are listed in `docs/curriculum-grade-N.md` and
+  `docs/materials-grade-N.md` — read them before writing a lesson. Notable: grade 8 "Thalész párhuzamos szelők
+  tétele" is the intercept theorem (not the semicircle theorem); a new grade 5 curriculum starts in 2027/28
+  (drops vectors/translation) — not relevant this year; grade 7 "Adatfeldolgozás" is a survey project in the
+  curriculum, the app practises it with given data sets and charts.
 - `npm run check` fails until task 03 adds `scripts/check.ts`. Meanwhile:
   `npx tsx scripts/dev/smoke-lesson.ts` smoke-tests one lesson.
 
