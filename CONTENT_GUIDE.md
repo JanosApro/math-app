@@ -1,7 +1,13 @@
 # Content guide — how to write a subtopic (lesson)
 
-This is the recipe for adding lesson content. **Copy the pattern of the gold-standard lesson**
-`src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts` — read it completely before you start.
+This is the recipe for adding lesson content. **Copy the pattern of a gold-standard lesson** —
+read the one closest to your topic completely before you start:
+
+| template | shows |
+|---|---|
+| `src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts` | geometry lesson: triangle/quadrilateral/geometry figures that follow the numbers, root answers (5√2), varied labels and orientation, word problems, an explore card, a static proof figure |
+| `src/content/grade-5/tortek-2/01-osszeadas-kivonas.ts` | non-geometry lesson: fraction answers (simplify flag, mixed numbers), decimal answers, typical-mistake distractors, true/false, bar models and fraction models, LaTeX column addition |
+| `src/content/grade-8/henger-kup-gomb/03-henger-terfogata.ts` | short 3D lesson: solid figure (cylinder) following the numbers, π-form answers (`expression` with `'45π'`), π ≈ 3,14 answers with `precision`, reverse problems, "how does it change" choice, explore sliders |
 
 ## Rules
 1. **Do not modify engine files** (`src/engine`, `src/figures`, `src/state`, `src/ui`, `src/lesson`,
