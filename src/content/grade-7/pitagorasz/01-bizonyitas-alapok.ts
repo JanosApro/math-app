@@ -495,17 +495,32 @@ const squareAreas: GeneratorDef = {
         ],
       };
     }
-    // level 2: from the areas to the side length
+    // level 2: from the areas to a side length (the hypotenuse or a leg), in different units
+    const unit = rng.pick(['cm', 'dm', 'm']);
+    if (askHyp) {
+      return {
+        prompt: tex`Egy derékszögű háromszög befogóira rajzolt négyzetek területe $${num(a * a)}$ ${unit}² és $${num(b * b)}$ ${unit}². Milyen hosszú az átfogó?`,
+        figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} ${unit}²`, b: `${num(b * b)} ${unit}²` }, sideLabels: { c: 'c = ?' } },
+        answer: { type: 'number', value: c, unit },
+        inputLabel: '$c =$',
+        hint: 'Először az átfogóra rajzolt négyzet területét számítsd ki, aztán gondold meg: mekkora annak a négyzetnek az oldala?',
+        solution: [
+          tex`Az átfogóra rajzolt négyzet területe: $c^2 = ${num(a * a)} + ${num(b * b)} = ${num(c * c)}$ ${unit}².`,
+          tex`A négyzet oldala ennek a négyzetgyöke: $c = \sqrt{${num(c * c)}} = ${num(c)}$.`,
+          tex`Az átfogó **${num(c)} ${unit}**.`,
+        ],
+      };
+    }
     return {
-      prompt: tex`Egy derékszögű háromszög befogóira rajzolt négyzetek területe $${num(a * a)}$ cm² és $${num(b * b)}$ cm². Milyen hosszú az átfogó?`,
-      figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} cm²`, b: `${num(b * b)} cm²` }, sideLabels: { c: 'c = ?' } },
-      answer: { type: 'number', value: c, unit: 'cm' },
-      inputLabel: '$c =$',
-      hint: 'Először az átfogóra rajzolt négyzet területét számítsd ki, aztán gondold meg: mekkora annak a négyzetnek az oldala?',
+      prompt: tex`Egy derékszögű háromszög átfogójára rajzolt négyzet területe $${num(c * c)}$ ${unit}², az egyik befogóra rajzolté $${num(a * a)}$ ${unit}². Milyen hosszú a másik befogó?`,
+      figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} ${unit}²`, c: `${num(c * c)} ${unit}²` }, sideLabels: { b: 'b = ?' } },
+      answer: { type: 'number', value: b, unit },
+      inputLabel: '$b =$',
+      hint: 'A két befogóra rajzolt négyzet együtt akkora, mint az átfogóra rajzolt. Számítsd ki a hiányzó négyzet területét, aztán az oldalát!',
       solution: [
-        tex`Az átfogóra rajzolt négyzet területe: $c^2 = ${num(a * a)} + ${num(b * b)} = ${num(c * c)}$ cm².`,
-        tex`A négyzet oldala ennek a négyzetgyöke: $c = \sqrt{${num(c * c)}} = ${num(c)}$.`,
-        tex`Az átfogó **${num(c)} cm**.`,
+        tex`A másik befogóra rajzolt négyzet területe: $b^2 = ${num(c * c)} - ${num(a * a)} = ${num(b * b)}$ ${unit}².`,
+        tex`A négyzet oldala ennek a négyzetgyöke: $b = \sqrt{${num(b * b)}} = ${num(b)}$.`,
+        tex`A másik befogó **${num(b)} ${unit}**.`,
       ],
     };
   },
