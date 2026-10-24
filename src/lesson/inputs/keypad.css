@@ -186,7 +186,7 @@
   min-width: 44px;
   border: 2px solid var(--outline);
   border-radius: 14px;
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--text);
   font-family: var(--font-display);
   font-size: 1.45rem;
@@ -243,12 +243,12 @@
   padding: 0.65rem 1rem;
   border: var(--line) solid var(--outline);
   border-radius: 16px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   font-size: 1.08rem;
   text-align: left;
   cursor: pointer;
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease;
   touch-action: manipulation;
 }
@@ -341,13 +341,13 @@
   min-height: 84px;
   border: var(--line) solid var(--outline);
   border-radius: 18px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease;
 }
 .kp-tf-icon {
@@ -473,7 +473,7 @@
   padding: 0.45rem 0.6rem;
   border: var(--line) solid var(--outline);
   border-radius: 14px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   font-size: 1.05rem;
   cursor: pointer;

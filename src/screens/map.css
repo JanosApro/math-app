@@ -22,10 +22,10 @@
 }
 .map-card {
   position: relative;
-  background: var(--surface);
+  background: var(--card-bg);
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   padding: 0.95rem 1rem 1rem;
 }
 .map-card-head {
@@ -153,6 +153,8 @@
 /* ---- chapter section ---- */
 .map-topic {
   --topic-soft: color-mix(in srgb, var(--topic) 14%, var(--surface));
+  --card-bottom: color-mix(in srgb, var(--topic) 15%, var(--surface));
+  --card-bg: linear-gradient(165deg, var(--surface) 0%, color-mix(in srgb, var(--topic) 4%, var(--surface)) 40%, var(--card-bottom) 100%);
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -163,9 +165,9 @@
   gap: 0.8rem;
   padding: 0.85rem 0.95rem;
   border-radius: var(--radius);
-  background: var(--topic-soft);
+  background: linear-gradient(160deg, var(--topic-soft) 0%, color-mix(in srgb, var(--topic) 30%, var(--surface)) 100%);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
 }
 .map-topic-icon {
   flex: none;
@@ -174,7 +176,7 @@
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: var(--topic);
+  background: var(--gloss), var(--topic);
   color: #fff;
   border: var(--line) solid var(--outline);
   box-shadow: var(--pop-sm);
@@ -326,7 +328,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--topic);
   border: 3px solid var(--outline);
   box-shadow: var(--pop);
@@ -370,14 +372,14 @@
 
 /* states — each one differs in shape/icon too, never only in color */
 .st-done .node-dot {
-  background: var(--topic);
+  background: var(--gloss), var(--topic);
   color: #fff;
 }
 .st-done .node-status {
   color: var(--good-strong);
 }
 .st-recommended .node-dot {
-  background: var(--topic);
+  background: var(--gloss), var(--topic);
   color: #fff;
   box-shadow: var(--pop-lg), 0 0 0 9px color-mix(in srgb, var(--topic) 22%, transparent);
 }

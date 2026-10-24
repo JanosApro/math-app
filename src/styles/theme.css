@@ -10,7 +10,7 @@
   --font-display: 'DynaPuff Variable', 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
 
   /* cartoon "sticker" look: ink outlines + hard offset shadows (never a colored bottom border) */
-  --outline: #2b2347;
+  --outline: #33266f;
   /* color of the hard shadows (= the outline in light mode, pure black in dark mode) */
   --ink: var(--outline);
   --line: 2.5px;
@@ -18,13 +18,26 @@
   --pop-sm: 2px 2.5px 0 var(--ink);
   --pop-lg: 5px 6px 0 var(--ink);
 
-  --bg: #f5f3ff;
-  --bg-pattern: #ebe7ff;
+  --bg: #ece4ff;
+  --bg-pattern: rgba(108, 84, 230, 0.1);
+  /* colorful backdrop behind the squared paper: soft pink, sky and sun glows */
+  --bg-art: radial-gradient(60vmax 45vmax at 0% 0%, rgba(255, 168, 214, 0.55), transparent 70%),
+    radial-gradient(55vmax 45vmax at 100% 12%, rgba(130, 210, 255, 0.5), transparent 70%),
+    radial-gradient(70vmax 50vmax at 50% 108%, rgba(255, 210, 130, 0.5), transparent 70%),
+    linear-gradient(160deg, #efe6ff 0%, #e7e0ff 50%, #f5e8ff 100%);
   --surface: #ffffff;
-  --surface-2: #f1effb;
-  --surface-3: #e6e2f7;
-  --text: #1c1a2e;
-  --text-muted: #5f5a78;
+  --surface-2: #f1ecff;
+  --surface-3: #e4dcfb;
+  /* cards: white fading into lavender, with a soft inner shade at the bottom and a lit top edge */
+  --card-bottom: #ece5ff;
+  --card-bg: linear-gradient(165deg, #ffffff 0%, #fcfaff 40%, var(--card-bottom) 100%);
+  --card-shade: inset 0 -16px 24px -18px rgba(83, 58, 190, 0.32), inset 0 2px 0 rgba(255, 255, 255, 0.95);
+  /* glossy highlight laid over colored buttons and chips */
+  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(40, 20, 120, 0.08) 100%);
+  /* top bar, tab bar, lesson action bar */
+  --bar-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(238, 230, 255, 0.88));
+  --text: #261c55;
+  --text-muted: #6a5e9a;
   --border: #e1ddf2;
   --primary: #5a4ff3;
   --primary-strong: #4237d6;
@@ -83,11 +96,20 @@
   /* lighter outlines so cards keep their shape on the dark background; shadows stay black */
   --outline: #5d5694;
   --ink: #000;
-  --bg: #13111d;
-  --bg-pattern: #1a1728;
+  --bg: #120f22;
+  --bg-pattern: rgba(160, 140, 255, 0.07);
+  --bg-art: radial-gradient(60vmax 45vmax at 0% 0%, rgba(170, 60, 170, 0.32), transparent 70%),
+    radial-gradient(55vmax 45vmax at 100% 12%, rgba(40, 110, 180, 0.32), transparent 70%),
+    radial-gradient(70vmax 50vmax at 50% 108%, rgba(160, 105, 30, 0.22), transparent 70%),
+    linear-gradient(160deg, #161132 0%, #110e21 100%);
   --surface: #1e1b2d;
   --surface-2: #29253d;
   --surface-3: #343050;
+  --card-bottom: #1b182f;
+  --card-bg: linear-gradient(165deg, #2b2647 0%, #231f3b 45%, var(--card-bottom) 100%);
+  --card-shade: inset 0 -16px 24px -18px rgba(0, 0, 0, 0.65), inset 0 1.5px 0 rgba(255, 255, 255, 0.07);
+  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.12) 100%);
+  --bar-bg: linear-gradient(180deg, rgba(32, 28, 52, 0.92), rgba(38, 32, 66, 0.9));
   --text: #f2f0fb;
   --text-muted: #aaa5c6;
   --border: #393352;
@@ -165,6 +187,16 @@ body {
   overflow-x: hidden;
 }
 
+/* the colorful backdrop, fixed behind every screen (screens draw only the squared paper on top) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-art);
+  pointer-events: none;
+}
+
 button,
 input,
 select,
@@ -202,7 +234,7 @@ a {
   padding: 0.6em 1.4em;
   border: var(--line) solid var(--outline);
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--gloss), var(--primary);
   color: var(--on-primary);
   font-family: var(--font-display);
   font-weight: 600;
@@ -215,7 +247,7 @@ a {
   touch-action: manipulation;
 }
 .btn:hover {
-  background: var(--primary-strong);
+  background: var(--gloss), var(--primary-strong);
   transform: translate(-1px, -1px);
   box-shadow: 4px 5px 0 var(--ink);
 }
@@ -234,35 +266,35 @@ a {
   width: 100%;
 }
 .btn-ghost {
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--primary);
 }
 .btn-ghost:hover {
-  background: var(--primary-soft);
+  background: var(--gloss), var(--primary-soft);
 }
 .btn-soft {
-  background: var(--primary-soft);
+  background: var(--gloss), var(--primary-soft);
   color: var(--primary);
   border-width: 2px;
   box-shadow: var(--pop-sm);
 }
 .btn-soft:hover {
-  background: var(--surface-3);
+  background: var(--gloss), var(--surface-3);
   box-shadow: 3px 3.5px 0 var(--ink);
 }
 .btn-good {
-  background: var(--good);
+  background: var(--gloss), var(--good);
   color: var(--on-primary);
 }
 .btn-good:hover {
-  background: var(--good-strong);
+  background: var(--gloss), var(--good-strong);
 }
 .btn-bad {
-  background: var(--bad);
+  background: var(--gloss), var(--bad);
   color: var(--on-primary);
 }
 .btn-bad:hover {
-  background: color-mix(in srgb, var(--bad) 85%, var(--text));
+  background: var(--gloss), color-mix(in srgb, var(--bad) 85%, var(--text));
 }
 .btn-small {
   min-height: 40px;
@@ -300,10 +332,10 @@ a {
 
 /* ---- Cards ---- */
 .card {
-  background: var(--surface);
+  background: var(--card-bg);
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   padding: 1.1rem 1.1rem;
 }
 

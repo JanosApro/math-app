@@ -127,9 +127,9 @@
   gap: 0;
   padding: 0.5rem 0.25rem 0.45rem;
   border-radius: 16px;
-  background: var(--surface);
+  background: var(--card-bg);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop-sm);
+  box-shadow: var(--pop-sm), var(--card-shade);
   animation: boing 0.55s ease-out backwards;
 }
 .pf-stat:nth-child(2) {

@@ -33,7 +33,7 @@
   white-space: nowrap;
   border: var(--line) solid var(--outline);
   border-radius: 16px;
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--text);
   font-family: var(--font-display);
   font-weight: 600;

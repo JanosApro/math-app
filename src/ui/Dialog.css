@@ -25,7 +25,7 @@
   max-height: min(88dvh, 720px);
   overflow: auto;
   overscroll-behavior: contain;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   border-radius: 24px;
   border: var(--line) solid var(--outline);
@@ -66,7 +66,7 @@
   bottom: -1.25rem; /* into the panel's bottom padding */
   margin: 0 -1.25rem -1.25rem;
   padding: 0.75rem 1.25rem 1.25rem;
-  background: var(--surface);
+  background: linear-gradient(to top, var(--card-bottom) 75%, transparent);
 }
 .dlg-actions > .btn {
   width: 100%;

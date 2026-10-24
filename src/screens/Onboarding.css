@@ -9,7 +9,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: max(1rem, env(safe-area-inset-top)) 1rem max(2rem, env(safe-area-inset-bottom));
-  background-color: var(--bg);
+  background-color: transparent; /* the colorful backdrop is on body::before */
   background-image: linear-gradient(var(--bg-pattern) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-pattern) 1px, transparent 1px);
   background-size: 26px 26px;
@@ -84,11 +84,11 @@
   padding: 0.5rem 0.4rem;
   border: var(--line) solid var(--outline);
   border-radius: 22px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   cursor: pointer;
   overflow: hidden;
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.15s ease, box-shadow 0.15s ease;
   touch-action: manipulation;
 }

@@ -8,10 +8,13 @@
 .lesson {
   --topic-soft: color-mix(in srgb, var(--topic) 14%, var(--surface));
   --topic-line: color-mix(in srgb, var(--topic) 45%, var(--border));
+  /* every card, tile and key in a lesson fades into a hint of the topic color */
+  --card-bottom: color-mix(in srgb, var(--topic) 15%, var(--surface));
+  --card-bg: linear-gradient(165deg, var(--surface) 0%, color-mix(in srgb, var(--topic) 4%, var(--surface)) 40%, var(--card-bottom) 100%);
   --lesson-w: 680px;
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: var(--bg);
+  background-color: transparent; /* the colorful backdrop is on body::before */
   background-image: linear-gradient(var(--bg-pattern) 1px, transparent 1px), linear-gradient(90deg, var(--bg-pattern) 1px, transparent 1px);
   background-size: 26px 26px;
   background-position: -1px -1px;
@@ -23,7 +26,7 @@
   top: 0;
   z-index: 30;
   padding: env(safe-area-inset-top) max(0.5rem, env(safe-area-inset-right)) 0 max(0.5rem, env(safe-area-inset-left));
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: var(--bar-bg);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
   border-bottom: 1px solid var(--border);
@@ -115,10 +118,10 @@
 /* ---- cards ---- */
 .lesson-card {
   position: relative;
-  background: var(--surface);
+  background: var(--card-bg);
   border-radius: 22px;
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop-lg);
+  box-shadow: var(--pop-lg), var(--card-shade);
   padding: 1rem 1rem 1.1rem;
   overflow-wrap: anywhere;
 }
@@ -519,7 +522,7 @@
   bottom: 0;
   z-index: 30;
   padding: 0.6rem max(0.85rem, env(safe-area-inset-right)) calc(0.6rem + env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  background: var(--bar-bg);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
   border-top: var(--line) solid var(--outline);
@@ -591,11 +594,11 @@
 }
 .lesson-sheet-good {
   --sheet-accent: var(--good);
-  background: var(--good-bg);
+  background: linear-gradient(180deg, var(--good-bg), color-mix(in srgb, var(--good) 24%, var(--surface)));
 }
 .lesson-sheet-bad {
   --sheet-accent: var(--bad);
-  background: var(--bad-bg);
+  background: linear-gradient(180deg, var(--bad-bg), color-mix(in srgb, var(--bad) 22%, var(--surface)));
 }
 @keyframes lesson-sheet-in {
   from {
@@ -870,7 +873,7 @@
   width: 42px;
   height: 42px;
   border-radius: 13px;
-  background: var(--topic);
+  background: var(--gloss), var(--topic);
   color: #fff;
   display: flex;
   align-items: center;
@@ -976,12 +979,12 @@
   padding: 0.5rem 0.9rem 0.5rem 0.65rem;
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   font: inherit;
   text-align: left;
   cursor: pointer;
-  box-shadow: var(--pop);
+  box-shadow: var(--pop), var(--card-shade);
   transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1056,7 +1059,7 @@
   color: #fff;
 }
 .lesson-partrow.is-next {
-  background: var(--topic-soft);
+  background: linear-gradient(165deg, var(--topic-soft) 0%, color-mix(in srgb, var(--topic) 28%, var(--surface)) 100%);
 }
 .lesson-partrow.is-next .lesson-partrow-num {
   background: var(--topic);
@@ -1428,10 +1431,10 @@
   color: var(--text-muted);
 }
 .lesson-stat-xp {
-  background: var(--xp-bg);
+  background: var(--gloss), var(--xp-bg);
 }
 .lesson-stat-streak {
-  background: var(--streak-bg);
+  background: var(--gloss), var(--streak-bg);
 }
 .lesson-stat-streak .lesson-stat-value {
   color: var(--streak);

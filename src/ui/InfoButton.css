@@ -10,7 +10,7 @@
   vertical-align: middle;
   border-radius: 50%;
   border: 2px solid var(--outline);
-  background: var(--surface);
+  background: var(--gloss), var(--card-bg);
   color: var(--primary);
   box-shadow: var(--pop-sm);
   cursor: pointer;

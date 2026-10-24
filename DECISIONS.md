@@ -165,6 +165,12 @@ Architectural choices and why. Add new entries at the end of a section.
   nodes. Pressing a button pushes it into its shadow. Deliberately *not* the Duolingo look: no
   colored bottom border, no green. In dark mode the outline is a light violet (black would vanish
   on dark cards) and the shadows stay black.
+- **Color and shade instead of black on white** (teacher feedback): a fixed colorful backdrop
+  (`--bg-art` on `body::before`: pink, sky and sun glows) under the squared paper; cards, tiles
+  and keys use `--card-bg` (white fading into lavender, in lessons and map chapters into the
+  topic color) with `--card-shade` (soft inner shade at the bottom, lit top edge); colored
+  buttons, chips and nodes get a `--gloss` highlight; text and outlines are deep indigo, not
+  black. All of it is tokens in theme.css, redefined for dark mode.
 - **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
   `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
   confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star

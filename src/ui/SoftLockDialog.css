@@ -108,7 +108,7 @@
   padding: 0.45rem 0.7rem 0.45rem 0.5rem;
   border: 2px solid var(--outline);
   border-radius: 14px;
-  background: var(--surface);
+  background: var(--card-bg);
   color: var(--text);
   text-align: left;
   cursor: pointer;
