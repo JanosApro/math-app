@@ -26,7 +26,7 @@
           "id": "g5-termeszetes-szamok-1-03",
           "file": "03-szamtani-muveletek",
           "title": "Számtani műveletek az N₀ halmazon",
-          "status": "todo",
+          "status": "draft",
           "scope": "The four operations in N₀ and their terms (összeadandó, összeg, kisebbítendő, kivonandó, különbség, tényező, szorzat, osztandó, osztó, hányados); commutative, associative, distributive laws, role of 0 and 1, no division by 0; when subtraction/division is possible in N₀; division with remainder a = b · q + r, 0 ≤ r < b; clever mental calculation using the laws. Exercises: integer input (results, quotient, remainder, missing number), MC which law is used, T/F. Numbers up to millions at level 3."
         },
         {
