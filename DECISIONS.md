@@ -83,6 +83,16 @@ Architectural choices and why. Add new entries at the end of a section.
   area, and the answer area scrolls into view on the first key press (`scroll-margin-bottom`
   keeps it above the bar). Figures are at most 340 px tall (`FigureView`), so a tall thin triangle
   cannot push the answer off the screen.
+- **A lesson is 3–5 short parts + the mini test** (teacher feedback: the Pythagoras lesson was
+  great but too long in one go). `SubtopicModule.parts: { title, steps }[]`; the textbook
+  structure (one subtopic = one lesson = one map node) stays, the parts live inside it. The
+  lesson opens on an overview (goals + part list); every finished part shows a small celebration
+  ("N. rész kész!", XP, streak, part dots) and is saved (`parts` in the subtopic progress), so a
+  student can do one part a day. Parts can be replayed in any order; the mini test is offered
+  once every part is done (and can be opened from the overview any time). There is no mid-part
+  resume: a part is ~5 minutes, restarting it is cheap and keeps the state simple. The map shows
+  a started lesson with a ring of part segments ("2/4 rész kész"); the part count comes from the
+  lazily loaded module of started lessons only (module chunks stay lazy).
 - `src/dev/demoLesson.ts` (`dev-demo`) is a developer lesson that uses every step and answer type;
   `npm run check` validates and stress-tests it like real content. Choice/order/match buttons carry
   `data-index` / `data-left` / `data-right` attributes for browser automation (dev scripts read the
@@ -92,8 +102,10 @@ Architectural choices and why. Add new entries at the end of a section.
 - localStorage key `matek-kaland:v1`, versioned and sanitised on load/import; every access in
   try/catch; in-memory fallback with a visible notice. Tabs stay in sync via the `storage` event.
 - Progress is kept **per grade** (XP, subtopics, chapters, daily records, streak badges).
-- The streak is **derived** from the set of days with a completed daily challenge (not stored as a
-  counter), so it can't get out of sync; it stays alive until the end of the next day.
+- The streak is **derived** from the set of active days (not stored as a counter), so it can't
+  get out of sync; it stays alive until the end of the next day. A day is active when the daily
+  challenge was completed **or** a lesson part / mini test was finished (`activity` per day in
+  the grade progress). Finishing a part gives `XP.partComplete` (first time) / `XP.partReplay`.
 - Daily challenge: seed = `daily:<grade>:<YYYY-MM-DD in Europe/Belgrade>`; 6 questions from the
   eligible subtopics (daily.json, or everything with content). Only the first completion of the
   day gives XP and counts for the streak; replays are practice.

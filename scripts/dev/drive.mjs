@@ -191,16 +191,23 @@ export async function answerAndContinue(page, mode = 'correct', via = 'tap') {
 }
 
 /**
- * Plays the lesson on screen from its first step to the "Jöhet a minidolgozat!" card.
- * `onQuestion(type, i)` may return 'wrong' to answer that question wrong. Returns counts.
+ * Plays the lesson on screen from the current part to the "Jöhet a minidolgozat!" card, going on
+ * to the next part after each "N. rész kész!" screen. `onQuestion(type, i)` may return 'wrong' to
+ * answer that question wrong. `stopAfterParts` stops on the n-th part celebration. Returns counts.
  */
-export async function playSteps(page, onQuestion = () => 'correct', via = 'tap') {
+export async function playSteps(page, onQuestion = () => 'correct', via = 'tap', stopAfterParts = Infinity) {
   let questions = 0;
   let unexpected = 0;
-  for (let guard = 0; guard < 300; guard++) {
+  let parts = 0;
+  for (let guard = 0; guard < 400; guard++) {
     await sleep(60);
     if (await page.locator('.lesson-totest').count()) break;
-    if (await page.locator('.lesson-qcard').count()) {
+    if (await page.locator('.lesson-partdots').count()) {
+      parts++;
+      if (parts >= stopAfterParts) break;
+      await clickMain(page);
+      await page.waitForSelector('.lesson-partdots', { state: 'detached' });
+    } else if (await page.locator('.lesson-qcard').count()) {
       const cur = await freshQuestion(page);
       const mode = onQuestion(cur.question.answer.type, questions) ?? 'correct';
       const verdict = await answerAndContinue(page, mode, via);
@@ -215,7 +222,7 @@ export async function playSteps(page, onQuestion = () => 'correct', via = 'tap')
       await clickMain(page);
     }
   }
-  return { questions, unexpected };
+  return { questions, unexpected, parts };
 }
 
 /** Runs the mini test on screen; the first `wrong` items are answered wrong. */

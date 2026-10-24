@@ -1,13 +1,14 @@
 /**
  * Route #/profile: nickname, level + XP, lessons/chapters done, current and best streak,
- * a calendar of the last 5 weeks (Monday first, done days marked with 🔥 — not only by color),
+ * a calendar of the last 5 weeks (Monday first, days with a finished lesson part, mini test or
+ * daily challenge marked with 🔥 — not only by color),
  * chapter badges and streak badges (7 / 30 / 100). Everything is for the current grade.
  */
 import { useMemo, type CSSProperties } from 'react';
 import { flatten, topicColor } from '../content/catalog';
 import { GRADES, getGradeTopics } from '../content/registry';
 import { t } from '../i18n/hu';
-import { computeStreak } from '../state/progress';
+import { gradeStreak } from '../state/progress';
 import { addDays, formatDateHu, todayBelgrade, weekdayMon0 } from '../state/dates';
 import { gradeProgress, useAppState, type GradeProgress } from '../state/store';
 import { levelFromXp, STREAK_MILESTONES } from '../state/xp';
@@ -35,7 +36,7 @@ function Calendar({ gp, today }: { gp: GradeProgress; today: string }) {
       {Array.from({ length: WEEKS }, (_, w) => (
         <div key={w} className="pf-cal-row" role="row">
           {days.slice(w * 7, w * 7 + 7).map((d) => {
-            const done = !!gp.daily[d];
+            const done = !!gp.daily[d] || (gp.activity?.[d] ?? 0) > 0;
             const isToday = d === today;
             const future = d > today;
             const day = Number(d.slice(8));
@@ -65,7 +66,7 @@ export default function ProfileScreen() {
   const gp = useAppState((s) => (grade === null ? null : gradeProgress(s, grade)));
   const today = useMemo(() => todayBelgrade(), []);
   const topics = grade === null ? undefined : getGradeTopics(grade);
-  const streak = useMemo(() => (gp ? computeStreak(Object.keys(gp.daily), today) : null), [gp, today]);
+  const streak = useMemo(() => (gp ? gradeStreak(gp, today) : null), [gp, today]);
   if (grade === null || !gp || !streak) return null;
 
   const lv = levelFromXp(gp.xp);

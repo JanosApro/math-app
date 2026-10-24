@@ -8,9 +8,9 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { GradeTopics, TopicMeta } from '../engine/types';
 import { flatten, nodeState, recommendedNext, topicColor, topicCompleted } from '../content/catalog';
-import { getGradeTopics } from '../content/registry';
+import { getGradeTopics, hasModule, loadSubtopic } from '../content/registry';
 import { t } from '../i18n/hu';
-import { computeStreak } from '../state/progress';
+import { gradeStreak } from '../state/progress';
 import { schoolYearProgress, todayBelgrade } from '../state/dates';
 import { gradeProgress, useAppState, type GradeProgress } from '../state/store';
 import { FlagIcon, TrophyIcon } from '../ui/AppShellIcons';
@@ -51,7 +51,7 @@ function YearGoal({ done, total, today }: { done: number; total: number; today: 
 }
 
 function DailyCard({ gp, today }: { gp: GradeProgress; today: string }) {
-  const streak = useMemo(() => computeStreak(Object.keys(gp.daily), today), [gp.daily, today]);
+  const streak = useMemo(() => gradeStreak(gp, today), [gp, today]);
   const rec = gp.daily[today];
   return (
     <section className={`map-card map-daily${rec ? ' is-done' : ''}`} aria-labelledby="map-daily-title">
@@ -75,11 +75,37 @@ function DailyCard({ gp, today }: { gp: GradeProgress; today: string }) {
   );
 }
 
+/** Number of parts per lesson, filled in as the started lessons' modules load (cached). */
+const partTotals = new Map<string, number>();
+
+function usePartTotals(grade: number, ids: string[]): ReadonlyMap<string, number> {
+  const [, setVersion] = useState(0);
+  const key = ids.join(',');
+  useEffect(() => {
+    let cancelled = false;
+    for (const id of ids) {
+      if (partTotals.has(id) || !hasModule(grade, id)) continue;
+      loadSubtopic(grade, id).then(
+        (m) => {
+          partTotals.set(id, m.parts.length);
+          if (!cancelled) setVersion((v) => v + 1);
+        },
+        () => {},
+      );
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [grade, key]);
+  return partTotals;
+}
+
 function TopicSection({
   topics,
   topic,
   index,
   gp,
+  totals,
   recommendedId,
   onOpen,
 }: {
@@ -87,6 +113,7 @@ function TopicSection({
   topic: TopicMeta;
   index: number;
   gp: GradeProgress;
+  totals: ReadonlyMap<string, number>;
   recommendedId?: string;
   onOpen: (id: string) => void;
 }) {
@@ -96,7 +123,8 @@ function TopicSection({
   const nodes: TrailNode[] = topic.subtopics.map((sub, i) => {
     const state = nodeState(topics, sub.id, completed, acknowledged);
     const p = gp.subtopics[sub.id];
-    const inProgress = !p?.completedAt && (p?.step ?? 0) > 0 && state !== 'soon';
+    const doneParts = p?.parts?.length ?? 0;
+    const inProgress = !p?.completedAt && doneParts > 0 && state !== 'soon';
     return {
       id: sub.id,
       title: sub.title,
@@ -104,6 +132,7 @@ function TopicSection({
       globalIndex: flat.findIndex((f) => f.sub.id === sub.id),
       state,
       inProgress,
+      parts: inProgress ? { done: doneParts, total: totals.get(sub.id) } : undefined,
       bubble: sub.id === recommendedId ? (inProgress ? t.map.continueHere : t.map.startHere) : undefined,
     };
   });
@@ -151,6 +180,8 @@ export default function MapScreen({ grade }: { grade: number }) {
   const flat = useMemo(() => (topics ? flatten(topics) : []), [topics]);
   const recommended = useMemo(() => (topics ? recommendedNext(topics, (id) => !!gp.subtopics[id]?.completedAt) : undefined), [topics, gp]);
   const done = flat.filter((f) => gp.subtopics[f.sub.id]?.completedAt).length;
+  const started = flat.filter((f) => !gp.subtopics[f.sub.id]?.completedAt && (gp.subtopics[f.sub.id]?.parts?.length ?? 0) > 0).map((f) => f.sub.id);
+  const totals = usePartTotals(grade, started);
 
   const scrollToRecommended = (smooth: boolean, focus = false) => {
     if (!recommended) return;
@@ -202,7 +233,7 @@ export default function MapScreen({ grade }: { grade: number }) {
       </div>
       {!anyOpenable && <p className="map-empty card">{t.map.noLessonsYet}</p>}
       {topics.topics.map((topic, i) => (
-        <TopicSection key={topic.id} topics={topics} topic={topic} index={i} gp={gp} recommendedId={recommended?.sub.id} onOpen={open} />
+        <TopicSection key={topic.id} topics={topics} topic={topic} index={i} gp={gp} totals={totals} recommendedId={recommended?.sub.id} onOpen={open} />
       ))}
       <SoftLockDialog
         grade={grade}

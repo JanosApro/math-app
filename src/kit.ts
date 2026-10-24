@@ -18,6 +18,7 @@ export type {
   FractionAnswer,
   GenRef,
   GeneratorDef,
+  LessonPart,
   LessonStep,
   MatchAnswer,
   MiniTestDef,

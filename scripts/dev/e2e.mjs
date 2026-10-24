@@ -41,12 +41,13 @@ async function demoLesson() {
   const seen = new Set();
   const notices = [];
   // first question of each type: wrong (where it is cheap), and the almost / parse-error cases
-  const { questions, unexpected } = await playSteps(page, (type) => {
+  const { questions, unexpected, parts: demoParts } = await playSteps(page, (type) => {
     const first = !seen.has(type);
     seen.add(type);
     return first && ['number', 'choice', 'order', 'match', 'numbers'].includes(type) ? 'wrong' : 'correct';
   });
   check(questions >= 15 && unexpected === 0, `${questions} questions, every verdict as expected (types: ${[...seen].join(', ')})`);
+  check(demoParts === 4, `${demoParts} part celebrations, then the mini test`);
   check(seen.size === 9, 'all 9 answer types appeared');
   await shot(page, SHOTS, 'demo-totest');
   // "almost" and parse error: jump to the fraction practice with the preview's dev panel
@@ -104,9 +105,29 @@ async function studentFlow() {
   check(recId === 'g7-pitagorasz-01', `recommended lesson: ${recId}`);
   await rec.click();
   await page.waitForSelector('.lesson-start');
+  check((await page.locator('.lesson-partrow').count()) === 5, 'overview lists 4 parts + the mini test');
   await clickMain(page);
-  const { questions, unexpected } = await playSteps(page);
-  check(questions > 10 && unexpected === 0, `lesson played (${questions} questions)`);
+  // first part only, then back to the map: the part is saved, today counts for the streak
+  const first = await playSteps(page, undefined, undefined, 1);
+  await shot(page, SHOTS, 'part-done');
+  const s1 = (await saved()).grades['7'];
+  check(first.parts === 1 && JSON.stringify(s1.subtopics['g7-pitagorasz-01'].parts) === '[0]', `part 1 done (${first.questions} questions) and saved`);
+  check(Object.keys(s1.activity).length === 1 && s1.xp > 0, 'a finished part counts for the streak and gives XP');
+  await page.locator('.lesson-footer .lesson-side-btn').click(); // back to the lesson overview
+  await page.waitForSelector('.lesson-partrow.is-done');
+  await page.locator('.lesson-close').click();
+  await page.waitForSelector('.map-topic');
+  check((await page.locator('.st-recommended .node-ring path.is-on').count()) === 1, 'map node shows 1 finished part segment');
+  check(/1\/4 rész/.test((await page.locator('.st-recommended .node-status').textContent()) ?? ''), 'map node says "1/4 rész kész"');
+  check((await page.locator('.shell-chip-streak.is-lit').count()) === 1, 'streak chip lit after one part');
+  await shot(page, SHOTS, 'map-progress');
+  await page.locator('.st-recommended .node').click();
+  await page.waitForSelector('.lesson-start');
+  await clickMain(page); // "Folytatás: 2. rész"
+  const rest = await playSteps(page);
+  const questions = first.questions + rest.questions;
+  const unexpected = first.unexpected + rest.unexpected;
+  check(rest.parts === 3 && unexpected === 0, `lesson played (${questions} questions in 4 parts)`);
   check(await noHScroll(page), 'no horizontal scroll in the lesson');
   await clickMain(page);
   await playTest(page, 3);

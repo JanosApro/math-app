@@ -2,7 +2,7 @@
  * Route #/dev/preview/<id> (dev builds only): any subtopic — or the demo lesson `dev-demo`
  * (src/dev/demoLesson.ts) — in the real LessonPlayer, in preview mode (nothing is saved).
  *
- * The 🛠 button in the top bar opens the dev tools: jump to any step, start the mini test
+ * The 🛠 button in the top bar opens the dev tools: jump to any part or step, start the mini test
  * directly, and see the current question's answer + what to type (also on `window.__mkQuestion`
  * for browser automation).
  */
@@ -11,7 +11,7 @@ import type { GradeTopics, LessonStep, SubtopicModule, TopicMeta } from '../engi
 import { canonicalInput, formatAnswer } from '../engine/answers';
 import { findSubtopic, topicColor } from '../content/catalog';
 import { getGradeTopics, gradeOfSubtopic, hasModule, loadSubtopic } from '../content/registry';
-import { LessonPlayer } from '../lesson/LessonPlayer';
+import { LessonPlayer, partQuestionCount, type PlayerStart } from '../lesson/LessonPlayer';
 import { LessonMessage } from '../lesson/LessonScreen';
 import { useCurrentQuestion } from '../lesson/devHook';
 import { Rich, RichInline } from '../ui/Rich';
@@ -82,7 +82,9 @@ function CurrentAnswer() {
   );
 }
 
-function DevTools({ data, onJump, onClose }: { data: Loaded; onJump: (to: number | 'test' | 'start') => void; onClose: () => void }) {
+type Jump = PlayerStart | 'start';
+
+function DevTools({ data, onJump, onClose }: { data: Loaded; onJump: (to: Jump) => void; onClose: () => void }) {
   return (
     <div className="dev-preview-panel" role="region" aria-label="Fejlesztői eszközök">
       <div className="dev-preview-head">
@@ -105,20 +107,28 @@ function DevTools({ data, onJump, onClose }: { data: Loaded; onJump: (to: number
           📝 Minidolgozat
         </button>
       </div>
-      <ol className="dev-preview-steps">
-        {data.module.steps.map((s, i) => (
-          <li key={i}>
-            <button type="button" className="dev-preview-step" onClick={() => onJump(i)}>
-              <span className="dev-preview-step-no">{i + 1}.</span>
-              <span aria-hidden="true">{STEP_ICON[s.type]}</span>
-              <span className="dev-preview-step-type">{s.type}</span>
-              <span className="dev-preview-step-text">
-                <Rich text={stepSummary(s)} className="lesson-inline-rich" />
-              </span>
-            </button>
-          </li>
-        ))}
-      </ol>
+      {data.module.parts.map((part, p) => (
+        <section key={p} className="dev-preview-part">
+          <button type="button" className="dev-preview-part-head" onClick={() => onJump({ part: p })}>
+            <strong>{p + 1}. rész</strong> <RichInline text={part.title} />
+            <span className="dev-small muted"> · {part.steps.length} lépés · {partQuestionCount(part.steps)} kérdés</span>
+          </button>
+          <ol className="dev-preview-steps">
+            {part.steps.map((s, i) => (
+              <li key={i}>
+                <button type="button" className="dev-preview-step" onClick={() => onJump({ part: p, step: i })}>
+                  <span className="dev-preview-step-no">{i + 1}.</span>
+                  <span aria-hidden="true">{STEP_ICON[s.type]}</span>
+                  <span className="dev-preview-step-type">{s.type}</span>
+                  <span className="dev-preview-step-text">
+                    <Rich text={stepSummary(s)} className="lesson-inline-rich" />
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
       <div className="dev-links">
         <a className="btn btn-small btn-ghost" href="#/dev">
           /dev
@@ -138,7 +148,7 @@ function DevTools({ data, onJump, onClose }: { data: Loaded; onJump: (to: number
 
 export default function PreviewScreen({ subtopicId }: { subtopicId: string }) {
   const [state, setState] = useState<{ id: string; data?: Loaded; error?: string } | null>(null);
-  const [jump, setJump] = useState<{ n: number; to: number | 'test' | 'start' }>({ n: 0, to: 'start' });
+  const [jump, setJump] = useState<{ n: number; to: Jump }>({ n: 0, to: 'start' });
   const [toolsOpen, setToolsOpen] = useState(false);
 
   useEffect(() => {
@@ -175,7 +185,7 @@ export default function PreviewScreen({ subtopicId }: { subtopicId: string }) {
   if (!state?.data || state.id !== subtopicId) return <div className="page muted">{t.common.loading}</div>;
   const data = state.data;
 
-  const onJump = (to: number | 'test' | 'start') => {
+  const onJump = (to: Jump) => {
     setJump((j) => ({ n: j.n + 1, to }));
     setToolsOpen(false);
   };
@@ -192,7 +202,7 @@ export default function PreviewScreen({ subtopicId }: { subtopicId: string }) {
         color={data.color}
         preview
         onExit={back}
-        initialStep={jump.to === 'start' ? undefined : jump.to}
+        initial={jump.to === 'start' ? undefined : jump.to}
         topExtra={
           <button
             type="button"

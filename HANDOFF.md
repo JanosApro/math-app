@@ -27,6 +27,15 @@ Git: this repository has a local git identity (`git config user.name onam`,
 Tasks 01–08 are finished (rows below). The architecture is complete; what remains is lesson
 content: write the next `todo` subtopic from CONTENT_STATUS.md following CONTENT_GUIDE.md.
 
+Teacher feedback round (same day), done so far:
+- Light mode by default + sun/moon toggle in every top bar (DECISIONS "Theme and sound").
+- Synthesized sound effects (correct / wrong / part / lesson / chapter fanfare), on by default.
+- **Lessons are split into 3–5 parts** (`parts: [{ title, steps }]` in every module, state v2
+  stores finished parts + active days): overview with part list, "N. rész kész!" celebration with
+  XP, every finished part counts for the streak, map node ring "2/4 rész kész". The three gold
+  lessons and the demo lesson are split; `npm run check` warns about parts that are too long.
+- Still to do: visual refresh (playful bundled font, cartoony outlined style, popping effects).
+
 ### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
 is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`
@@ -121,6 +130,7 @@ Milestone 3 — gold-standard lessons → task 07
 
 Milestone 4–6
 - [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`
+- [x] Lessons split into 3–5 parts (XP + streak per part, map ring) — teacher feedback
 - [x] Browser verification of the full flow → task 08 (repeat it any time: `npm run dev`, then
       `node scripts/dev/e2e.mjs [--width=1280] [--dark]` — about a minute, exit code 1 on failure)
 
@@ -185,7 +195,7 @@ src/
   styles/      theme.css (design tokens, light/dark, buttons, animations)
 scripts/       check.ts (npm run check), status.ts (npm run status), dev/figure-preview.ts
                (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser automation),
-               dev/smoke-lesson.ts (legacy one-lesson smoke test)
+               dev/drive.mjs + dev/e2e.mjs (Playwright: plays the lessons, 30 checks)
 docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
 materials/     the teacher's textbook screenshots (reference only — never copy text)
 ```

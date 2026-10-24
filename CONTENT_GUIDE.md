@@ -26,8 +26,7 @@ read the one closest to your topic completely before you start:
 2. Find its entry in `src/content/grade-N/topics.json`: `id` (e.g. `g7-pitagorasz-02`), topic
    `folder` (e.g. `pitagorasz`) and `file` (e.g. `02-szerkesztesek`).
 3. Create `src/content/grade-N/<folder>/<file>.ts` (copy the structure below).
-4. Run `npm run check -- --only=<id>` until it prints no errors (until task 03 exists:
-   edit and run `npx tsx scripts/dev/smoke-lesson.ts`).
+4. Run `npm run check -- --only=<id>` until it prints no errors or warnings.
 5. Open it in the browser: `npm run dev`, then `http://localhost:5173/#/dev/preview/<id>`.
    Play it through. Check the math by hand on a few seeds (the /dev page has a sample viewer).
 6. Set `"status": "draft"` in topics.json (it becomes visible to students!) and, after the
@@ -64,12 +63,23 @@ const area: GeneratorDef = {
 export default defineSubtopic({
   id: 'g5-pelda-01',                     // MUST equal the id in topics.json
   goals: ['kiszámítani a téglalap területét,'],   // 2–4 items, shown on the start screen
-  steps: [
-    { type: 'theory', title: 'A téglalap területe', body: '…', figure: { … }, remember: '$T = a \\cdot b$' },
-    { type: 'check', question: { prompt: '…', answer: { type: 'truefalse', value: true }, hint: '…', solution: ['…'] } },
-    { type: 'example', title: '…', problem: '…', figure: { … }, steps: [{ text: '…' }, { text: '…' }], answer: '…' },
-    { type: 'practice', generator: 'rect-area', level: 1, count: 2 },
-    { type: 'practice', generator: 'rect-area', level: 2 },
+  parts: [                               // 3–5 short parts (~5 minutes each), then the mini test
+    {
+      title: 'A téglalap területe',      // shown in the part list and on the "N. rész kész!" screen
+      steps: [
+        { type: 'theory', title: 'A téglalap területe', body: '…', figure: { … }, remember: '$T = a \\cdot b$' },
+        { type: 'check', question: { prompt: '…', answer: { type: 'truefalse', value: true }, hint: '…', solution: ['…'] } },
+        { type: 'practice', generator: 'rect-area', level: 1, count: 2 },
+      ],
+    },
+    {
+      title: 'Kidolgozott példák',
+      steps: [
+        { type: 'example', title: '…', problem: '…', figure: { … }, steps: [{ text: '…' }, { text: '…' }], answer: '…' },
+        { type: 'practice', generator: 'rect-area', level: 2 },
+      ],
+    },
+    // … 3–5 parts in total
   ],
   generators: [area],
   miniTest: { items: [{ generator: 'rect-area', level: 1 }, /* … 5–8 items, mixed levels */] },
@@ -88,7 +98,17 @@ export default defineSubtopic({
 
 **Recommended order:** theory → check → theory → (explore) → example → practice L1 → example →
 practice L1/L2 → theory → example → practice L2 → practice L3. The mini test comes automatically
-after the last step. A lesson takes 10–20 minutes.
+after the last part. A whole lesson takes 15–25 minutes.
+
+### Parts (3–5 per lesson)
+Split the step sequence into **3–5 parts of about 5 minutes each**, one idea per part (e.g.
+"the theorem", "computing the hypotenuse", "computing a leg", "is it a right triangle?"). Each
+finished part gives XP and counts for the daily streak, so a student can do one part a day.
+- Every part gets a short Hungarian `title` (a noun phrase, no full stop).
+- Every part ends with at least one question (check or practice) — never a theory card alone.
+- Keep a part to **at most 4 theory/example cards and 8 questions**; the validator warns above that.
+- The first part introduces; later parts may start with a one-card recap.
+- Parts can be replayed in any order; the mini test is offered when all are done.
 
 ## RichText (all student-facing text)
 - Math between `$...$` in LaTeX: `$a^2 + b^2 = c^2$`, `$\frac{3}{4}$`, `$\sqrt{2}$`, `$3 \cdot 4$`.

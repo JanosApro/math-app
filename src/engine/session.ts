@@ -2,12 +2,17 @@
  * Turning modules + generator references into concrete questions, and composing the
  * daily challenge deterministically.
  */
-import type { DailyConfig, GenRef, GradeTopics, Question, SubtopicModule } from './types';
+import type { DailyConfig, GenRef, GradeTopics, LessonStep, Question, SubtopicModule } from './types';
 import { createRng, hashString } from './rng';
 
 /** A stable seed from any parts: seedOf('test', id, 3) */
 export function seedOf(...parts: (string | number)[]): number {
   return hashString(parts.join(':'));
+}
+
+/** Every step of a lesson, all parts in order. */
+export function lessonSteps(mod: SubtopicModule): LessonStep[] {
+  return (mod.parts ?? []).flatMap((p) => p.steps ?? []);
 }
 
 /** Generates a question. Throws a descriptive error if the generator is missing or fails. */

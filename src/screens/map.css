@@ -427,6 +427,42 @@
 .is-progress .node-status {
   color: var(--warn);
 }
+/* started lesson: one ring segment per part around the dot */
+.node-ring {
+  position: absolute;
+  inset: -11px;
+  width: calc(100% + 22px);
+  height: calc(100% + 22px);
+  overflow: visible;
+  pointer-events: none;
+}
+.node-ring path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--topic) 22%, var(--surface-3));
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.node-ring path.is-on {
+  stroke: var(--xp);
+  animation: node-seg-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes node-seg-in {
+  from {
+    opacity: 0;
+    stroke-width: 0;
+  }
+}
+.is-progress.st-recommended .node-dot {
+  box-shadow: var(--shadow-strong);
+}
+@media (prefers-reduced-motion: reduce) {
+  .node-ring path.is-on {
+    animation: none;
+  }
+}
+:root.reduce-motion .node-ring path.is-on {
+  animation: none;
+}
 
 /* "Kezdd itt!" bubble above the recommended node */
 .node-bubble {

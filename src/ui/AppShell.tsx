@@ -11,7 +11,7 @@ import type { Route } from './router';
 import { routeToHash } from './router';
 import { t } from '../i18n/hu';
 import { gradeProgress, useAppState } from '../state/store';
-import { computeStreak } from '../state/progress';
+import { gradeStreak } from '../state/progress';
 import { todayBelgrade } from '../state/dates';
 import { GRADES } from '../content/registry';
 import { Logo, NavIcon, XpIcon, type NavIconName } from './AppShellIcons';
@@ -29,10 +29,10 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
   const grade = useAppState((s) => s.grade);
   const gp = useAppState((s) => (grade === null ? null : gradeProgress(s, grade)));
   const today = todayBelgrade();
-  const streak = useMemo(() => (gp ? computeStreak(Object.keys(gp.daily), today) : null), [gp, today]);
+  const streak = useMemo(() => (gp ? gradeStreak(gp, today) : null), [gp, today]);
   const xp = gp?.xp ?? 0;
   const gradeLabel = grade === null ? '' : (GRADES.find((g) => g.grade === grade)?.label ?? t.common.grade(grade));
-  const dailyPending = grade !== null && !!streak && !streak.doneToday;
+  const dailyPending = grade !== null && !!gp && !gp.daily[today];
 
   return (
     <div className="shell">

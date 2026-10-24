@@ -26,8 +26,8 @@ export interface SubtopicProgress {
   testAttempts?: number;
   /** The student confirmed opening this soft-locked subtopic; don't warn again. */
   skipAck?: boolean;
-  /** Index of the lesson step to resume from. */
-  step?: number;
+  /** Indices of the finished lesson parts (0-based, sorted). */
+  parts?: number[];
 }
 
 export interface DailyRecord {
@@ -43,6 +43,11 @@ export interface GradeProgress {
   chapters: Record<string, string>;
   /** date (YYYY-MM-DD, Belgrade) → daily challenge result. One record per day. */
   daily: Record<string, DailyRecord>;
+  /**
+   * date → number of lesson parts and mini tests finished that day. A day counts for the streak
+   * if it has activity here OR a daily challenge record.
+   */
+  activity: Record<string, number>;
   /** Streak milestones already celebrated (7, 30, 100). */
   streakBadges: number[];
 }
@@ -59,7 +64,7 @@ export interface AppState {
 }
 
 export function emptyGradeProgress(): GradeProgress {
-  return { xp: 0, subtopics: {}, chapters: {}, daily: {}, streakBadges: [] };
+  return { xp: 0, subtopics: {}, chapters: {}, daily: {}, activity: {}, streakBadges: [] };
 }
 
 export function initialState(): AppState {
@@ -107,7 +112,10 @@ export function sanitizeState(raw: unknown): AppState | null {
         if (typeof sp.bestPercent === 'number') s.bestPercent = sp.bestPercent;
         if (typeof sp.testAttempts === 'number') s.testAttempts = sp.testAttempts;
         if (sp.skipAck === true) s.skipAck = true;
-        if (typeof sp.step === 'number') s.step = sp.step;
+        if (Array.isArray(sp.parts)) {
+          const parts = [...new Set(sp.parts.filter((n): n is number => Number.isInteger(n) && n >= 0 && n < 50))].sort((a, b) => a - b);
+          if (parts.length) s.parts = parts;
+        }
         p.subtopics[id] = s;
       }
     }
@@ -117,6 +125,9 @@ export function sanitizeState(raw: unknown): AppState | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || !isObj(r)) continue;
         p.daily[d] = { correct: Number(r.correct) || 0, total: Number(r.total) || 0, xp: Number(r.xp) || 0 };
       }
+    }
+    if (isObj(gp.activity)) {
+      for (const [d, n] of Object.entries(gp.activity)) if (/^\d{4}-\d{2}-\d{2}$/.test(d) && typeof n === 'number' && n > 0) p.activity[d] = Math.floor(n);
     }
     if (Array.isArray(gp.streakBadges)) p.streakBadges = gp.streakBadges.filter((n): n is number => typeof n === 'number');
     state.grades[g] = p;

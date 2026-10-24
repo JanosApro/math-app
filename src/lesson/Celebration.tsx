@@ -26,6 +26,8 @@ export interface CelebrationProps {
   actions: ReactNode;
   /** Default: the chapter/streak fanfare for big celebrations, the lesson fanfare otherwise. */
   sound?: SoundName;
+  /** 'part': a finished lesson part — smaller medal, less confetti, no "keep going" line. */
+  size?: 'part';
 }
 
 /** Simple star medal in the topic color (no mascots). */
@@ -46,8 +48,9 @@ function StarMedal() {
   );
 }
 
-export function Celebration({ title, subtitle, xp, score, chapter, milestone, progress, streak, children, actions, sound }: CelebrationProps) {
+export function Celebration({ title, subtitle, xp, score, chapter, milestone, progress, streak, children, actions, sound, size }: CelebrationProps) {
   const big = !!chapter || !!milestone;
+  const small = size === 'part' && !big;
   const played = useRef(false);
   useEffect(() => {
     if (played.current) return;
@@ -57,8 +60,8 @@ export function Celebration({ title, subtitle, xp, score, chapter, milestone, pr
   const pct = progress && progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
   return (
     <>
-      <Confetti count={big ? 110 : 60} />
-      <div className={`lesson-card lesson-celebrate${big ? ' is-big' : ''}`}>
+      <Confetti count={big ? 110 : small ? 40 : 60} />
+      <div className={`lesson-card lesson-celebrate${big ? ' is-big' : ''}${small ? ' is-part' : ''}`}>
         <div className="lesson-celebrate-art anim-pop">
           {chapter ? (
             <div className="lesson-badge" style={{ '--badge': chapter.color } as CSSProperties}>
@@ -116,7 +119,7 @@ export function Celebration({ title, subtitle, xp, score, chapter, milestone, pr
             </div>
           </div>
         )}
-        <p className="lesson-keep-going">{t.celebrate.keepGoing}</p>
+        {!small && <p className="lesson-keep-going">{t.celebrate.keepGoing}</p>}
         {children}
       </div>
       <LessonFooter>{actions}</LessonFooter>
