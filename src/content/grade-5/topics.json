@@ -70,7 +70,7 @@
           "id": "g5-mertani-alapfogalmak-01",
           "file": "01-pont-egyenes-sik",
           "title": "A pont, az egyenes és a sík",
-          "status": "todo",
+          "status": "draft",
           "scope": "Basic objects: point (capital letters), line (lowercase letters), plane; incidence (A ∈ p, A ∉ p), collinear points, betweenness; segment AB, ray (félegyenes); exactly one line through two points. Exercises: T/F statements about a labelled figure, MC notation, integer input for the number of lines / segments determined by n points (no three collinear; n ≤ 6), figure with labelled points and lines."
         },
         {
