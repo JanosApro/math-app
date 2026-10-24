@@ -26,7 +26,7 @@
           "id": "g5-termeszetes-szamok-1-03",
           "file": "03-szamtani-muveletek",
           "title": "Számtani műveletek az N₀ halmazon",
-          "status": "draft",
+          "status": "done",
           "scope": "The four operations in N₀ and their terms (összeadandó, összeg, kisebbítendő, kivonandó, különbség, tényező, szorzat, osztandó, osztó, hányados); commutative, associative, distributive laws, role of 0 and 1, no division by 0; when subtraction/division is possible in N₀; division with remainder a = b · q + r, 0 ≤ r < b; clever mental calculation using the laws. Exercises: integer input (results, quotient, remainder, missing number), MC which law is used, T/F. Numbers up to millions at level 3."
         },
         {
@@ -70,7 +70,7 @@
           "id": "g5-mertani-alapfogalmak-01",
           "file": "01-pont-egyenes-sik",
           "title": "A pont, az egyenes és a sík",
-          "status": "draft",
+          "status": "done",
           "scope": "Basic objects: point (capital letters), line (lowercase letters), plane; incidence (A ∈ p, A ∉ p), collinear points, betweenness; segment AB, ray (félegyenes); exactly one line through two points. Exercises: T/F statements about a labelled figure, MC notation, integer input for the number of lines / segments determined by n points (no three collinear; n ≤ 6), figure with labelled points and lines."
         },
         {
@@ -355,7 +355,7 @@
           "id": "g5-tortek-3-01",
           "file": "01-szazalek",
           "title": "Százalék",
-          "status": "draft",
+          "status": "done",
           "scope": "Percent as hundredths (1% = 1/100); converting fraction ↔ decimal ↔ percent; p% of a quantity, first 50%, 25%, 75%, 10%, then any; discounts and price rises; 10×10 grid and pie models; collecting data in a table and a pie chart (curriculum data outcome). Exercises: integer/decimal input for p% of a quantity, conversion inputs, MC (distractor: dividing by p instead of taking p hundredths), reading a pie chart. Finding the whole from a percent only at level 3."
         },
         {
