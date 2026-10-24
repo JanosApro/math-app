@@ -32,7 +32,7 @@ passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 |---|---|---|
 | 02 lesson player | **done** (cloud session): lesson.css, demoLesson (`#/dev/preview/dev-demo`), PreviewScreen with 🛠 jump panel, verified in Chromium at 375/1280, light/dark | — |
 | 01 app shell | **done** (cloud session): MapScreen + map.css, Profile, Settings, PWA (manifest, icons, `sw.js` from vite.config.ts), verified at 375/1280, light/dark, offline | — |
-| 04 solids | `solids.ts` + `solids-common.ts`: all solids render (the cylinder lesson validates) | **nets** (`solids-net.ts` is a stub that throws), galleries `src/dev/gallery/solids.ts` + `nets.ts`, visual review (light/dark), CONTENT_GUIDE figure rows |
+| 04 solids | **done** (cloud session): nets (`solids-net.ts`), galleries `solids.ts` (34) + `nets.ts` (12), reviewed light/dark, CONTENT_GUIDE rows | — |
 | 05 charts | `charts.ts`, `charts-common.ts`, `charts-pie.ts`, `charts-table.ts`; gallery `charts.ts` (30 entries, 0 errors) | visual review of gallery page 2+ (light/dark), CONTENT_GUIDE figure rows |
 | 06 constructions etc. | construction.ts, fraction.ts (fractionModel + barModel) with galleries; gallery `shapes.ts` (33 entries) | galleries `coordinate.ts` + `numberline.ts`, visual review of shapes/coordinate/number line, fix the triangle `squares` label collisions (4 Pythagoras warnings), CONTENT_GUIDE figure rows |
 | 07 gold lessons | all three written, `draft`, 0 errors | play through in the finished player, set `done` |
@@ -88,7 +88,8 @@ Milestone 1 — engine and app shell
       (`geometry` was visually reviewed. The other six were written by an agent that was cut off: they render the
       examples in CONTENT_GUIDE.md and the Pythagoras lesson without validation errors, but have NOT been visually
       reviewed and have no gallery sections yet — task 06 adds the galleries; look at the screenshots and fix what looks off.)
-- [ ] Figures missing (stubs throw): `solid`, `net` → task 04 · charts/pictogram/table → task 05 · `construction`, `fractionModel`, `barModel` + galleries → task 06
+- [x] Figures `solid`, `net` (+ galleries `solids`, `nets`) → task 04
+- [ ] Figure reviews: charts/pictogram/table → task 05 · coordinate + number-line galleries, shapes review → task 06
 - [x] Progress store, streak/XP, export/import, Belgrade dates (`src/state/`)
 - [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
 - [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects

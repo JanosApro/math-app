@@ -278,6 +278,8 @@ export function labelRuns(text: string): TextRun[] {
     if (letter === letter.toUpperCase()) continue;
     // A letter after "number + space" is a unit (5 m, 3 g, 2 l) → upright.
     if (/\d[\s\u202f]+$/.test(text.slice(0, start))) continue;
+    // "a henger magassága": an 'a' followed by a word is the Hungarian article → upright.
+    if (letter === 'a' && /^[\s\u202f]+[a-záéíóöőúüű]{2}/.test(text.slice(start + 1))) continue;
     if (start > last) runs.push({ text: text.slice(last, start) });
     runs.push({ text: letter, italic: true });
     last = start + 1;
