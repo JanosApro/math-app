@@ -87,3 +87,19 @@ Look at the screenshots. No console errors.
   feedback sheet), steps (theory/example/explore/check/practice), MiniTest, Celebration
   (+ confetti), DailyScreen; `src/dev/demoLesson.ts`, `src/dev/PreviewScreen.tsx`.
   CSS: `src/lesson/lesson.css` (prefix `lesson-`), `src/lesson/inputs/keypad.css` (prefix `kp-`).
+- 2026-10-24 (Claude Code, cloud session): **done.** Added `src/lesson/lesson.css` (prefix
+  `lesson-`), `src/dev/demoLesson.ts` (`dev-demo`: every step type, every answer type incl.
+  35° 48′, 3x²−2x, 36π, mixed/simplified fractions, 5√2, order, match; + mini test; stress-tested by
+  `npm run check`), `src/dev/PreviewScreen.tsx` (LessonPlayer in preview mode + 🛠 panel: jump to any
+  step / the mini test, current answer + what to type). Fixes found while verifying: the step
+  slide-in animated `transform` on the stage, which trapped the `position: fixed` footer and
+  feedback sheet inside it (now the cards animate, see DECISIONS); the "simplify it"/parse-error
+  notice now sits between the display and the keypad and the hint above the answer (both were
+  hidden under the action bar on phones); the keypad scrolls into view on the first key press;
+  tall figures are capped at 340 px; degree–minute answers print as 83° 18′. Verified with
+  Playwright (scratch scripts) at 375×740 light + 1280×800 dark (keypad taps and physical
+  keyboard): every step type, every answer type correct and wrong, `almost` (fraction, root),
+  parse error (expression), practice re-queue, mini test fail → review → retry → pass →
+  celebration, `#/lesson/g7-pitagorasz-01` with saving (XP 200, completed, best 100 %), daily
+  challenge (XP + streak 1), done-today screen, replay as practice (no XP), todo/unknown lesson
+  screens, no console errors, no horizontal scroll.

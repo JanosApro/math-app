@@ -1,0 +1,198 @@
+/* Settings screen. Prefix: st-. */
+
+.st {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.st-section > .section-title {
+  margin-bottom: 0.6rem;
+}
+.st-banner {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-small);
+  background: var(--bad-bg);
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* grade picker */
+.st-grades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.st-grade {
+  flex: 1 1 6.5rem;
+  min-height: 52px;
+  padding: 0.5rem 0.75rem;
+  border: var(--line) solid var(--outline);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: var(--pop-sm);
+  transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s;
+}
+.st-grade:active {
+  transform: translate(2px, 2.5px);
+  box-shadow: none;
+}
+.st-grade.is-selected {
+  background: var(--primary-soft);
+  color: var(--primary);
+  transform: translate(2px, 2.5px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.st-grade.is-selected::before {
+  content: '✓ ';
+}
+
+/* nickname */
+.st-nick {
+  display: flex;
+  gap: 0.5rem;
+}
+.st-nick .text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* toggles */
+.st-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 56px;
+  padding: 0.5rem 0;
+  border-bottom: 1.5px solid var(--border);
+  cursor: pointer;
+}
+.st-toggle-text {
+  display: flex;
+  flex-direction: column;
+}
+.st-toggle-text .field-hint {
+  margin-top: 0.1rem;
+}
+.st-toggle-label {
+  font-weight: 750;
+}
+.st-switch {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 56px;
+  height: 32px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--surface-3);
+  border: 2px solid var(--outline);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.st-switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 0 0 2px var(--outline);
+  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+/* a ✓ on the track when on, so the state never depends on color alone */
+.st-switch:checked {
+  background: var(--good);
+}
+.st-switch:checked::before {
+  transform: translateX(24px);
+}
+.st-switch:checked::after {
+  content: '✓';
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--on-primary);
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+.st-switch:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* theme segmented control */
+.st-theme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+.st-segment {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 2px solid var(--outline);
+}
+.st-seg {
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.st-seg.is-selected {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: 0 0 0 2px var(--outline), var(--pop-sm);
+}
+
+/* data */
+.st-warning {
+  margin: 0 0 0.6rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-small);
+  background: var(--warn-bg);
+  font-weight: 650;
+  font-size: 0.95rem;
+}
+.st-data-hint {
+  margin: 0 0 0.75rem;
+}
+.st-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.st-reset {
+  color: var(--bad);
+  margin-top: 0.4rem;
+}
+.st-about {
+  margin: 0 0 0.3rem;
+}
+
+.st-sound-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0;
+  border-bottom: 1.5px solid var(--border);
+}

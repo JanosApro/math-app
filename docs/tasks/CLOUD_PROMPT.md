@@ -2,7 +2,7 @@
 
 Paste this as the task:
 
-> Continue building the Matek Kaland app. Read CLAUDE.md, AGENTS.md and HANDOFF.md (start at the
+> Continue building the Zsebmatek app (formerly Matek Kaland). Read CLAUDE.md, AGENTS.md and HANDOFF.md (start at the
 > "RESUME HERE" table), then docs/tasks/00-README.md. Finish the remaining build tasks in this
 > order: 02 (lesson player: lesson CSS, demoLesson, PreviewScreen, verification) → 01 (MapScreen,
 > SoftLockDialog, Profile, Settings, PWA) → 04 (nets + solids/nets galleries) → 06 (coordinate and

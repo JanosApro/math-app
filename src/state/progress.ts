@@ -51,15 +51,6 @@ export function acknowledgeSkip(grade: number, subtopicId: string): void {
   update((s) => withGrade(s, grade, (g) => withSubtopic(g, subtopicId, (p) => ({ ...p, skipAck: true }))));
 }
 
-/** Remembers where the student is inside a lesson (to resume later). */
-export function saveLessonStep(grade: number, subtopicId: string, step: number): void {
-  update((s) => {
-    const cur = gradeProgress(s, grade).subtopics[subtopicId]?.step;
-    if (cur === step) return s;
-    return withGrade(s, grade, (g) => withSubtopic(g, subtopicId, (p) => ({ ...p, step })));
-  });
-}
-
 export function addXp(grade: number, amount: number): void {
   if (amount <= 0) return;
   update((s) => withGrade(s, grade, (g) => ({ ...g, xp: g.xp + amount })));
@@ -89,6 +80,8 @@ export interface TestOutcome {
   xpGained: number;
   /** Set if this completion finished a whole topic (chapter badge). */
   chapterCompleted?: TopicMeta;
+  /** A streak milestone (7, 30, 100) reached with this test. */
+  milestone?: number;
 }
 
 /**
@@ -102,6 +95,7 @@ export function recordTestResult(grade: number, topics: GradeTopics, subtopicId:
   const firstCompletion = passed && !wasCompleted;
   let xpGained = passed ? (firstCompletion ? XP.lessonComplete : XP.lessonReplay) : 0;
   let chapterCompleted: TopicMeta | undefined;
+  let milestone: number | undefined;
   const today = todayBelgrade();
 
   update((s) => {
@@ -111,7 +105,6 @@ export function recordTestResult(grade: number, topics: GradeTopics, subtopicId:
         testAttempts: (p.testAttempts ?? 0) + 1,
         bestPercent: Math.max(p.bestPercent ?? 0, percent),
         completedAt: p.completedAt ?? (passed ? today : undefined),
-        step: passed ? undefined : p.step,
       })),
     );
     if (firstCompletion) {
@@ -124,9 +117,14 @@ export function recordTestResult(grade: number, topics: GradeTopics, subtopicId:
         next = withGrade(next, grade, (g) => ({ ...g, chapters: { ...g.chapters, [topic.id]: today } }));
       }
     }
-    return withGrade(next, grade, (g) => ({ ...g, xp: g.xp + xpGained }));
+    // a finished mini test (passed or not) counts for the streak
+    return withGrade(next, grade, (g) => {
+      const r = withActivity(g, today);
+      milestone = r.milestone;
+      return { ...r.g, xp: r.g.xp + xpGained };
+    });
   });
-  return { passed, percent, firstCompletion, xpGained, chapterCompleted };
+  return { passed, percent, firstCompletion, xpGained, chapterCompleted, milestone };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -162,8 +160,56 @@ export function computeStreak(days: string[], today: string): StreakInfo {
   return { current, best: Math.max(best, current), doneToday };
 }
 
+/** Days that count for the streak: a daily challenge OR a finished lesson part / mini test. */
+export function activeDays(g: GradeProgress): string[] {
+  return [...new Set([...Object.keys(g.daily), ...Object.keys(g.activity ?? {})])];
+}
+
+/** The streak of a grade (from activeDays). */
+export function gradeStreak(g: GradeProgress, today = todayBelgrade()): StreakInfo {
+  return computeStreak(activeDays(g), today);
+}
+
 export function streakOf(s: AppState, grade: number, today = todayBelgrade()): StreakInfo {
-  return computeStreak(Object.keys(gradeProgress(s, grade).daily), today);
+  return gradeStreak(gradeProgress(s, grade), today);
+}
+
+/** Adds one activity on `date` and awards the streak milestones it reaches (7, 30, 100). */
+function withActivity(g: GradeProgress, date: string): { g: GradeProgress; milestone?: number } {
+  const activity = { ...(g.activity ?? {}), [date]: ((g.activity ?? {})[date] ?? 0) + 1 };
+  const next = { ...g, activity };
+  const streak = computeStreak(activeDays(next), date);
+  const reached = STREAK_MILESTONES.filter((m) => streak.current >= m && !g.streakBadges.includes(m));
+  return { g: { ...next, streakBadges: [...g.streakBadges, ...reached] }, milestone: reached.length ? reached[reached.length - 1] : undefined };
+}
+
+export interface PartOutcome {
+  firstTime: boolean;
+  /** Bonus XP for the part (the answers' XP was added while playing). */
+  xpGained: number;
+  streak: StreakInfo;
+  /** This was the first activity of the day: the streak grew (or started). */
+  streakExtended: boolean;
+  milestone?: number;
+}
+
+/** A lesson part was finished: XP bonus, the part is remembered, the day counts for the streak. */
+export function recordPartDone(grade: number, subtopicId: string, part: number): PartOutcome {
+  const today = todayBelgrade();
+  const before = gradeProgress(getState(), grade);
+  const firstTime = !(before.subtopics[subtopicId]?.parts ?? []).includes(part);
+  const streakExtended = !computeStreak(activeDays(before), today).doneToday;
+  const xpGained = firstTime ? XP.partComplete : XP.partReplay;
+  let milestone: number | undefined;
+  update((s) =>
+    withGrade(s, grade, (g0) => {
+      const g1 = withSubtopic(g0, subtopicId, (p) => ({ ...p, parts: [...new Set([...(p.parts ?? []), part])].sort((a, b) => a - b) }));
+      const r = withActivity(g1, today);
+      milestone = r.milestone;
+      return { ...r.g, xp: r.g.xp + xpGained };
+    }),
+  );
+  return { firstTime, xpGained, streak: streakOf(getState(), grade, today), streakExtended, milestone };
 }
 
 export interface DailyOutcome {
@@ -185,7 +231,7 @@ export function recordDaily(grade: number, date: string, correct: number, total:
   update((s) =>
     withGrade(s, grade, (g) => {
       const daily = { ...g.daily, [date]: { correct, total, xp: xpGained } };
-      const streak = computeStreak(Object.keys(daily), date);
+      const streak = computeStreak(activeDays({ ...g, daily }), date);
       const reached = STREAK_MILESTONES.filter((m) => streak.current >= m && !g.streakBadges.includes(m));
       milestone = reached.length ? reached[reached.length - 1] : undefined;
       return { ...g, daily, xp: g.xp + xpGained, streakBadges: [...g.streakBadges, ...reached] };
@@ -199,13 +245,14 @@ export function recordDaily(grade: number, date: string, correct: number, total:
 // ---------------------------------------------------------------------------------------------
 
 export interface ProgressFile {
-  app: 'matek-kaland';
+  /** 'matek-kaland' in files saved before the app was renamed (still accepted). */
+  app: 'zsebmatek' | 'matek-kaland';
   exportedAt: string;
   state: AppState;
 }
 
 export function exportProgressJson(): string {
-  const file: ProgressFile = { app: 'matek-kaland', exportedAt: new Date().toISOString(), state: getState() };
+  const file: ProgressFile = { app: 'zsebmatek', exportedAt: new Date().toISOString(), state: getState() };
   return JSON.stringify(file, null, 2);
 }
 
@@ -215,7 +262,7 @@ export function downloadProgress(): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `matek-kaland-mentes-${todayBelgrade()}.json`;
+  a.download = `zsebmatek-mentes-${todayBelgrade()}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -226,7 +273,8 @@ export function downloadProgress(): void {
 export function parseProgressFile(text: string): AppState | null {
   try {
     const data = JSON.parse(text) as unknown;
-    if (typeof data === 'object' && data !== null && (data as ProgressFile).app === 'matek-kaland') {
+    const app = typeof data === 'object' && data !== null ? (data as ProgressFile).app : undefined;
+    if (app === 'zsebmatek' || app === 'matek-kaland') {
       return sanitizeState((data as ProgressFile).state);
     }
     return sanitizeState(data); // a raw state object also works

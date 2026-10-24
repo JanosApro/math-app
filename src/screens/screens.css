@@ -4,9 +4,10 @@
   width: 100%;
   min-height: 50px;
   padding: 0.65rem 1rem;
-  border: 2px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 14px;
   background: var(--surface);
+  box-shadow: inset 2px 3px 0 color-mix(in srgb, var(--outline) 12%, transparent);
   color: var(--text);
   font-size: 1.05rem;
   font-weight: 600;
@@ -19,8 +20,7 @@
 }
 .text-input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-soft);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .field-hint {
@@ -69,26 +69,27 @@
 
 /* section heading used on profile/settings */
 .screen-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -0.015em;
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: 0;
   margin: 0.25rem 0 0.25rem;
 }
 .section-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.08rem;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 600;
   margin: 0 0 0.75rem;
 }
 
 /* progress bar */
 .pbar {
   position: relative;
-  height: 14px;
+  height: 16px;
   border-radius: 999px;
   background: var(--surface-3);
+  border: 2px solid var(--outline);
   overflow: hidden;
 }
 .pbar-fill {

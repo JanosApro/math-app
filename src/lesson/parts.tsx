@@ -3,6 +3,7 @@
  */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { t } from '../i18n/hu';
+import { SoundToggle } from '../ui/SoundToggle';
 
 /** True if animations should be skipped (system setting or the app's "Kevesebb animáció"). */
 export function reducedMotion(): boolean {
@@ -27,6 +28,7 @@ export function LessonTopBar({ progress, onClose, label, children }: { progress:
         <div className="lesson-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={label ?? t.lesson.progressLabel}>
           <div className="lesson-progress-fill" style={{ width: `${pct}%` }} />
         </div>
+        <SoundToggle />
         {children}
       </div>
     </header>
@@ -90,7 +92,10 @@ export function CountUp({ value, duration = 900 }: { value: number; duration?: n
   return <span className="lesson-countup">{shown}</span>;
 }
 
-/** CSS confetti burst (decorative, hidden with reduced motion). */
+/**
+ * CSS confetti (decorative, hidden with reduced motion): pieces explode out of the middle of the
+ * screen, then tumble down. Stars, dots and strips in the figure palette.
+ */
 export function Confetti({ count = 60 }: { count?: number }) {
   const pieces = Array.from({ length: count }, (_, i) => {
     // deterministic pseudo-random spread
@@ -98,23 +103,47 @@ export function Confetti({ count = 60 }: { count?: number }) {
       const x = Math.sin((i + 1) * 12.9898 + k * 78.233) * 43758.5453;
       return x - Math.floor(x);
     };
+    const shape = i % 3 === 0 ? 'star' : i % 3 === 1 ? 'dot' : 'strip';
+    const size = shape === 'star' ? 14 + Math.round(r(6) * 8) : 7 + Math.round(r(6) * 6);
     const style = {
-      left: `${(r(1) * 100).toFixed(1)}%`,
-      animationDelay: `${(r(2) * 0.5).toFixed(2)}s`,
-      animationDuration: `${(1.6 + r(3) * 1.2).toFixed(2)}s`,
-      '--cf-drift': `${((r(4) - 0.5) * 160).toFixed(0)}px`,
+      animationDelay: `${(r(2) * 0.25).toFixed(2)}s`,
+      animationDuration: `${(1.9 + r(3) * 1.1).toFixed(2)}s`,
+      // burst target (relative to the screen center), then the fall drift
+      '--cf-x': `${((r(1) - 0.5) * 92).toFixed(1)}vw`,
+      '--cf-y': `${(-12 - r(4) * 34).toFixed(1)}vh`,
+      '--cf-drift': `${((r(8) - 0.5) * 30).toFixed(1)}vw`,
       '--cf-rot': `${Math.round(360 + r(5) * 720)}deg`,
       background: `var(--fig-s${(i % 8) + 1})`,
-      width: `${6 + Math.round(r(6) * 6)}px`,
-      height: `${8 + Math.round(r(7) * 8)}px`,
-      borderRadius: i % 3 === 0 ? '50%' : '2px',
+      width: `${size}px`,
+      height: `${shape === 'strip' ? size * 1.8 : size}px`,
     } as CSSProperties;
-    return <span key={i} className="lesson-confetti-piece" style={style} />;
+    return <span key={i} className={`lesson-confetti-piece is-${shape}`} style={style} />;
   });
   return (
     <div className="lesson-confetti" aria-hidden="true">
       {pieces}
     </div>
+  );
+}
+
+/** A ring of little stars and dots flying out of its parent (decorative, e.g. around the ✓). */
+export function Burst({ count = 12, distance = 48 }: { count?: number; distance?: number }) {
+  return (
+    <span className="lesson-burst" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <i
+          key={i}
+          style={
+            {
+              '--ba': `${Math.round((i * 360) / count + (i % 2) * 9)}deg`,
+              '--bd': `${-Math.round(distance * (i % 2 ? 0.72 : 1))}px`,
+              '--bc': `var(--fig-s${(i % 8) + 1})`,
+              animationDelay: `${(i % 3) * 0.03}s`,
+            } as CSSProperties
+          }
+        />
+      ))}
+    </span>
   );
 }
 

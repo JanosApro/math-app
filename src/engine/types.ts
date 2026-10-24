@@ -300,6 +300,17 @@ export interface ExploreStep {
 
 export type LessonStep = TheoryStep | ExampleStep | CheckStep | PracticeStep | ExploreStep;
 
+/**
+ * A short part of a lesson — about 5 minutes: typically 1–2 explanation steps (theory / example /
+ * explore) and 3–6 questions (checks and practice). Every finished part gives XP and counts for
+ * the daily streak. A lesson has 3–5 parts; after them comes the mini test.
+ */
+export interface LessonPart {
+  /** Short title shown in the part list, e.g. 'Az átfogó kiszámítása'. */
+  title: RichText;
+  steps: LessonStep[];
+}
+
 // ---------------------------------------------------------------------------------------------
 // Subtopic module
 // ---------------------------------------------------------------------------------------------
@@ -317,8 +328,11 @@ export interface SubtopicModule {
   id: string;
   /** Learning goals, Hungarian, shown on the lesson start screen. 2–4 short items. */
   goals: RichText[];
-  /** The lesson in order: theory + checks, examples, practice. */
-  steps: LessonStep[];
+  /**
+   * The lesson in 3–5 short parts (about 5 minutes each), in order: theory + checks, examples,
+   * practice. The mini test comes after the last part.
+   */
+  parts: LessonPart[];
   generators: GeneratorDef[];
   miniTest: MiniTestDef;
   /** Which generators the daily challenge may use. Default: the mini test items. */

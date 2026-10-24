@@ -247,6 +247,8 @@ function layoutColumns(T: string, fig: CatFigure, kind: 'bar' | 'line'): LayoutR
             const next = s.values[i + 1];
             if ((prev === undefined || prev > x) && (next === undefined || next > x) && (prev !== undefined || next !== undefined)) dir = 's';
           }
+          // no room under a point at the bottom of the plot (the category names are there)
+          if (dir === 's' && Y(x) < 6 + FS.value * 1.3) dir = 'n';
           labels.push({ t: 'label', at: v(xs[i], Y(x)), text: num(x), dir, gap: 6, size: FS.value, font: 'ui' });
           if (dir === 'n') top = Math.max(top, Y(x) + 6 + FS.value * 1.2 + 6);
         });

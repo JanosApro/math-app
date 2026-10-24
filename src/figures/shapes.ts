@@ -254,7 +254,8 @@ export function layoutTriangle(fig: TriangleFigure): LayoutResult {
       const toward = angleAt(V, q1, M) > angleAt(V, q2, M) ? q1 : q2;
       let n = norm(perp(d));
       if (dot(n, sub(toward, V)) < 0) n = mul(n, -1);
-      ownLabels.push({ t: 'label', at: lerp(V, M, 0.55), text: md.label, dir: n, color: 'purple' });
+      // 40 % of the way: the medians all cross at 2/3 (the centroid), keep the labels away from it
+      ownLabels.push({ t: 'label', at: lerp(V, M, 0.4), text: md.label, dir: n, color: 'purple' });
     }
   }
 

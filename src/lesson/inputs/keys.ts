@@ -35,7 +35,7 @@ export function specialKeys(spec: AnswerSpec): KeyDef[] {
     case 'number':
       return spec.acceptFraction ? [ins('/', t.input.fractionKey)] : [];
     case 'fraction':
-      return [ins('/', t.input.fractionKey), ins(' ', t.input.mixedKey, 'op', '␣')];
+      return [ins('/', t.input.fractionKey), ins(' ', t.input.mixedKey, 'op', t.input.spaceLabel)];
     case 'root':
       return [ins('√', t.input.rootKey), ins('/', t.input.fractionKey)];
     case 'expression': {

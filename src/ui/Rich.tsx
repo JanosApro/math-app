@@ -11,8 +11,11 @@ export function renderMath(latex: string, display = false): string {
   const key = (display ? 'D:' : 'I:') + latex;
   let html = cache.get(key);
   if (html === undefined) {
+    // Inline fractions at full size (\dfrac), like in the printed textbooks: KaTeX's text-style
+    // \frac is too small to read for 11-year-olds on a phone.
+    const tex = display ? latex : latex.replace(/\\frac(?![a-zA-Z])/g, '\\dfrac');
     try {
-      html = katex.renderToString(latex, { throwOnError: true, displayMode: display, strict: 'ignore' });
+      html = katex.renderToString(tex, { throwOnError: true, displayMode: display, strict: 'ignore' });
     } catch {
       html = `<span class="math-error">${latex.replace(/</g, '&lt;')}</span>`;
     }

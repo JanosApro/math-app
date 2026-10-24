@@ -1,0 +1,52 @@
+.theme-toggle {
+  flex: none;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--outline);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--pop-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+/* bigger invisible hit area (≥ 44 px) */
+.theme-toggle::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+.theme-toggle:hover {
+  transform: rotate(-12deg);
+}
+.theme-toggle:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.theme-toggle svg {
+  animation: theme-toggle-in 0.4s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.theme-toggle-moon {
+  fill: var(--primary);
+}
+.theme-toggle-sun {
+  fill: var(--xp);
+  stroke: var(--xp);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+@keyframes theme-toggle-in {
+  from {
+    transform: rotate(-90deg) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}

@@ -71,6 +71,7 @@ export function ChoiceInput({
             role="radio"
             aria-checked={selected}
             className={cls}
+            data-index={orig}
             disabled={locked}
             onClick={() => onSelect(orig)}
           >
@@ -185,6 +186,7 @@ export function OrderInput({
               key={i}
               type="button"
               className={`kp-order-item${picked ? ' is-picked' : ''}`}
+              data-index={i}
               disabled={locked}
               aria-pressed={picked}
               onClick={() => tap(i)}
@@ -296,6 +298,7 @@ export function MatchInput({
                 key={l}
                 type="button"
                 className={`kp-match-item${pendingLeft === l ? ' is-pending' : ''}${pairClass(no)}`}
+                data-left={l}
                 disabled={locked}
                 aria-pressed={pendingLeft === l || no > 0}
                 onClick={() => tapLeft(l)}
@@ -318,6 +321,7 @@ export function MatchInput({
                 key={r}
                 type="button"
                 className={`kp-match-item${pendingRight === r ? ' is-pending' : ''}${pairClass(no)}`}
+                data-right={r}
                 disabled={locked}
                 aria-pressed={pendingRight === r || no > 0}
                 onClick={() => tapRight(r)}

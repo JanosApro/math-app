@@ -1,4 +1,7 @@
-# Matek Kaland — handoff
+# Zsebmatek — handoff
+
+(First called "Matek Kaland"; renamed on 2026-10-24. Internal keys such as the localStorage key
+`matek-kaland:v1` keep the old name on purpose, so saved progress survives.)
 
 A "Duolingo-style" math practice web app for grades 5, 7 and 8 (Serbian curriculum, Hungarian
 language of instruction). Pure static site: React + Vite + TypeScript; progress is stored only on
@@ -23,20 +26,40 @@ Git: this repository has a local git identity (`git config user.name onam`,
 `user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
 `git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
 
-## ▶ RESUME HERE — session notes, 2026-10-24 evening (Claude Code, lead)
+## ▶ RESUME HERE — 2026-10-24, cloud session: ALL BUILD TASKS DONE
+Tasks 01–08 are finished (rows below). The architecture is complete; what remains is lesson
+content: write the next `todo` subtopic from CONTENT_STATUS.md following CONTENT_GUIDE.md.
+
+Teacher feedback round (same day), done so far:
+- Light mode by default + sun/moon toggle in every top bar (DECISIONS "Theme and sound").
+- Synthesized sound effects (correct / wrong / part / lesson / chapter fanfare), on by default.
+- **Lessons are split into 3–5 parts** (`parts: [{ title, steps }]` in every module, state v2
+  stores finished parts + active days): overview with part list, "N. rész kész!" celebration with
+  XP, every finished part counts for the streak, map node ring "2/4 rész kész". The three gold
+  lessons and the demo lesson are split; `npm run check` warns about parts that are too long.
+- Visual refresh: bundled DynaPuff + Nunito fonts (Hungarian ő/ű checked), cartoon sticker style
+  (ink outlines, hard offset shadows), popping effects (star burst, flying XP, exploding confetti,
+  springy entrances). See DECISIONS "Look and feel". Checked at 360/375/1280, light and dark.
+- Renamed to **Zsebmatek** with a "Z" trail logo (`public/icon*.svg`, PNGs via
+  `node scripts/dev/icons.mjs`). Live site: **https://janosapro.github.io/math-app/** (GitHub
+  Pages, `.github/workflows/deploy-pages.yml`, deploys every push to `master`).
+- Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
+  (default is reduced motion, which makes the e2e run fast and stable).
+
+### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
 is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`
 passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 
 | task | done | still to do |
 |---|---|---|
-| 02 lesson player | `src/lesson/`: LessonScreen, LessonPlayer, steps.tsx, QuestionRunner, QuestionView, parts.tsx, MiniTest, Celebration, DailyScreen, inputs/ (Keypad, keys, TextAnswer, PickAnswers, draft, keypad.css) — type-checks | **lesson CSS** (`src/lesson/lesson.css`, prefix `lesson-`; only keypad.css exists), `src/dev/demoLesson.ts`, `src/dev/PreviewScreen.tsx` (still placeholder), browser verification (spec's "Verify") |
-| 01 app shell | AppShell, TopicIcon (real icons), Onboarding (+ WelcomeArt, Onboarding.css), MapTrail.tsx (path component), ImportProgress.tsx (shared import UI), screens.css, devFlags.ts | **MapScreen** (placeholder; use MapTrail), **SoftLockDialog**, **ProfileScreen**, **SettingsScreen** (placeholders), **PWA** (manifest, icon, sw plugin in vite.config.ts), verification |
-| 04 solids | `solids.ts` + `solids-common.ts`: all solids render (the cylinder lesson validates) | **nets** (`solids-net.ts` is a stub that throws), galleries `src/dev/gallery/solids.ts` + `nets.ts`, visual review (light/dark), CONTENT_GUIDE figure rows |
-| 05 charts | `charts.ts`, `charts-common.ts`, `charts-pie.ts`, `charts-table.ts`; gallery `charts.ts` (30 entries, 0 errors) | visual review of gallery page 2+ (light/dark), CONTENT_GUIDE figure rows |
-| 06 constructions etc. | construction.ts, fraction.ts (fractionModel + barModel) with galleries; gallery `shapes.ts` (33 entries) | galleries `coordinate.ts` + `numberline.ts`, visual review of shapes/coordinate/number line, fix the triangle `squares` label collisions (4 Pythagoras warnings), CONTENT_GUIDE figure rows |
-| 07 gold lessons | all three written, `draft`, 0 errors | play through in the finished player, set `done` |
-| 08 verification | — | whole flow in a browser, final docs |
+| 02 lesson player | **done** (cloud session): lesson.css, demoLesson (`#/dev/preview/dev-demo`), PreviewScreen with 🛠 jump panel, verified in Chromium at 375/1280, light/dark | — |
+| 01 app shell | **done** (cloud session): MapScreen + map.css, Profile, Settings, PWA (manifest, icons, `sw.js` from vite.config.ts), verified at 375/1280, light/dark, offline | — |
+| 04 solids | **done** (cloud session): nets (`solids-net.ts`), galleries `solids.ts` (34) + `nets.ts` (12), reviewed light/dark, CONTENT_GUIDE rows | — |
+| 05 charts | **done** (cloud session): all 30 gallery entries reviewed light/dark, 2 fixes, CONTENT_GUIDE rows; `npm run check` 0 warnings | — |
+| 06 constructions etc. | **done** (cloud session): galleries `coordinate.ts` (15) + `numberline.ts` (14), shapes/coordinate/number-line review light/dark, square-label collisions fixed (Pythagoras: 0 warnings), CONTENT_GUIDE rows | — |
+| 07 gold lessons | **done** (cloud session): all three played through at 375 px and set to `done` | — |
+| 08 verification | **done** (cloud session): full flow at 375/1280, light/dark; production build + offline; `node scripts/dev/e2e.mjs` added | — |
 
 Each task file `docs/tasks/0X-*.md` has the full spec (and a short progress log). Work in the
 order 02 → 01 → 04 → 06 → 05 → 07 → 08; commit after each.
@@ -88,12 +111,18 @@ Milestone 1 — engine and app shell
       (`geometry` was visually reviewed. The other six were written by an agent that was cut off: they render the
       examples in CONTENT_GUIDE.md and the Pythagoras lesson without validation errors, but have NOT been visually
       reviewed and have no gallery sections yet — task 06 adds the galleries; look at the screenshots and fix what looks off.)
-- [ ] Figures missing (stubs throw): `solid`, `net` → task 04 · charts/pictogram/table → task 05 · `construction`, `fractionModel`, `barModel` + galleries → task 06
+- [x] Figures `solid`, `net` (+ galleries `solids`, `nets`) → task 04
+- [x] Coordinate + number-line galleries, shapes review, square-label collisions → task 06
+- [x] Chart review (charts/pictogram/table) → task 05
 - [x] Progress store, streak/XP, export/import, Belgrade dates (`src/state/`)
 - [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
 - [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects
-- [ ] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA → task 01
-- [ ] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
+- [x] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA → task 01
+      (`src/screens/*`, `src/ui/SoftLockDialog.tsx`, `public/` icons + manifest, service worker
+      generated by the plugin in `vite.config.ts`; works offline after the first load)
+- [x] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
+      (`src/lesson/**` + `lesson.css`, `src/dev/demoLesson.ts` = every step/answer type,
+      `src/dev/PreviewScreen.tsx`; verified with Playwright at 375×740 and 1280×800, light/dark)
 - [x] `/dev` page, gallery screen, `npm run check`, `npm run status` → task 03
       (`src/dev/validate.ts` + `scripts/check.ts` + `scripts/status.ts` + `src/dev/DevScreen.tsx` +
       `GalleryScreen.tsx` + `dev.css`; verified at 1280/375 px, no console errors, no horizontal
@@ -105,13 +134,15 @@ Milestone 2 — skeleton
 - [x] Curriculum summaries `docs/curriculum-grade-N.md`, textbook style notes `docs/materials-grade-N.md`
 
 Milestone 3 — gold-standard lessons → task 07
-- [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — written, smoke-tested (status `draft` until played in the real player)
-- [x] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`) — written (draft); figures need task 06
-- [x] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — written (draft); figure needs task 04
+- [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — **done** (played through in the player)
+- [x] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`) — **done**
+- [x] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — **done**
 
 Milestone 4–6
 - [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`
-- [ ] Browser verification of the full flow → task 08
+- [x] Lessons split into 3–5 parts (XP + streak per part, map ring) — teacher feedback
+- [x] Browser verification of the full flow → task 08 (repeat it any time: `npm run dev`, then
+      `node scripts/dev/e2e.mjs [--width=1280] [--dark]` — about a minute, exit code 1 on failure)
 
 ### Known issues / open questions
 - **Grade 8 solid notation** (r, H, B, M, P, V) is inferred — the teacher should confirm (see DECISIONS.md).
@@ -123,10 +154,9 @@ Milestone 4–6
   tétele" is the intercept theorem (not the semicircle theorem); a new grade 5 curriculum starts in 2027/28
   (drops vectors/translation) — not relevant this year; grade 7 "Adatfeldolgozás" is a survey project in the
   curriculum, the app practises it with given data sets and charts.
-- `npm run check` passes with **5 warnings in the Pythagoras lesson** (found by the new validator,
-  content fix — small, do it with the next content change): `square-areas` figures have overlapping
-  square-area labels at some sizes (e.g. "49 cm²", seeds ~11 %), and `square-areas` L2 produces only
-  9 distinct questions (add variety); the explore step 6 figure has a colliding "1" label at a=1, b=8.
+- ~~5 warnings in the Pythagoras lesson~~ — fixed in task 06 (square-area labels that do not fit
+  their square move outside it; the low-variety warning had already been fixed by more variety).
+  `npm run check` now reports 0 warnings for the lessons.
 - `CONTENT_STATUS.md` is **generated** (`npm run status`) — edit statuses/scopes in
   `src/content/grade-N/topics.json`, never in the markdown file; `npm run check` warns if it is stale.
 
@@ -147,7 +177,14 @@ Add the ids of the lessons you have covered in class (ids are in `CONTENT_STATUS
 challenge only picks from these. An empty list means "every lesson that has content". Commit and
 push — the site redeploys automatically (see below).
 
-## Deployment (Cloudflare Pages, automatic on every push)
+## Deployment: GitHub Pages (set up, automatic on every push to master)
+Live at **https://janosapro.github.io/math-app/**. `.github/workflows/deploy-pages.yml` runs
+`npm ci`, `npm run check` and `npm run build`, then publishes `dist/`. A failing check stops the
+deploy, so broken content never goes live. One-time setup (already needed only once): repository
+Settings → Pages → Build and deployment → Source: **GitHub Actions**. Manual re-deploy: Actions →
+"Deploy to GitHub Pages" → Run workflow.
+
+### Alternative: Cloudflare Pages
 1. Push this repository to GitHub.
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → "Connect to Git" → pick the repo.
 3. Build settings: framework preset **None** (or Vite), build command **`npm run build`**,
@@ -175,7 +212,7 @@ src/
   styles/      theme.css (design tokens, light/dark, buttons, animations)
 scripts/       check.ts (npm run check), status.ts (npm run status), dev/figure-preview.ts
                (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser automation),
-               dev/smoke-lesson.ts (legacy one-lesson smoke test)
+               dev/drive.mjs + dev/e2e.mjs (Playwright: plays the lessons, 30 checks)
 docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
 materials/     the teacher's textbook screenshots (reference only — never copy text)
 ```

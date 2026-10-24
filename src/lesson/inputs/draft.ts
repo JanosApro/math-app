@@ -4,7 +4,7 @@
  * (null while the draft is incomplete — the Check button stays disabled).
  */
 import type { AnswerSpec, NumbersAnswer, RichText, StudentAnswer } from '../../engine/types';
-import { choiceOrder } from '../../engine/answers';
+import { choiceOrder, joinFields } from '../../engine/answers';
 import { expressionToTex } from '../../engine/polynomial';
 import { t } from '../../i18n/hu';
 
@@ -149,12 +149,13 @@ export function displayText(text: string): string {
 }
 
 function fieldsText(spec: NumbersAnswer, texts: string[]): RichText {
-  return spec.fields
-    .map((f, i) => {
+  return joinFields(
+    spec,
+    spec.fields.map((f, i) => {
       const unit = f.unit ? (/^[°′″]$/.test(f.unit) ? f.unit : ` ${f.unit}`) : '';
       return `${f.label ? `${f.label} ` : ''}$${texNumber(texts[i] ?? '')}$${unit}`;
-    })
-    .join(', ');
+    }),
+  );
 }
 
 /** The student's answer as RichText, for "A te válaszod: …" in reviews. */

@@ -16,6 +16,7 @@ import { chromium } from 'playwright-core';
 const CANDIDATES = [
   process.env.CHROME_PATH,
   join(homedir(), '.cache/ms-playwright/chromium-1228/chrome-linux64/chrome'),
+  '/opt/pw-browsers/chromium', // Claude Code cloud containers
   '/usr/bin/chromium',
   '/usr/bin/chromium-browser',
   '/usr/bin/google-chrome',

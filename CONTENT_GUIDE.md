@@ -26,8 +26,7 @@ read the one closest to your topic completely before you start:
 2. Find its entry in `src/content/grade-N/topics.json`: `id` (e.g. `g7-pitagorasz-02`), topic
    `folder` (e.g. `pitagorasz`) and `file` (e.g. `02-szerkesztesek`).
 3. Create `src/content/grade-N/<folder>/<file>.ts` (copy the structure below).
-4. Run `npm run check -- --only=<id>` until it prints no errors (until task 03 exists:
-   edit and run `npx tsx scripts/dev/smoke-lesson.ts`).
+4. Run `npm run check -- --only=<id>` until it prints no errors or warnings.
 5. Open it in the browser: `npm run dev`, then `http://localhost:5173/#/dev/preview/<id>`.
    Play it through. Check the math by hand on a few seeds (the /dev page has a sample viewer).
 6. Set `"status": "draft"` in topics.json (it becomes visible to students!) and, after the
@@ -64,12 +63,23 @@ const area: GeneratorDef = {
 export default defineSubtopic({
   id: 'g5-pelda-01',                     // MUST equal the id in topics.json
   goals: ['kiszámítani a téglalap területét,'],   // 2–4 items, shown on the start screen
-  steps: [
-    { type: 'theory', title: 'A téglalap területe', body: '…', figure: { … }, remember: '$T = a \\cdot b$' },
-    { type: 'check', question: { prompt: '…', answer: { type: 'truefalse', value: true }, hint: '…', solution: ['…'] } },
-    { type: 'example', title: '…', problem: '…', figure: { … }, steps: [{ text: '…' }, { text: '…' }], answer: '…' },
-    { type: 'practice', generator: 'rect-area', level: 1, count: 2 },
-    { type: 'practice', generator: 'rect-area', level: 2 },
+  parts: [                               // 3–5 short parts (~5 minutes each), then the mini test
+    {
+      title: 'A téglalap területe',      // shown in the part list and on the "N. rész kész!" screen
+      steps: [
+        { type: 'theory', title: 'A téglalap területe', body: '…', figure: { … }, remember: '$T = a \\cdot b$' },
+        { type: 'check', question: { prompt: '…', answer: { type: 'truefalse', value: true }, hint: '…', solution: ['…'] } },
+        { type: 'practice', generator: 'rect-area', level: 1, count: 2 },
+      ],
+    },
+    {
+      title: 'Kidolgozott példák',
+      steps: [
+        { type: 'example', title: '…', problem: '…', figure: { … }, steps: [{ text: '…' }, { text: '…' }], answer: '…' },
+        { type: 'practice', generator: 'rect-area', level: 2 },
+      ],
+    },
+    // … 3–5 parts in total
   ],
   generators: [area],
   miniTest: { items: [{ generator: 'rect-area', level: 1 }, /* … 5–8 items, mixed levels */] },
@@ -88,7 +98,17 @@ export default defineSubtopic({
 
 **Recommended order:** theory → check → theory → (explore) → example → practice L1 → example →
 practice L1/L2 → theory → example → practice L2 → practice L3. The mini test comes automatically
-after the last step. A lesson takes 10–20 minutes.
+after the last part. A whole lesson takes 15–25 minutes.
+
+### Parts (3–5 per lesson)
+Split the step sequence into **3–5 parts of about 5 minutes each**, one idea per part (e.g.
+"the theorem", "computing the hypotenuse", "computing a leg", "is it a right triangle?"). Each
+finished part gives XP and counts for the daily streak, so a student can do one part a day.
+- Every part gets a short Hungarian `title` (a noun phrase, no full stop).
+- Every part ends with at least one question (check or practice) — never a theory card alone.
+- Keep a part to **at most 4 theory/example cards and 8 questions**; the validator warns above that.
+- The first part introduces; later parts may start with a one-card recap.
+- Parts can be replayed in any order; the mini test is offered when all are done.
 
 ## RichText (all student-facing text)
 - Math between `$...$` in LaTeX: `$a^2 + b^2 = c^2$`, `$\frac{3}{4}$`, `$\sqrt{2}$`, `$3 \cdot 4$`.
@@ -186,13 +206,16 @@ follow the numbers (e.g. extreme ratios), set `notToScale: true`.
 | `regularPolygon` | ready | `{ type: 'regularPolygon', n: 6, side: 4, sideLabel: 'a', center: true, radius: 'r' }` |
 | `circle` | ready | `{ type: 'circle', r: 3, radius: 'r', sector: { angle: 60, label: '60°' } }` |
 | `coordinate` | ready | `{ type: 'coordinate', x: [-1, 6], y: [-1, 5], points: [{ at: [1, 1], label: 'A' }, { at: [5, 4], label: 'B' }], distances: [{ from: [1, 1], to: [5, 4], labels: { dx: '4', dy: '3', d: 'd = ?' } }] }`; functions: `{ kind: 'linear', k: 2, n: 1, label: 'y = 2x + 1' }`, `{ kind: 'inverse', k: 6 }` |
-| `numberLine` | ready | `{ type: 'numberLine', min: 0, max: 2, step: 1, subdivisions: 4, fractionDenominator: 4, points: [{ value: 0.75, label: 'A' }] }` |
-| `solid` | **not implemented yet** (task 04) | `{ type: 'solid', shape: 'cylinder', r: 3, h: 7, labels: { r: 'r = 3 cm', h: 'H = 7 cm' } }` |
-| `net` | not implemented yet (task 04) | `{ type: 'net', of: 'cube', a: 2 }` |
-| `barChart`, `lineChart`, `pieChart`, `pictogram`, `table` | not implemented yet (task 05) | `{ type: 'barChart', categories: ['H', 'K', 'Sze'], series: [{ values: [3, 5, 2] }] }` |
-| `fractionModel` | not implemented yet (task 06) | `{ type: 'fractionModel', shape: 'circle', parts: 4, shaded: 3 }` |
-| `barModel` | not implemented yet (task 06) | see `BarModelFigure` in types.ts |
-| `construction` | not implemented yet (task 06) | `{ type: 'construction', points: {…}, given: [...], steps: [{ caption: '…', items: [...] }] }` |
+| `numberLine` | ready | `{ type: 'numberLine', min: 0, max: 2, step: 1, subdivisions: 4, fractionDenominator: 4, points: [{ value: 0.75, label: 'A' }] }` — also `tickLabels: 'major'|'all'|'ends'|'none'|[values]`, `points[].open` (hollow) / `below`, `intervals: [{ from, to, fromClosed, toClosed, label }]` (±Infinity = ray), `jumps: [{ from, to, label }]` (addition/subtraction arcs; overlapping jumps are drawn taller). |
+| `solid` | ready | `{ type: 'solid', shape: 'cylinder', r: 3, h: 7, labels: { r: 'r = 3 cm', h: 'H = 7 cm' } }` — shapes: `cube` (a), `cuboid` (a, b, c), `prism` / `pyramid` (`base`: 'triangle', 'square', 'rectangle' + b, 'hexagon', 'regular' + n; a, h), `cylinder` / `cone` (r, h), `sphere` (r). `labels` / `show` / `highlight` take segment keys: a, b, c, h (height of the solid; dashed axis with a right-angle marker for pyramids/cones), r, d, s (cone generator / pyramid face height), edge (pyramid lateral edge), spaceDiagonal, faceDiagonal = baseDiagonal, apothem — labelling a key also draws it; asking for a key the shape does not have is a clear error. `triangle`: 'axial' (cone: r, H, s · pyramid: apothem, H, s), 'edge' (pyramid: half base diagonal, H, lateral edge), 'diagonal' (cuboid/cube/even prism: base diagonal, edge, space diagonal), 'face' (cuboid: a, b, base diagonal) — filled in the highlight color with a right-angle marker, exact for Pythagoras in 3D. `vertexLabels: true` (cuboid A–D bottom, E–H top; pyramid apex V) or your own list; `fill: false` for no tint. Oblique projection (depth up-right, halved), hidden edges dashed, true proportions. |
+| `net` | ready | `{ type: 'net', of: 'cylinder', r: 2, h: 5, labels: { r: 'r', h: 'H', a: '2rπ' } }` — `of`: `cube` (a; labels a), `cuboid` (a, b, c), `triangularPrism` (a = edge of the equilateral base, h; labels a, h), `squarePyramid` (a, s = height of a side face, s > a/2; labels a, s — s is drawn dashed with its right angle), `cylinder` (r, h; labels r, h, a = the long side 2rπ), `cone` (r, s, r < s; sector angle 360°·r/s; labels r, s). Folds dashed, bases tinted stronger (`colorFaces: false` → one tint). True proportions. |
+| `barChart`, `lineChart` | ready | `{ type: 'barChart', categories: ['H', 'K', 'Sze'], series: [{ values: [3, 5, 2] }], yLabel: 'tanulók száma', showValues: true }` — several `series` (with `name`) get a legend; `horizontal: true` for long names; `yMin`/`yMax`/`yStep` for the value axis (lineChart: `yMin` zooms in, drawn with an axis break); negative values work; long or many category names wrap or turn vertical (12 months: 'jan.', 'febr.' …). |
+| `pieChart` | ready | `{ type: 'pieChart', slices: [{ label: 'labdarúgás', value: 10 }, { label: 'úszás', value: 5 }] }` — `show: 'percent'` (default, 1 decimal) / `'value'` / `'label'` / `'none'`; small slices labelled outside with a leader line; legend (off with `legend: false`); at most 8 slices without own colors. |
+| `pictogram` | ready | `{ type: 'pictogram', rows: [{ label: '5.a', value: 25 }], unit: 10, unitLabel: 'tanuló', symbol: 'person' }` — symbols circle, square, star, person, heart; a remainder is a cut symbol; `showValues` writes the numbers. |
+| `table` | ready | `{ type: 'table', header: ['Jegy', '1', '2', '3', '4', '5'], rows: [['Gyakoriság', 1, 4, 7, 9, 5]], rowHeaders: true, highlight: [[0, 4]] }` — numbers get a decimal comma; '' = empty cell. |
+| `fractionModel` | ready | `{ type: 'fractionModel', shape: 'circle', parts: 4, shaded: 3, label: '3/4' }` — shapes `circle` (pizza), `bar` (chocolate), `rect` (grid, `rows` optional); `shaded > parts` draws several wholes (improper fractions; label e.g. `'1 3/4'`); `color` default 'accent'. A label like '3/4' is drawn as a stacked fraction. |
+| `barModel` | ready | `{ type: 'barModel', rows: [{ label: 'Anna', segments: [{ value: 70, label: 'a' }, { value: 50, label: 'b' }] }], total: { label: '120' } }` — szalagmodell for word problems: rows of pieces in true proportions (shared scale), `unknown: true` = dashed piece with '?', `braces: [{ row, segments: [i, j] or span: [x0, x1], label, side }]` for totals, parts and differences. |
+| `construction` | ready | `{ type: 'construction', points: { A: [0, 0], B: [5, 0] }, intersections: { P: { circles: [['A', 3.5], ['B', 3.5]] } }, given: [{ kind: 'segment', from: 'A', to: 'B' }], steps: [{ caption: 'Körzővel ívet rajzolunk…', items: [{ kind: 'compass', center: 'A', through: ['P'] }] }] }` — the student taps through the steps (new items are animated). `intersections` computes points from circles/lines (`pick: 'above'|'below'|'left'|'right'` or `near`), `compass` draws an arc (or a full circle without `through`), every geometry item works in a step, `numberLine` adds a number line (√2 constructions). Full example in `src/figures/types.ts` and the gallery. |
 
 Colors (theme-aware, never hex): `'ink'` (default), `'accent'` (topic color), `'highlight'`
 (the unknown / key segment), `'muted'`, `'good'`, `'bad'`, `'blue'`, `'green'`, `'orange'`,

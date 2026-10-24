@@ -4,6 +4,10 @@ export const XP = {
   correct: 10,
   /** Correct answer after using the hint or after a parse-error retry. */
   correctWithHint: 5,
+  /** Finishing a lesson part for the first time (on top of the XP for the answers). */
+  partComplete: 20,
+  /** Finishing a lesson part again (practice). */
+  partReplay: 5,
   /** Passing a mini test for the first time. */
   lessonComplete: 50,
   /** Passing a mini test again later (practice). */

@@ -1,0 +1,578 @@
+/*
+ * Map screen: year goal + daily cards, chapter sections, the winding trail (MapTrail.tsx).
+ * Prefixes: map-, trail-, node-. `--topic` is set per chapter section.
+ */
+
+.map {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* ---- top cards ---- */
+.map-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+@media (min-width: 600px) {
+  .map-cards {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+.map-card {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
+  padding: 0.95rem 1rem 1rem;
+}
+.map-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+.map-card-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  border: 2px solid var(--outline);
+  transform: rotate(-6deg);
+  display: grid;
+  place-items: center;
+}
+.map-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+.map-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+/* year goal */
+.map-goal-icon {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.map-goal-count {
+  margin-left: auto;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.map-goal-bar {
+  position: relative;
+  height: 16px;
+  margin: 0.85rem 0 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  border: 2px solid var(--outline);
+}
+.map-goal-bar .pbar-fill {
+  background: var(--primary);
+}
+/* "where the plan says we should be by now": a small flag pole over the bar */
+.map-goal-marker {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 4px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--text);
+  opacity: 0.75;
+}
+.map-goal-marker::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 4px;
+  width: 11px;
+  height: 8px;
+  border-radius: 0 3px 3px 0;
+  background: var(--streak);
+}
+.map-goal-note {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* daily challenge */
+.map-daily {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: linear-gradient(135deg, var(--streak-bg), var(--surface) 75%);
+}
+.map-daily-fire {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
+}
+.map-daily-emoji {
+  font-size: 2.3rem;
+  line-height: 1;
+  animation: flame-flicker 2.4s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+.map-daily-fire.is-zero .map-daily-emoji {
+  filter: grayscale(0.85);
+  opacity: 0.5;
+  animation: none;
+}
+.map-daily-num {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--streak);
+  font-variant-numeric: tabular-nums;
+}
+.map-daily-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+.map-daily-text {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.map-daily .btn {
+  margin-top: 0.15rem;
+  text-decoration: none;
+}
+
+/* ---- chapter section ---- */
+.map-topic {
+  --topic-soft: color-mix(in srgb, var(--topic) 14%, var(--surface));
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.map-topic-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--radius);
+  background: var(--topic-soft);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
+}
+.map-topic-icon {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--topic);
+  color: #fff;
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop-sm);
+  transform: rotate(-6deg);
+  transition: transform 0.3s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.map-topic-head:hover .map-topic-icon {
+  transform: rotate(6deg) scale(1.08);
+}
+.map-topic-text {
+  flex: 1;
+  min-width: 0;
+}
+.map-topic-chapter {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.map-topic-title {
+  margin: 0.05rem 0 0.35rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.map-topic-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.map-topic-bar {
+  position: relative;
+  flex: 1;
+  max-width: 180px;
+  height: 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--topic) 18%, var(--surface-3));
+  border: 2px solid var(--outline);
+  overflow: hidden;
+}
+.map-topic-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--topic);
+}
+.map-topic-count {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.map-topic-trophy {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--xp);
+  color: var(--on-xp);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop-sm);
+  animation: boing 0.6s ease-out both;
+}
+
+/* ---- the trail ---- */
+.trail {
+  --dot: 64px;
+  position: relative;
+  padding: 0.9rem 0 0.4rem;
+}
+.trail-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.trail-path {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.trail-path-rest {
+  stroke: color-mix(in srgb, var(--topic) 30%, var(--surface-3));
+  stroke-dasharray: 0.1 16;
+  stroke-width: 9;
+}
+.trail-path-done {
+  stroke: var(--topic);
+  stroke-dasharray: 0.1 16;
+  stroke-width: 11;
+}
+.trail-list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.trail-row {
+  display: flex;
+  min-height: var(--dot);
+}
+.trail-row.st-recommended {
+  --dot: 76px;
+  margin-top: 2.3rem; /* room for the bubble */
+}
+
+/* a node: dot + label, the whole thing is one button */
+.node {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--dot);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 20px;
+  -webkit-tap-highlight-color: transparent;
+}
+.side-left .node {
+  margin-left: calc(var(--x) * (100% - var(--dot)));
+  max-width: calc(100% - var(--x) * (100% - var(--dot)));
+}
+.side-right .node {
+  flex-direction: row-reverse;
+  text-align: right;
+  margin-left: auto;
+  margin-right: calc((1 - var(--x)) * (100% - var(--dot)));
+  max-width: calc(100% - (1 - var(--x)) * (100% - var(--dot)));
+}
+.node:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+}
+.node-dot {
+  position: relative;
+  flex: none;
+  width: var(--dot);
+  height: var(--dot);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--topic);
+  border: 3px solid var(--outline);
+  box-shadow: var(--pop);
+  transition: transform 0.2s cubic-bezier(0.3, 1.8, 0.5, 1);
+  /* springy pop-in, one after the other along the trail (--i from MapTrail) */
+  animation: boing 0.6s calc(0.05s * var(--i, 0)) ease-out backwards;
+}
+.node:active .node-dot {
+  transform: scale(0.9);
+}
+@media (hover: hover) {
+  .node:hover .node-dot {
+    transform: scale(1.1) rotate(-6deg);
+  }
+}
+.node-num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.node-label {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.node-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.02rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.node-status {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+/* states — each one differs in shape/icon too, never only in color */
+.st-done .node-dot {
+  background: var(--topic);
+  color: #fff;
+}
+.st-done .node-status {
+  color: var(--good-strong);
+}
+.st-recommended .node-dot {
+  background: var(--topic);
+  color: #fff;
+  box-shadow: var(--pop-lg), 0 0 0 9px color-mix(in srgb, var(--topic) 22%, transparent);
+}
+/* the play triangle hops */
+.st-recommended .node-dot > svg {
+  animation: node-hop 1.6s ease-in-out infinite;
+}
+@keyframes node-hop {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  70% {
+    transform: translateY(-5px) scale(1.08, 0.95);
+  }
+  80% {
+    transform: translateY(0) scale(0.94, 1.06);
+  }
+  90% {
+    transform: translateY(-2px);
+  }
+}
+.st-recommended .node-dot::after {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 3px solid var(--topic);
+  opacity: 0;
+  animation: node-ring 2s ease-out infinite;
+}
+@keyframes node-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+.st-recommended .node-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.st-softLocked .node-dot {
+  background: var(--surface-2);
+  color: var(--locked);
+  border: 3px dashed color-mix(in srgb, var(--outline) 55%, transparent);
+  box-shadow: none;
+}
+.st-softLocked .node-title {
+  color: var(--text-muted);
+}
+.st-soon .node-dot {
+  background: var(--surface-2);
+  color: var(--locked);
+  border: 3px solid color-mix(in srgb, var(--outline) 22%, transparent);
+  box-shadow: none;
+  opacity: 0.85;
+}
+.st-soon .node-title {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.st-soon .node-status {
+  font-style: italic;
+}
+/* in progress: a half-filled badge on the dot */
+.node-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--surface);
+  background: linear-gradient(90deg, var(--xp) 50%, var(--surface-3) 50%);
+}
+.is-progress .node-status {
+  color: var(--warn);
+}
+/* started lesson: one ring segment per part around the dot */
+.node-ring {
+  position: absolute;
+  inset: -11px;
+  width: calc(100% + 22px);
+  height: calc(100% + 22px);
+  overflow: visible;
+  pointer-events: none;
+}
+.node-ring path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--topic) 22%, var(--surface-3));
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.node-ring path.is-on {
+  stroke: var(--xp);
+  animation: node-seg-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes node-seg-in {
+  from {
+    opacity: 0;
+    stroke-width: 0;
+  }
+}
+.is-progress.st-recommended .node-dot {
+  box-shadow: var(--pop-lg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .node-ring path.is-on {
+    animation: none;
+  }
+}
+:root.reduce-motion .node-ring path.is-on {
+  animation: none;
+}
+
+/* "Kezdd itt!" bubble above the recommended node */
+.node-bubble {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.8rem;
+  border-radius: 12px;
+  background: var(--xp);
+  color: var(--on-xp);
+  border: 2px solid var(--outline);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--pop-sm);
+  animation: node-bob 1.8s ease-in-out infinite;
+}
+.node-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: 2px;
+  border: 8px solid transparent;
+  border-top-color: var(--outline);
+}
+@keyframes node-bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -4px);
+  }
+}
+
+/* the chapter's goal: a trophy at the end of the trail */
+.trail-goal {
+  --dot: 50px;
+}
+.trail-goal.side-left .goal-dot {
+  margin-left: calc(var(--x) * (100% - var(--dot)));
+}
+.trail-goal.side-right .goal-dot {
+  margin-left: auto;
+  margin-right: calc((1 - var(--x)) * (100% - var(--dot)));
+}
+.goal-dot {
+  background: var(--surface-2);
+  color: var(--locked);
+  border: var(--line) solid color-mix(in srgb, var(--outline) 35%, transparent);
+  box-shadow: none;
+}
+.trail-goal.is-won .goal-dot {
+  background: var(--xp);
+  color: var(--on-xp);
+  border-color: var(--outline);
+  box-shadow: var(--pop-sm);
+}
+
+@media (max-width: 380px) {
+  .trail {
+    --dot: 56px;
+  }
+  .trail-row.st-recommended {
+    --dot: 68px;
+  }
+  .node-title {
+    font-size: 0.92rem;
+  }
+}

@@ -50,3 +50,12 @@ Brief: `PROMPT.md` §4a. Style: `docs/materials-grade-8.md` (how the textbook dr
   `src/dev/gallery/solids.ts` + `nets.ts`. Note: `g8-henger-kup-gomb-03` already uses
   `{ type: 'solid', shape: 'cylinder', labels: { r | d, h }, highlight }` (r 2–9, H 2–12) — must
   render without label collisions. Next: implement solids.
+- 2026-10-24 (Claude Code, cloud session): **done.** `src/figures/solids-net.ts` (cube, cuboid,
+  triangular prism, square pyramid, cylinder, cone — true proportions, folds dashed, bases tinted
+  stronger, per-net label keys, clear errors for r ≥ s and s ≤ a/2), galleries
+  `src/dev/gallery/solids.ts` (34 entries: every shape, n = 3/4/5/6/8, rectangle-base pyramid,
+  every SolidSegment and SolidTriangle, flat/tall/tiny/huge, long labels, fill: false,
+  notToScale) and `nets.ts` (12 entries). Visual review light + dark with
+  `figure-preview.ts` (now also finds the container's headless Chromium): hidden edges checked by
+  hand on the triangular pyramid; 0 errors, 0 warnings. Label styling: an "a" followed by a word
+  ("a henger magassága") is the article and stays upright. CONTENT_GUIDE figure rows updated.

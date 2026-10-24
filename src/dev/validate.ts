@@ -349,13 +349,31 @@ export function validateModule(mod: SubtopicModule, sub: SubtopicMeta | undefine
     });
   }
 
-  // Steps
-  if (!Array.isArray(mod.steps) || mod.steps.length === 0) {
-    issues.push({ level: 'error', where, message: 'steps is empty' });
+  // Parts (3–5 short parts, about 5 minutes each)
+  const parts = Array.isArray(mod.parts) ? mod.parts : [];
+  if (!Array.isArray(mod.parts) || parts.length === 0) {
+    issues.push({ level: 'error', where, message: 'parts is empty (a lesson is 3–5 parts: { title, steps })' });
+  } else if (parts.length < 3 || parts.length > 5) {
+    issues.push({ level: 'warning', where, message: `${parts.length} part(s) — a lesson should have 3–5 short parts` });
   }
+  const steps: { step: LessonStep; where: string }[] = [];
+  parts.forEach((part, pi) => {
+    const partWhere = `${where} · part ${pi + 1}`;
+    if (!part || typeof part.title !== 'string' || part.title.trim() === '') issues.push({ level: 'error', where: partWhere, message: 'part title is empty' });
+    else addRich(issues, partWhere, 'title', part.title);
+    if (!Array.isArray(part?.steps) || part.steps.length === 0) {
+      issues.push({ level: 'error', where: partWhere, message: 'part has no steps' });
+      return;
+    }
+    // about 5 minutes: count the questions (checks + practice items) and the explanation cards
+    const questions = part.steps.reduce((n, st) => n + (st?.type === 'check' ? 1 : st?.type === 'practice' ? Math.max(1, st.count ?? 1) : 0), 0);
+    const cards = part.steps.length - part.steps.filter((st) => st?.type === 'check' || st?.type === 'practice').length;
+    if (questions === 0) issues.push({ level: 'warning', where: partWhere, message: 'part has no questions (add a check or practice step)' });
+    if (questions > 8 || cards > 4) issues.push({ level: 'warning', where: partWhere, message: `part is long (${cards} cards, ${questions} questions) — about 5 minutes is the aim; split it` });
+    part.steps.forEach((step, si) => steps.push({ step, where: `${partWhere} · step ${si + 1}` }));
+  });
   const kinds = new Set<string>();
-  (mod.steps ?? []).forEach((step: LessonStep, i: number) => {
-    const stepWhere = `${where} · step ${i + 1}`;
+  steps.forEach(({ step, where: stepWhere }) => {
     kinds.add(step?.type);
     switch (step?.type) {
       case 'theory':
@@ -465,7 +483,7 @@ export function validateModule(mod: SubtopicModule, sub: SubtopicMeta | undefine
       issues.push({ level: 'error', where, message: `miniTest passPercent ${pass} is not in 1..100` });
     }
   }
-  for (const step of mod.steps ?? []) if (step?.type === 'practice') used.add(step.generator);
+  for (const { step } of steps) if (step?.type === 'practice') used.add(step.generator);
   for (const ref of mod.daily ?? []) {
     checkGenRef(mod, ref, `${where} · daily`, issues);
     used.add(ref.generator);

@@ -5,7 +5,7 @@
  * Plain strings may contain RichText ($math$, **bold**) where they are rendered with <Rich>.
  */
 export const t = {
-  appName: 'Matek Kaland',
+  appName: 'Zsebmatek',
   tagline: 'Gyakorolj játékosan, minden nap egy kicsit!',
 
   common: {
@@ -35,16 +35,20 @@ export const t = {
 
   shell: {
     mainNav: 'Fő menü',
-    home: 'Matek Kaland – vissza a térképre',
+    home: 'Zsebmatek – vissza a térképre',
     streakAria: (n: number) => `Sorozat: ${n} nap`,
     streakTodo: 'A mai napi kihívás még hátravan.',
     xpAria: (n: number) => `Összes XP: ${n}`,
     dailyPending: 'A mai kihívás még vár rád!',
     skipToContent: 'Ugrás a tartalomhoz',
+    toDark: 'Sötét mód bekapcsolása',
+    toLight: 'Világos mód bekapcsolása',
+    soundOn: 'Hang bekapcsolása',
+    soundOff: 'Hang kikapcsolása',
   },
 
   onboarding: {
-    welcome: 'Szia! Üdv a Matek Kalandban!',
+    welcome: 'Szia! Üdv a Zsebmatekben!',
     intro: 'Itt lépésről lépésre gyakorolhatod az év matekanyagát. Válaszd ki, hányadikos vagy!',
     pickGrade: 'Hányadik osztályba jársz?',
     nicknameLabel: 'Becenév (nem kötelező)',
@@ -65,6 +69,7 @@ export const t = {
     continueHere: 'Folytasd!',
     completed: 'Kész',
     inProgress: 'Folyamatban',
+    partsStatus: (done: number, total: number) => `${done}/${total} rész kész`,
     notStarted: 'Még nem kezdted el',
     locked: 'Előbb az előzőeket érdemes megcsinálni',
     soon: 'Hamarosan…',
@@ -91,8 +96,6 @@ export const t = {
   lesson: {
     goals: 'Ebben a leckében megtanulod:',
     start: 'Kezdjük!',
-    resume: 'Folytatás',
-    restart: 'Elölről',
     theory: 'Elmélet',
     example: 'Kidolgozott példa',
     exampleLabel: (n: number) => `${n}. példa`,
@@ -106,7 +109,7 @@ export const t = {
     hint: 'Segítség',
     hintTitle: 'Tipp',
     quit: 'Kilépés',
-    quitConfirm: 'Biztosan kilépsz? A lecke állása megmarad.',
+    quitConfirm: 'Biztosan kilépsz? A már befejezett részek megmaradnak.',
     progress: (i: number, n: number) => `${i}. lépés / ${n}`,
     toTest: 'Jöhet a minidolgozat!',
     toTestBody: 'Ügyes vagy! Most egy rövid minidolgozat következik, segítség nélkül. 80%-tól sikeres.',
@@ -120,8 +123,22 @@ export const t = {
     generatorError: 'Ezt a feladatot most nem sikerült elkészíteni. Lépj tovább!',
     completedBefore: 'Ezt a leckét már teljesítetted',
     bestPercent: (p: number) => `legjobb eredmény: ${p}%`,
-    meta: (steps: number, testItems: number) => `${steps} lépés, a végén ${testItems} feladatos minidolgozat`,
-    resumeAt: (i: number, n: number) => `Legutóbb itt tartottál: ${i}. lépés / ${n}`,
+    meta: (parts: number, testItems: number) => `${parts} rövid rész, a végén ${testItems} feladatos minidolgozat`,
+    // lesson parts
+    parts: 'A lecke részei',
+    part: (n: number) => `${n}. rész`,
+    partQuestions: (n: number) => `${n} kérdés`,
+    partDone: 'Kész',
+    partNext: 'Következő',
+    continuePart: (n: number) => `Folytatás: ${n}. rész`,
+    replay: 'Újra gyakorlom',
+    partDoneTitle: (n: number) => `${n}. rész kész!`,
+    nextPart: (n: number) => `Tovább: ${n}. rész`,
+    toTestBtn: 'Jöhet a minidolgozat!',
+    backToLesson: 'Vissza a leckéhez',
+    todayCounts: 'A mai napod megvan – nő a sorozatod!',
+    partsProgress: (d: number, n: number) => `${d}/${n} rész kész`,
+    testBest: (p: number) => `legjobb: ${p}%`,
   },
 
   feedback: {
@@ -152,6 +169,7 @@ export const t = {
     fractionKey: 'törtvonal',
     rootKey: 'gyökjel',
     mixedKey: 'vegyes szám (szóköz)',
+    spaceLabel: 'szóköz',
     powerKey: 'hatvány',
     preview: 'Így értem:',
     // task 02 (keypad + pick inputs)
@@ -226,7 +244,7 @@ export const t = {
     calendar: 'Teljesített napok',
     today: 'ma',
     dayDone: 'teljesítve',
-    explain: 'A sorozat akkor nő, ha minden nap teljesíted a napi kihívást.',
+    explain: 'A sorozat akkor nő, ha minden nap gyakorolsz: befejezel egy leckerészt vagy a napi kihívást.',
     weekdays: ['H', 'K', 'Sze', 'Cs', 'P', 'Szo', 'V'],
   },
 
@@ -260,10 +278,12 @@ export const t = {
     gradeHint: 'Az előrehaladásod osztályonként külön megmarad.',
     nickname: 'Becenév',
     sound: 'Hangok',
-    soundHint: 'Rövid hangjelzés helyes és hibás válasznál.',
+    soundHint: 'Hangjelzés helyes és hibás válasznál, és amikor befejezel egy leckét.',
+    soundCorrect: 'Helyes',
+    soundWrong: 'Hibás',
+    soundDone: 'Lecke kész',
     reduceMotion: 'Kevesebb animáció',
     theme: 'Megjelenés',
-    themeAuto: 'Automatikus',
     themeLight: 'Világos',
     themeDark: 'Sötét',
     data: 'Adatok mentése',
@@ -271,7 +291,7 @@ export const t = {
     importBtn: 'Haladás visszatöltése fájlból',
     exportDone: 'A mentés elkészült. Tedd biztonságos helyre a fájlt!',
     importDone: 'A haladásod visszatöltve!',
-    importError: 'Ezt a fájlt nem sikerült beolvasni. Biztosan a Matek Kaland mentése?',
+    importError: 'Ezt a fájlt nem sikerült beolvasni. Biztosan a Zsebmatek mentése?',
     importConfirm: 'A betöltés felülírja a jelenlegi haladást ezen az eszközön. Folytatod?',
     storageWarning:
       'Fontos: a haladásod csak ebben a böngészőben van elmentve. Ha törlöd a böngészési adatokat, a haladás is elvész. Időnként mentsd el fájlba!',

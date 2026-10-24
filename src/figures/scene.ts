@@ -113,6 +113,11 @@ export type Prim = Common &
         font?: 'math' | 'ui';
         /** Do not move it to avoid collisions. */
         fixed?: boolean;
+        /**
+         * For a `fixed` label: if it collides at its fixed position (e.g. a long area label in a
+         * small square), place it near `at` in direction `dir` instead (collision-avoiding).
+         */
+        alt?: { at: Vec; dir: Vec };
         /** Stacked fraction label. */
         frac?: { num: string; den: string };
       }
@@ -278,6 +283,8 @@ export function labelRuns(text: string): TextRun[] {
     if (letter === letter.toUpperCase()) continue;
     // A letter after "number + space" is a unit (5 m, 3 g, 2 l) → upright.
     if (/\d[\s\u202f]+$/.test(text.slice(0, start))) continue;
+    // "a henger magassága": an 'a' followed by a word is the Hungarian article → upright.
+    if (letter === 'a' && /^[\s\u202f]+[a-záéíóöőúüű]{2}/.test(text.slice(start + 1))) continue;
     if (start > last) runs.push({ text: text.slice(last, start) });
     runs.push({ text: letter, italic: true });
     last = start + 1;
@@ -720,7 +727,8 @@ export function fitScene(prims: Prim[], opts: FitOptions = {}): Scene {
       pref = v(d.x, -d.y);
     }
     const size = l.size ?? FONT_SIZE;
-    const { box, overlaps } = place(anchor, pref, l.text, size, l.gap ?? 5, !!l.fixed, l.frac);
+    let { box, overlaps } = place(anchor, pref, l.text, size, l.gap ?? 5, !!l.fixed, l.frac);
+    if (overlaps && l.fixed && l.alt) ({ box, overlaps } = place(T(l.alt.at), norm(v(l.alt.dir.x, -l.alt.dir.y)), l.text, size, 5, false, l.frac));
     if (overlaps) warnings.push(`A(z) "${l.text}" címke nem tudta elkerülni az ütközést.`);
     pushLabel(box, l.text, size, COLOR[l.color ?? 'ink'], l.bold, l.font ?? 'math', l.step, l.frac);
   }

@@ -43,7 +43,7 @@
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--line) solid var(--outline);
 }
 .shell-brand {
   display: flex;
@@ -60,7 +60,7 @@
   transition: transform 0.2s ease;
 }
 .shell-brand:hover .app-logo {
-  transform: rotate(-6deg) scale(1.05);
+  transform: rotate(-10deg) scale(1.1);
 }
 .shell-brand-text {
   display: flex;
@@ -69,14 +69,15 @@
   line-height: 1.1;
 }
 .shell-brand-name {
-  font-weight: 800;
-  font-size: 1.02rem;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
   white-space: nowrap;
 }
 .shell-brand-grade {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -95,12 +96,15 @@
   height: 38px;
   padding: 0 0.75rem 0 0.6rem;
   border-radius: 999px;
+  border: 2px solid var(--outline);
+  box-shadow: var(--pop-sm);
   text-decoration: none;
-  font-weight: 800;
-  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.08rem;
   font-variant-numeric: tabular-nums;
   color: var(--text);
-  transition: transform 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.15s;
 }
 /* bigger invisible hit area (≥ 44 px) */
 .shell-chip::after {
@@ -108,8 +112,12 @@
   position: absolute;
   inset: -4px -2px;
 }
+.shell-chip:hover {
+  transform: translate(-1px, -1px) rotate(-2deg);
+}
 .shell-chip:active {
-  transform: scale(0.95);
+  transform: translate(2px, 2.5px);
+  box-shadow: 0 0 0 var(--ink);
 }
 .shell-chip-streak {
   background: var(--streak-bg);
@@ -135,8 +143,8 @@
   color: var(--xp);
 }
 .shell-chip-unit {
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
   margin-left: -0.05rem;
 }
@@ -166,7 +174,7 @@
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
-  border-top: 1px solid var(--border);
+  border-top: var(--line) solid var(--outline);
 }
 .shell-nav-item {
   display: flex;
@@ -178,8 +186,9 @@
   padding: 0.2rem 0.1rem 0.35rem;
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.74rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 500;
   border-radius: 14px;
   -webkit-tap-highlight-color: transparent;
 }
@@ -190,7 +199,8 @@
   width: 58px;
   height: 32px;
   border-radius: 999px;
-  transition: background 0.2s ease, transform 0.2s ease;
+  border: 2px solid transparent;
+  transition: background 0.2s ease, transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
 }
 .shell-nav-label {
   white-space: nowrap;
@@ -203,9 +213,13 @@
 }
 .shell-nav-item.is-active {
   color: var(--primary);
+  font-weight: 600;
 }
 .shell-nav-item.is-active .shell-nav-icon {
   background: var(--primary-soft);
+  border-color: var(--outline);
+  box-shadow: var(--pop-sm);
+  animation: boing 0.5s ease-out;
 }
 .shell-nav-item:active .shell-nav-icon {
   transform: scale(0.92);
@@ -240,8 +254,10 @@
 .shell-main .page {
   padding-bottom: 2.5rem;
 }
+/* no fill-mode: a transform kept after the animation would make .shell-view the containing
+   block of position: fixed descendants (dialogs, bars) */
 .shell-view {
-  animation: shell-view-in 0.28s ease-out both;
+  animation: shell-view-in 0.28s ease-out;
 }
 @keyframes shell-view-in {
   from {
@@ -315,9 +331,13 @@
     height: 40px;
     border-radius: 12px;
   }
+  .shell-nav-item {
+    border: 2px solid transparent;
+  }
   .shell-nav-item.is-active {
     background: var(--surface);
-    box-shadow: var(--shadow);
+    border-color: var(--outline);
+    box-shadow: var(--pop);
   }
   .shell-nav-item.is-active .shell-nav-icon {
     background: var(--primary-soft);
@@ -332,5 +352,28 @@
   .shell-main .page {
     padding-top: 1.5rem;
     padding-bottom: 3rem;
+  }
+}
+
+/* the brand gives way to the stats (theme toggle, streak, XP) on narrow phones */
+.shell-brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+@media (max-width: 420px) {
+  .shell-brand-name {
+    display: none;
+  }
+  .shell-brand-grade {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .shell-chip-unit {
+    display: none;
+  }
+  .shell-chip {
+    padding: 0 0.6rem 0 0.5rem;
   }
 }

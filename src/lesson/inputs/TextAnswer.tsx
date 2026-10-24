@@ -3,7 +3,7 @@
  * a display (no <input>, so the phone keyboard never opens) + live KaTeX preview + keypad.
  * The physical keyboard works too while the question is active.
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import type { ExpressionAnswer, FractionAnswer, NumberAnswer, NumbersAnswer, RichText, RootAnswer } from '../../engine/types';
 import { RichInline, renderMath } from '../../ui/Rich';
 import { t } from '../../i18n/hu';
@@ -34,6 +34,21 @@ function usePhysicalKeys(active: boolean, keys: KeyDef[], onKey: (a: KeyAction) 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [active]);
+}
+
+/**
+ * On the first key press, scrolls the answer area (display + keypad) into view: on short phones
+ * the keypad starts below the fixed action bar. `scroll-margin-bottom` in CSS keeps it above the bar.
+ */
+function useRevealOnFirstKey() {
+  const ref = useRef<HTMLDivElement>(null);
+  const done = useRef(false);
+  const reveal = () => {
+    if (done.current) return;
+    done.current = true;
+    requestAnimationFrame(() => ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+  };
+  return { ref, reveal };
 }
 
 function Display({
@@ -77,6 +92,7 @@ export function TextAnswer({
   onChange,
   locked,
   verdict,
+  notice,
 }: {
   spec: TextSpec;
   inputLabel?: RichText;
@@ -84,11 +100,15 @@ export function TextAnswer({
   onChange: (text: string) => void;
   locked?: boolean;
   verdict?: Verdict;
+  /** Shown between the display and the keypad ("simplify it" …). */
+  notice?: ReactNode;
 }) {
   const specials = useMemo(() => specialKeys(spec), [spec]);
   const keys = useMemo(() => allKeys(specials), [specials]);
+  const { ref, reveal } = useRevealOnFirstKey();
   const onKey = (a: KeyAction) => {
     if (locked) return;
+    reveal();
     onChange(editText(text, a));
   };
   usePhysicalKeys(!locked, keys, onKey);
@@ -97,7 +117,7 @@ export function TextAnswer({
   const tex = showsPreview ? inputToTex(spec, text) : '';
   const unit = 'unit' in spec ? spec.unit : undefined;
   return (
-    <div className="kp-text-answer">
+    <div className="kp-text-answer" ref={ref}>
       <div className="kp-answer-row">
         {inputLabel && (
           <span className="kp-label">
@@ -118,6 +138,7 @@ export function TextAnswer({
           )}
         </div>
       )}
+      {notice}
       {!locked && <Keypad specials={specials} onKey={onKey} />}
     </div>
   );
@@ -130,6 +151,7 @@ export function NumbersAnswerInput({
   onChange,
   locked,
   verdict,
+  notice,
 }: {
   spec: NumbersAnswer;
   texts: string[];
@@ -137,12 +159,15 @@ export function NumbersAnswerInput({
   onChange: (texts: string[], focus: number) => void;
   locked?: boolean;
   verdict?: Verdict;
+  notice?: ReactNode;
 }) {
   const specials = useMemo(() => specialKeys(spec), [spec]);
   const keys = useMemo(() => allKeys(specials), [specials]);
+  const { ref, reveal } = useRevealOnFirstKey();
   const n = spec.fields.length;
   const onKey = (a: KeyAction) => {
     if (locked) return;
+    reveal();
     const cur = texts[focus] ?? '';
     if (a.kind === 'next') {
       let from = focus;
@@ -172,7 +197,7 @@ export function NumbersAnswerInput({
   });
 
   return (
-    <div className="kp-text-answer">
+    <div className="kp-text-answer" ref={ref}>
       <div className="kp-fields">
         {spec.fields.map((f, i) => (
           <div key={i} className="kp-field">
@@ -193,6 +218,7 @@ export function NumbersAnswerInput({
           </div>
         ))}
       </div>
+      {notice}
       {!locked && <Keypad specials={specials} onKey={onKey} />}
     </div>
   );

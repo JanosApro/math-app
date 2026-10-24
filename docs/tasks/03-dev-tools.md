@@ -14,7 +14,7 @@ authors find out whether their content is correct — make the output clear.
   `src/content/grade-N/<topic.folder>/<sub.file>.ts`; `catalog.ts` (pure), `registry.ts` (Vite only).
 - `package.json`: `"check": "tsc --noEmit && tsx scripts/check.ts"` (scripts/check.ts is missing).
 - Placeholders to REPLACE: `src/dev/DevScreen.tsx`, `src/dev/GalleryScreen.tsx`.
-- `scripts/dev/smoke-lesson.ts` is a working mini version of the stress test for one lesson — a good starting point.
+- (`scripts/dev/smoke-lesson.ts` was removed after task 03; `npm run check -- --only=<id>` replaces it.)
 
 ## Build
 1. **`src/dev/validate.ts`** — environment-independent (no Vite APIs, no DOM; runs in Node via

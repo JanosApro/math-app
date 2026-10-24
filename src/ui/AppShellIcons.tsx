@@ -125,7 +125,7 @@ export function FlagIcon({ size = 16 }: { size?: number }) {
 }
 
 /**
- * The app logo: a winding trail of checkpoints drawn as a big "M", ending in a star.
+ * The app logo: a zig-zag trail of checkpoints drawn as a big "Z" (Zsebmatek), ending in a star.
  * Same drawing as public/icon.svg. Uses its own colors (it is a logo).
  */
 export function Logo({ size = 36 }: { size?: number }) {
@@ -138,9 +138,9 @@ export function Logo({ size = 36 }: { size?: number }) {
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="18" fill="url(#mk-logo-bg)" />
-      <path d="M13 47 21 19l11 19 11-19 8 28" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="13" cy="47" r="5" fill="#ff8a4c" stroke="#fff" strokeWidth="2.5" />
-      <circle cx="32" cy="38" r="4.5" fill="#fff" />
+      <path d="M15 19H47L18 45H42" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="15" cy="19" r="5" fill="#ff8a4c" stroke="#fff" strokeWidth="2.5" />
+      <circle cx="32.5" cy="32" r="4.5" fill="#3cc6c8" stroke="#fff" strokeWidth="2.5" />
       <path d="M51 38.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8z" fill="#ffd23f" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
     </svg>
   );

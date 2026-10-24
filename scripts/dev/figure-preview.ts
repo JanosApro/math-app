@@ -64,10 +64,16 @@ async function main() {
     const htmlPath = join(outDir, `${name}-${p + 1}.html`);
     writeFileSync(htmlPath, html);
     const png = join(outDir, `${name}-${p + 1}${dark ? '-dark' : ''}.png`);
-    const shell = join(homedir(), '.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell');
-    if (existsSync(shell)) {
+    const shell = [
+      process.env.CHROME_PATH,
+      join(homedir(), '.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell'),
+      '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell',
+      '/opt/pw-browsers/chromium',
+      '/usr/bin/chromium',
+    ].find((p): p is string => !!p && existsSync(p));
+    if (shell) {
       try {
-        execFileSync(shell, ['--no-sandbox', '--hide-scrollbars', `--screenshot=${png}`, '--window-size=1500,1000', pathToFileURL(htmlPath).href], { stdio: 'ignore', timeout: 30000 });
+        execFileSync(shell, ['--headless', '--no-sandbox', '--hide-scrollbars', `--screenshot=${png}`, '--window-size=1500,1000', pathToFileURL(htmlPath).href], { stdio: 'ignore', timeout: 30000 });
         console.log(`screenshot: ${png}`);
       } catch (err) {
         console.log(`screenshot failed: ${(err as Error).message}`);

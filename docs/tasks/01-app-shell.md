@@ -67,3 +67,17 @@ export → reset → import restores progress; theme switch; no console errors; 
 - 2026-10-24 (Claude, task 01 agent) — started. Plan: TopicIcon set → AppShell (top bar, bottom
   nav / desktop rail) → Onboarding → MapScreen + SoftLockDialog → Profile → Settings (+ shared
   import component) → PWA (manifest, icons, sw plugin, pwa.ts update flow) → screenshots/tests.
+- 2026-10-24 (Claude Code, cloud session): **done.** New `src/screens/MapScreen.tsx` + `map.css`
+  (year goal with plan marker, daily card, chapter sections with `MapTrail`, all node states,
+  auto-scroll to the recommended lesson, soft-lock dialog wiring, toast for "soon"),
+  `ProfileScreen.tsx` + `Profile.css` (level, stats, 5-week calendar, chapter/streak badges),
+  `SettingsScreen.tsx` + `Settings.css` (grade, nickname, sound, reduce motion, theme, storage
+  warning, export/import/reset, about), PWA (`public/manifest.webmanifest`, `icon.svg`,
+  maskable + PNG icons, Vite plugin writing `dist/sw.js`). SoftLockDialog already existed.
+  Fixes: `.shell-view` animation without fill-mode (it trapped fixed dialogs), button text
+  contrast on `--good`/`--bad`/`--xp` in dark mode (`--on-xp` token). Verified with Playwright at
+  375 and 1280 px, light/dark: onboarding → map, every node state (dev open-all flag), soft-lock
+  dialog → "Vissza az ajánlotthoz" scrolls to + focuses the recommended node, profile, settings,
+  theme switch, export → reset → import from the onboarding screen restores XP/nickname/grade,
+  invalid file → friendly error, offline reload + offline lesson from the service worker
+  (`vite preview`), no console errors, no horizontal scroll.

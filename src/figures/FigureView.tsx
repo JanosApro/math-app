@@ -70,14 +70,20 @@ function Item({ it, isNew }: { it: SvgItem; isNew: boolean }) {
   );
 }
 
+/** Largest rendered figure height in CSS px. */
+const MAX_FIG_H = 340;
+
 export function SceneSvg({ scene, step, alt }: { scene: Scene; step?: number; alt?: string }) {
   const vb = scene.viewBox;
   const visible = step === undefined ? scene.items : scene.items.filter((it) => (it.step ?? 0) <= step);
+  // Up to 1.35× on wide screens, but never taller than MAX_FIG_H (tall, thin figures would
+  // push the answer off a phone screen).
+  const maxW = Math.min(vb.w * 1.35, (vb.w * MAX_FIG_H) / vb.h);
   return (
     <svg
       className="fig-svg"
       viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-      style={{ maxWidth: `${Math.round(vb.w * 1.35)}px` }}
+      style={{ maxWidth: `${Math.round(maxW)}px` }}
       role="img"
       aria-label={alt ?? t.figure.alt}
     >

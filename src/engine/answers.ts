@@ -322,6 +322,18 @@ export function canonicalInput(spec: AnswerSpec): StudentAnswer {
   }
 }
 
+/**
+ * Joins the formatted fields of a `numbers` answer: ", " between fields, but a plain space before
+ * an unlabelled ′ or ″ field, so an angle reads 83° 18′ (not 83°, 18′).
+ */
+export function joinFields(spec: NumbersAnswer, parts: string[]): string {
+  return parts.reduce((out, p, i) => {
+    if (i === 0) return p;
+    const f = spec.fields[i];
+    return out + (!f.label && (f.unit === '′' || f.unit === '″') ? ' ' : ', ') + p;
+  }, '');
+}
+
 /** The correct answer as RichText, for "A helyes válasz: …". */
 export function formatAnswer(spec: AnswerSpec): RichText {
   const unit = (u?: string) => (u ? ` ${u}` : '');
@@ -329,9 +341,7 @@ export function formatAnswer(spec: AnswerSpec): RichText {
     case 'number':
       return `$${num(spec.value, spec.precision, spec.precision !== undefined)}$${unit(spec.unit)}`;
     case 'numbers':
-      return spec.fields
-        .map((f) => `${f.label ? `${f.label} ` : ''}$${num(f.value, f.precision, f.precision !== undefined)}$${f.unit ? (/^[°′″]$/.test(f.unit) ? f.unit : ` ${f.unit}`) : ''}`)
-        .join(', ');
+      return joinFields(spec, spec.fields.map((f) => `${f.label ? `${f.label} ` : ''}$${num(f.value, f.precision, f.precision !== undefined)}$${f.unit ? (/^[°′″]$/.test(f.unit) ? f.unit : ` ${f.unit}`) : ''}`));
     case 'expression':
       return `$${expressionToTex(spec.value)}$`;
     case 'fraction': {

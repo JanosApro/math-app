@@ -8,6 +8,12 @@
   flex-direction: column;
   gap: 0.6rem;
   width: 100%;
+  /* scrollIntoView keeps the keypad above the fixed action bar of the lesson */
+  scroll-margin-top: calc(70px + env(safe-area-inset-top));
+  scroll-margin-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+.kp-text-answer .lesson-notice {
+  margin: 0;
 }
 
 .kp-answer-row {
@@ -42,11 +48,12 @@
   max-width: 20rem;
   min-height: 56px;
   padding: 0.35rem 0.85rem;
-  border: 2.5px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 14px;
   background: var(--surface);
+  box-shadow: inset 2px 3px 0 color-mix(in srgb, var(--outline) 12%, transparent);
   font-size: 1.5rem;
-  font-weight: 650;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -55,19 +62,16 @@
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .kp-display.is-focused {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-soft);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 .kp-display.is-correct {
-  border-color: var(--good);
   background: var(--good-bg);
-  box-shadow: none;
-  animation: pop 0.35s ease-out;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 45%, transparent);
+  animation: boing 0.55s ease-out;
 }
 .kp-display.is-wrong {
-  border-color: var(--bad);
   background: var(--bad-bg);
-  box-shadow: none;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 40%, transparent);
 }
 .kp-text {
   min-width: 0;
@@ -132,6 +136,9 @@
   align-items: center;
   gap: 0.4rem;
 }
+.kp-field .kp-label {
+  white-space: nowrap;
+}
 .kp-display-field {
   flex: 0 1 6.5rem;
   min-width: 5rem;
@@ -166,21 +173,24 @@
 .kp-key {
   min-height: 50px;
   min-width: 44px;
-  border: none;
+  border: 2px solid var(--outline);
   border-radius: 14px;
   background: var(--surface);
   color: var(--text);
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 0 0 1.5px var(--border), 0 1px 3px rgba(40, 30, 120, 0.06);
-  transition: transform 0.08s ease, background 0.12s ease;
+  box-shadow: var(--pop-sm);
+  transition: transform 0.1s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.1s ease, background 0.12s ease;
   -webkit-tap-highlight-color: transparent;
 }
 .kp-key:active {
-  transform: scale(0.94);
+  transform: translate(2px, 2.5px);
+  box-shadow: 0 0 0 var(--ink);
   background: var(--surface-3);
+  transition-duration: 0.04s;
 }
 @media (hover: hover) {
   .kp-key:hover {
@@ -220,29 +230,43 @@
   width: 100%;
   min-height: 56px;
   padding: 0.65rem 1rem;
-  border: 2.5px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 16px;
   background: var(--surface);
   color: var(--text);
   font-size: 1.08rem;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  box-shadow: var(--pop);
+  transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease;
   touch-action: manipulation;
 }
 .kp-choice:active:not(:disabled),
 .kp-order-item:active:not(:disabled),
 .kp-tf:active:not(:disabled),
 .kp-match-item:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: translate(3px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+  transition-duration: 0.04s;
 }
 @media (hover: hover) {
   .kp-choice:hover:not(:disabled),
   .kp-order-item:hover:not(:disabled),
   .kp-tf:hover:not(:disabled),
   .kp-match-item:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+    background: color-mix(in srgb, var(--primary) 7%, var(--surface));
   }
+}
+/* chosen: pressed into its shadow */
+.kp-choice.is-selected,
+.kp-tf.is-selected,
+.kp-order-item.is-picked {
+  transform: translate(2px, 2.5px);
+  box-shadow: 1px 1.5px 0 var(--ink);
+}
+.kp-choice.is-correct,
+.kp-tf.is-correct {
+  animation: boing 0.55s ease-out;
 }
 .kp-choice:disabled,
 .kp-order-item:disabled,
@@ -251,17 +275,14 @@
   cursor: default;
 }
 .kp-choice.is-selected {
-  border-color: var(--primary);
   background: var(--primary-soft);
 }
 .kp-choice.is-correct,
 .kp-tf.is-correct {
-  border-color: var(--good);
   background: var(--good-bg);
 }
 .kp-choice.is-wrong,
 .kp-tf.is-wrong {
-  border-color: var(--bad);
   background: var(--bad-bg);
 }
 .kp-choice-text {
@@ -273,26 +294,23 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 2.5px solid var(--border);
+  border: var(--line) solid var(--outline);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   font-weight: 800;
-  color: var(--surface);
+  color: #fff;
 }
 .is-selected .kp-radio {
-  border-color: var(--primary);
   background: var(--primary);
   box-shadow: inset 0 0 0 4px var(--surface);
 }
 .is-correct .kp-radio {
-  border-color: var(--good);
   background: var(--good);
   box-shadow: none;
 }
 .is-wrong .kp-radio {
-  border-color: var(--bad);
   background: var(--bad);
   box-shadow: none;
 }
@@ -310,14 +328,16 @@
   justify-content: center;
   gap: 0.2rem;
   min-height: 84px;
-  border: 2.5px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 18px;
   background: var(--surface);
   color: var(--text);
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  box-shadow: var(--pop);
+  transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease;
 }
 .kp-tf-icon {
   font-size: 1.6rem;
@@ -330,7 +350,6 @@
   color: var(--bad);
 }
 .kp-tf.is-selected {
-  border-color: var(--primary);
   background: var(--primary-soft);
 }
 
@@ -357,7 +376,6 @@
   gap: 0.5rem;
 }
 .kp-order-item.is-picked {
-  border-color: var(--primary);
   background: var(--primary-soft);
 }
 .kp-order-text {
@@ -371,7 +389,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px dashed var(--border);
+  border: 2px dashed color-mix(in srgb, var(--outline) 50%, transparent);
   font-size: 0.95rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
@@ -442,13 +460,14 @@
   gap: 0.45rem;
   min-height: 54px;
   padding: 0.45rem 0.6rem;
-  border: 2.5px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 14px;
   background: var(--surface);
   color: var(--text);
   font-size: 1.05rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  box-shadow: var(--pop-sm);
+  transition: background 0.15s, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease;
   touch-action: manipulation;
 }
 .kp-match-text {
@@ -456,9 +475,10 @@
   text-align: center;
 }
 .kp-match-item.is-pending {
-  border-color: var(--primary);
   border-style: dashed;
   background: var(--primary-soft);
+  transform: translate(2px, 2.5px);
+  box-shadow: none;
 }
 .kp-match-item .kp-badge {
   border: none;
@@ -489,8 +509,8 @@
   --pair: var(--fig-s8);
 }
 .kp-match-item.is-paired {
-  border-color: var(--pair);
-  background: color-mix(in srgb, var(--pair) 14%, var(--surface));
+  background: color-mix(in srgb, var(--pair) 18%, var(--surface));
+  box-shadow: 2px 2.5px 0 var(--pair);
 }
 .kp-match-item.is-paired .kp-badge {
   background: var(--pair);
@@ -503,4 +523,24 @@
   .kp {
     max-width: 400px;
   }
+}
+
+/* inline math a little larger inside the big answer buttons */
+.kp-choice-text .katex,
+.kp-order-text .katex,
+.kp-match-text .katex {
+  font-size: 1.12em;
+}
+
+/*
+ * KaTeX positions fraction parts with tall invisible struts that reach outside the visible
+ * glyphs — into the button above. The texts must not catch taps: the button that was hit gets it.
+ */
+.kp-choice-text,
+.kp-order-text,
+.kp-match-text,
+.kp-badge,
+.kp-radio,
+.kp-mark {
+  pointer-events: none;
 }

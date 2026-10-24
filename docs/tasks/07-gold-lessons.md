@@ -1,6 +1,13 @@
 # Task 07 — Gold-standard example lessons
 
-> **Status (2026-10-24):** all three lessons are WRITTEN and pass the math/text/answer checks of
+> **Status (2026-10-24, cloud session): DONE.** All three lessons were played through in the
+> finished player at 375 px (every step, wrong + right answers, mini test, celebration, saving,
+> daily challenge + replay) and set to `done`. Fixes made while playing: Pythagoras theory card 3
+> now has a counting grid in the squares (the text asks the student to count); grade 5: LKKT
+> written `[2; 3]` (comma = decimal comma), the two "Jegyezd meg" formulas on separate lines,
+> the 4-step recipe as lines, the liter unit spelled out, no-break space in "1 1/2". Engine-wide:
+> inline fractions at full size (`\dfrac`). Earlier status note:
+> all three lessons are WRITTEN and pass the math/text/answer checks of
 > `npm run check` (status `draft`). Remaining: once tasks 02 (player), 04 (solids) and 06
 > (fraction/bar models) are done, run `npm run check` (their figures must then render without
 > errors), play each lesson in the browser at phone width, fix anything odd, and set

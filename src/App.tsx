@@ -22,8 +22,8 @@ function useThemeClasses() {
   const settings = useAppState((s) => s.settings);
   useEffect(() => {
     const root = document.documentElement;
-    if (settings.theme === 'auto') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', settings.theme);
+    root.setAttribute('data-theme', settings.theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', settings.theme === 'dark' ? '#13111d' : '#5a4ff3');
     root.classList.toggle('reduce-motion', settings.reduceMotion);
   }, [settings.theme, settings.reduceMotion]);
 }

@@ -35,8 +35,15 @@ Architectural choices and why. Add new entries at the end of a section.
 - **Single import point for content**: `src/kit.ts`. Content never imports engine internals.
 - **Strings with math**: `$…$` LaTeX inside Hungarian text. The `tex` template tag avoids the
   classic "lost backslash" bug; the validator detects control characters it leaves behind.
-- **Statuses**: the Pythagoras gold lesson is `draft` until it has been played through in the
-  finished lesson player (task 02); then it becomes `done`.
+- **Statuses**: the three gold lessons (`g7-pitagorasz-01`, `g5-tortek-2-01`,
+  `g8-henger-kup-gomb-03`) were `draft` until they had been played through in the finished
+  player (task 07, 2026-10-24); they are `done` now.
+- **Inline fractions are rendered at full size** (`\frac` → `\dfrac` in `src/ui/Rich.tsx`, inline
+  math only): KaTeX's text-style fractions were too small to read on a phone for 5th graders, and
+  the printed textbooks also set fractions at full size inside sentences. Content keeps writing
+  `\frac`.
+- **List separators in math are semicolons** (`[2;\ 3] = 6`, `P(2;\ 3)`), because the comma is the
+  decimal separator.
 
 ## Answers
 - Answer checking is exact wherever possible: fractions by cross-multiplication, roots by comparing
@@ -64,12 +71,41 @@ Architectural choices and why. Add new entries at the end of a section.
   lesson content, so changing them is a content edit.
 - Constructions are a figure type with step captions; the figure player animates each new step.
 
+## Lesson player
+- **Nothing that contains a `position: fixed` element may keep a `transform`** (or filter,
+  backdrop-filter, will-change: transform): it becomes the containing block and the "fixed" action
+  bar / feedback sheet / dialog scrolls with it. So the step transition animates the *cards*
+  (`.lesson-stage > .lesson-card`), not the stage, and `.shell-view` animates without fill-mode.
+- The correct-answer green flash is an `::after` overlay on the card, so it never restarts the
+  card's own slide-in animation.
+- On phones the keypad often starts below the fixed action bar, so: the "simplify it" / "I don't
+  understand" notice is rendered between the display and the keypad, the hint above the answer
+  area, and the answer area scrolls into view on the first key press (`scroll-margin-bottom`
+  keeps it above the bar). Figures are at most 340 px tall (`FigureView`), so a tall thin triangle
+  cannot push the answer off the screen.
+- **A lesson is 3–5 short parts + the mini test** (teacher feedback: the Pythagoras lesson was
+  great but too long in one go). `SubtopicModule.parts: { title, steps }[]`; the textbook
+  structure (one subtopic = one lesson = one map node) stays, the parts live inside it. The
+  lesson opens on an overview (goals + part list); every finished part shows a small celebration
+  ("N. rész kész!", XP, streak, part dots) and is saved (`parts` in the subtopic progress), so a
+  student can do one part a day. Parts can be replayed in any order; the mini test is offered
+  once every part is done (and can be opened from the overview any time). There is no mid-part
+  resume: a part is ~5 minutes, restarting it is cheap and keeps the state simple. The map shows
+  a started lesson with a ring of part segments ("2/4 rész kész"); the part count comes from the
+  lazily loaded module of started lessons only (module chunks stay lazy).
+- `src/dev/demoLesson.ts` (`dev-demo`) is a developer lesson that uses every step and answer type;
+  `npm run check` validates and stress-tests it like real content. Choice/order/match buttons carry
+  `data-index` / `data-left` / `data-right` attributes for browser automation (dev scripts read the
+  current question from `window.__mkQuestion`, dev builds only).
+
 ## Progress, streak, daily challenge
 - localStorage key `matek-kaland:v1`, versioned and sanitised on load/import; every access in
   try/catch; in-memory fallback with a visible notice. Tabs stay in sync via the `storage` event.
 - Progress is kept **per grade** (XP, subtopics, chapters, daily records, streak badges).
-- The streak is **derived** from the set of days with a completed daily challenge (not stored as a
-  counter), so it can't get out of sync; it stays alive until the end of the next day.
+- The streak is **derived** from the set of active days (not stored as a counter), so it can't
+  get out of sync; it stays alive until the end of the next day. A day is active when the daily
+  challenge was completed **or** a lesson part / mini test was finished (`activity` per day in
+  the grade progress). Finishing a part gives `XP.partComplete` (first time) / `XP.partReplay`.
 - Daily challenge: seed = `daily:<grade>:<YYYY-MM-DD in Europe/Belgrade>`; 6 questions from the
   eligible subtopics (daily.json, or everything with content). Only the first completion of the
   day gives XP and counts for the streak; replays are practice.
@@ -96,7 +132,55 @@ Architectural choices and why. Add new entries at the end of a section.
 - `src/content/registry.ts` has two dev-only exports (`allModulePaths`, `importModule`) so `/dev`
   can load every module file directly, including orphan files no subtopic references.
 
+## Theme and sound (teacher feedback, 2026-10-24)
+- **Light mode by default**, dark only when chosen: the theme is always explicit
+  (`<html data-theme>`), set before the first paint by a tiny inline script in index.html. The
+  sun/moon toggle is in the top bar of every main screen (and on the welcome screen), and in
+  settings. "Automatic" (system) was removed — it made the app dark on dark-mode phones.
+- **Sounds are synthesized** with Web Audio (`src/ui/sound.ts`, no audio files: nothing to
+  download, no licences): bell "ding-ding" (correct), soft descending "bwomp" (wrong, never
+  harsh), neutral two-note nudge ("almost" / unreadable input), an encouraging phrase when a mini
+  test is not passed yet, a jingle for a finished lesson part and a brass-like fanfare with a
+  cymbal swell for a finished lesson / daily challenge (longer for a chapter or streak milestone).
+  A compressor on the master bus keeps overlapping sounds from clipping. On by default; mute
+  button in the lesson top bar, toggle + preview buttons in settings.
+- State version 2: v1 saves are migrated once — 'auto' → light, and sound → on (it was off by
+  default before, so a stored `false` was not a real choice).
+
+## Look and feel: cartoon "sticker" style (teacher feedback, 2026-10-24)
+- **Fonts are bundled** (no CDN, works offline): DynaPuff for headings, buttons and big numbers,
+  Nunito for body text (`src/styles/fonts.css`, `@fontsource-variable/*`, SIL OFL). Only the latin
+  and latin-ext subsets (~140 kB in total, variable weight). The display font must have the
+  Hungarian **ő / ű**: Fredoka, Lilita One, Sniglet and Bubblegum Sans were rejected because they
+  lack them (the browser silently fell back to another font for those two letters); DynaPuff,
+  Baloo 2 and Grandstander have them, DynaPuff is the most playful.
+- **Sticker look**: ink outlines (`--outline`, `--line`) and hard diagonal offset shadows
+  (`--pop`, `--pop-sm`, `--pop-lg` in `--ink`) on cards, buttons, answer tiles, keys, chips and map
+  nodes. Pressing a button pushes it into its shadow. Deliberately *not* the Duolingo look: no
+  colored bottom border, no green. In dark mode the outline is a light violet (black would vanish
+  on dark cards) and the shadows stay black.
+- **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
+  `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
+  confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star
+  medal, staggered pop-in of map nodes and part rows, a hopping ▶ on the recommended lesson.
+- Effects that leave their box (burst, "+10") live in an effects layer of the feedback sheet,
+  outside its scroll container, so they are not clipped.
+
+## PWA / offline
+- No PWA library: a ~60-line Vite plugin in `vite.config.ts` writes `dist/sw.js` with the list of
+  emitted files (+ `public/`, woff2 fonts only — every browser that runs service workers reads
+  woff2). Page navigations are **network first** (a new deploy reaches students at once) with the
+  cached `index.html` as the offline fallback; all other same-origin GETs are **cache first**
+  (file names are content-hashed). The cache name contains a hash of the file list, old caches
+  are deleted on activate. Registered only in production (`src/pwa.ts`).
+- Icons: original logo (an "M" drawn as a path with a start dot and a star), SVG + PNG renders
+  (192, 512, maskable 512, apple-touch 180) committed in `public/`.
+- Text on bright accent backgrounds uses tokens (`--on-primary`, `--on-xp`), not `#fff`, so it keeps
+  its contrast in dark mode, where the accents are lighter.
+
 ## Hosting
+- **GitHub Pages** via GitHub Actions (`.github/workflows/deploy-pages.yml`): free for a public
+  repository, deploys on every push to `master`, and runs `npm run check` first.
 - `base: './'` in vite.config.ts so `dist/` works under any path (GitHub Pages project sites,
   Cloudflare Pages). Cloudflare Pages: build command `npm run build`, output directory `dist`
   (see HANDOFF.md).
