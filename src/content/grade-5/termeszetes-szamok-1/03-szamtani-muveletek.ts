@@ -168,33 +168,33 @@ const laws: GeneratorDef = {
     let why: string;
     if (kind === 'comm-add') {
       equation = tex`$${num(a)} + ${num(b)} = ${num(b)} + ${num(a)}$`;
-      correct = 'felcserélhetőség';
+      correct = 'kommutativitás (felcserélhetőség)';
       why = 'A két tag sorrendje felcserélődött.';
     } else if (kind === 'comm-mul') {
       equation = tex`$${num(a)} \cdot ${num(b)} = ${num(b)} \cdot ${num(a)}$`;
-      correct = 'felcserélhetőség';
+      correct = 'kommutativitás (felcserélhetőség)';
       why = 'A két tényező sorrendje felcserélődött.';
     } else if (kind === 'assoc-add') {
       equation = tex`$(${num(a)} + ${num(b)}) + ${num(c)} = ${num(a)} + (${num(b)} + ${num(c)})$`;
-      correct = 'csoportosíthatóság';
+      correct = 'asszociativitás (csoportosíthatóság)';
       why = 'A zárójelek helye változott meg, a tagok sorrendje nem.';
     } else if (kind === 'assoc-mul') {
       equation = tex`$(${num(a)} \cdot ${num(b)}) \cdot ${num(c)} = ${num(a)} \cdot (${num(b)} \cdot ${num(c)})$`;
-      correct = 'csoportosíthatóság';
+      correct = 'asszociativitás (csoportosíthatóság)';
       why = 'A zárójelek helye változott meg, a tényezők sorrendje nem.';
     } else if (kind === 'dist-add') {
       equation = tex`$${num(a)} \cdot (${num(b)} + ${num(c)}) = ${num(a)} \cdot ${num(b)} + ${num(a)} \cdot ${num(c)}$`;
-      correct = 'széttagolhatóság';
+      correct = 'disztributivitás (széttagolhatóság)';
       why = 'A zárójelben lévő összeget tagonként szoroztuk meg.';
     } else {
       let big = Math.max(b, c);
       let small = Math.min(b, c);
       if (big === small) small = small > 1 ? small - 1 : small + 1; // a non-zero difference
       equation = tex`$${num(a)} \cdot (${num(big)} - ${num(small)}) = ${num(a)} \cdot ${num(big)} - ${num(a)} \cdot ${num(small)}$`;
-      correct = 'széttagolhatóság';
+      correct = 'disztributivitás (széttagolhatóság)';
       why = 'A zárójelben lévő különbséget tagonként szoroztuk meg.';
     }
-    const wrongs = ['felcserélhetőség', 'csoportosíthatóság', 'széttagolhatóság'].filter((w) => w !== correct);
+    const wrongs = ['kommutativitás (felcserélhetőség)', 'asszociativitás (csoportosíthatóság)', 'disztributivitás (széttagolhatóság)'].filter((w) => w !== correct);
     return {
       prompt: tex`Melyik tulajdonságot használtuk?\n\n${equation}`,
       answer: choice(rng, correct, wrongs, { count: 3 }),
@@ -587,7 +587,7 @@ export default defineSubtopic({
   id: 'g5-termeszetes-szamok-1-03',
   goals: [
     'megnevezni a négy alapművelet tagjait és eredményét,',
-    'használni a felcserélhetőséget, a csoportosíthatóságot és a széttagolhatóságot,',
+    'használni a kommutativitást (felcserélhetőséget), az asszociativitást (csoportosíthatóságot) és a disztributivitást (széttagolhatóságot),',
     'tudni, mi a szerepe a 0-nak és az 1-nek,',
     'maradékosan osztani és ellenőrizni az eredményt.',
   ],
@@ -630,18 +630,18 @@ export default defineSubtopic({
       steps: [
         {
           type: 'theory',
-          title: 'Felcserélhetőség, csoportosíthatóság, széttagolhatóság',
-          body: 'Az összeadásnál és a szorzásnál a tagok sorrendje nem számít. A zárójelek helye sem. Egy zárójelet tagonként is felbonthatunk.',
+          title: 'Kommutativitás, asszociativitás, disztributivitás',
+          body: 'Az összeadás és a szorzás **kommutatív (felcserélhető)**. A zárójelek csoportosítása **asszociatív (csoportosítható)**, a zárójel felbontása **disztributív (széttagolható)**.',
           figure: distributiveFigure,
-          remember: '$(3 + 2) \\cdot 2 = 3 \\cdot 2 + 2 \\cdot 2$',
+          remember: 'kommutativitás · asszociativitás · disztributivitás',
         },
         {
           type: 'check',
           question: {
             prompt: 'Melyik tulajdonságot használtuk?\n\n$7 \\cdot (10 + 2) = 7 \\cdot 10 + 7 \\cdot 2$',
-            answer: textChoice('széttagolhatóság', ['felcserélhetőség', 'csoportosíthatóság']),
+            answer: textChoice('disztributivitás (széttagolhatóság)', ['kommutativitás (felcserélhetőség)', 'asszociativitás (csoportosíthatóság)']),
             hint: 'Mi történt a zárójellel?',
-            solution: ['A zárójelben lévő összeget tagonként szoroztuk meg.', 'Ez a **széttagolhatóság**.'],
+            solution: ['A zárójelben lévő összeget tagonként szoroztuk meg.', 'Ez a **disztributivitás (széttagolhatóság)**.'],
           },
         },
         {
