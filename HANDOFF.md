@@ -20,6 +20,24 @@ Git: this repository has a local git identity (`git config user.name onam`,
 `user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
 `git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
 
+## ▶ RESUME HERE — session notes, 2026-10-24 evening (Claude Code, lead)
+Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
+is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`
+passes (0 errors, 7 warnings). Exact state per task — continue each from here:
+
+| task | done | still to do |
+|---|---|---|
+| 02 lesson player | `src/lesson/`: LessonScreen, LessonPlayer, steps.tsx, QuestionRunner, QuestionView, parts.tsx, MiniTest, Celebration, DailyScreen, inputs/ (Keypad, keys, TextAnswer, PickAnswers, draft, keypad.css) — type-checks | **lesson CSS** (`src/lesson/lesson.css`, prefix `lesson-`; only keypad.css exists), `src/dev/demoLesson.ts`, `src/dev/PreviewScreen.tsx` (still placeholder), browser verification (spec's "Verify") |
+| 01 app shell | AppShell, TopicIcon (real icons), Onboarding (+ WelcomeArt, Onboarding.css), MapTrail.tsx (path component), ImportProgress.tsx (shared import UI), screens.css, devFlags.ts | **MapScreen** (placeholder; use MapTrail), **SoftLockDialog**, **ProfileScreen**, **SettingsScreen** (placeholders), **PWA** (manifest, icon, sw plugin in vite.config.ts), verification |
+| 04 solids | `solids.ts` + `solids-common.ts`: all solids render (the cylinder lesson validates) | **nets** (`solids-net.ts` is a stub that throws), galleries `src/dev/gallery/solids.ts` + `nets.ts`, visual review (light/dark), CONTENT_GUIDE figure rows |
+| 05 charts | `charts.ts`, `charts-common.ts`, `charts-pie.ts`, `charts-table.ts`; gallery `charts.ts` (30 entries, 0 errors) | visual review of gallery page 2+ (light/dark), CONTENT_GUIDE figure rows |
+| 06 constructions etc. | construction.ts, fraction.ts (fractionModel + barModel) with galleries; gallery `shapes.ts` (33 entries) | galleries `coordinate.ts` + `numberline.ts`, visual review of shapes/coordinate/number line, fix the triangle `squares` label collisions (4 Pythagoras warnings), CONTENT_GUIDE figure rows |
+| 07 gold lessons | all three written, `draft`, 0 errors | play through in the finished player, set `done` |
+| 08 verification | — | whole flow in a browser, final docs |
+
+Each task file `docs/tasks/0X-*.md` has the full spec (and a short progress log). Work in the
+order 02 → 01 → 04 → 06 → 05 → 07 → 08; commit after each.
+
 ## Current state (2026-10-24)
 
 The **foundation is done and type-checks** (`npx tsc --noEmit -p .` passes); the **screens are
