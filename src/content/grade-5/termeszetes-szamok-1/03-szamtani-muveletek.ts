@@ -187,8 +187,9 @@ const laws: GeneratorDef = {
       correct = 'széttagolhatóság';
       why = 'A zárójelben lévő összeget tagonként szoroztuk meg.';
     } else {
-      const big = Math.max(b, c);
-      const small = Math.min(b, c);
+      let big = Math.max(b, c);
+      let small = Math.min(b, c);
+      if (big === small) small = small > 1 ? small - 1 : small + 1; // a non-zero difference
       equation = tex`$${num(a)} \cdot (${num(big)} - ${num(small)}) = ${num(a)} \cdot ${num(big)} - ${num(a)} \cdot ${num(small)}$`;
       correct = 'széttagolhatóság';
       why = 'A zárójelben lévő különbséget tagonként szoroztuk meg.';
