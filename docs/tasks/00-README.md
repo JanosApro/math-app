@@ -11,7 +11,7 @@ after every change, and commit after each task (`git commit`). Then tick the tas
 | 02 | [Lesson player, answer inputs + keypad, mini test, celebrations, daily challenge, dev preview](02-lesson-player.md) | done |
 | 03 | [`/dev` page, figure gallery screen, `npm run check`, `npm run status`](03-dev-tools.md) | done |
 | 04 | [Figures: 3D solids and nets](04-figures-solids.md) | done |
-| 05 | [Figures: charts, pictogram, table](05-figures-charts.md) | todo (stubs throw) |
+| 05 | [Figures: charts, pictogram, table](05-figures-charts.md) | done |
 | 06 | [Figures: constructions, fraction model, bar model + galleries for shapes/coordinate/number line](06-figures-construction-fraction.md) | done |
 | 07 | [Gold-standard lessons: grade 5 fractions, grade 8 cylinder; finish grade 7 Pythagoras](07-gold-lessons.md) | all 3 written (draft) — verify after 02/04/06 |
 | 08 | [Verification in a browser + final docs](08-verification.md) | todo |

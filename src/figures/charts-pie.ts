@@ -60,13 +60,20 @@ export function layoutPieChart(fig: PieChartFigure): LayoutResult {
 
   const R = RADIUS[fig.size ?? 'medium'];
   const W = chartWidth(fig.size);
+  // Slices without a color take the palette in order, skipping hues used by explicit colors
+  // (e.g. { color: 'bad' } is red, so the next default slice is not red as well).
+  const SAME_HUE: Partial<Record<string, PColor>> = { blue: 's1', orange: 's2', green: 's3', good: 's3', red: 's4', bad: 's4', highlight: 's4', purple: 's5', teal: 's6' };
+  const taken = new Set(fig.slices.map((x) => (x.color ? SAME_HUE[x.color] ?? x.color : undefined)).filter(Boolean));
+  const free = PALETTE.filter((p) => !taken.has(p));
+  let nextFree = 0;
+  const defaultColor = (i: number): PColor => (free.length > 0 && fig.slices.length <= PALETTE.length ? free[nextFree++ % free.length] : PALETTE[i % PALETTE.length]);
   let acc = 0;
   const slices: Slice[] = fig.slices.map((s, i) => {
     const a0 = (acc / total) * 360;
     acc += s.value;
     const a1 = (acc / total) * 360;
     const text = show === 'percent' ? `${num((s.value / total) * 100, 1)}%` : show === 'value' ? num(s.value) : show === 'label' ? s.label : '';
-    return { label: s.label, value: s.value, color: s.color ?? PALETTE[i], a0, a1, text };
+    return { label: s.label, value: s.value, color: s.color ?? defaultColor(i), a0, a1, text };
   });
 
   const wedges: Prim[] = [];

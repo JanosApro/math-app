@@ -39,3 +39,9 @@ Brief: `PROMPT.md` §4a ("Data and statistics").
   coordinate.ts, format.ts, the gallery format and the preview script. Plan: `charts.ts` (entry +
   bar/line), `charts-common.ts` (validation, nice axis, legend, wrapping, symbols),
   `charts-pie.ts`, `charts-table.ts` (pictogram + table); gallery `src/dev/gallery/charts.ts`.
+- 2026-10-24 (Claude Code, cloud session): **done.** Visual review of all 30 gallery entries in
+  light and dark (`figure-preview.ts charts`). Fixes: a line-chart value label of a low point at
+  the bottom of the plot goes above the point (it collided with the category names — the last
+  gallery warning); pie slices without a color skip hues already used by explicit colors
+  (`{ color: 'bad' }` + a default slice were both red). CONTENT_GUIDE rows for every chart type.
+  `npm run check`: 0 errors, 0 warnings.
