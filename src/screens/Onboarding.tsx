@@ -20,7 +20,7 @@ import './screens.css';
 import './Onboarding.css';
 
 /** A playful accent per grade tile (cycled for future grades). */
-const TILE_TONES = ['orange', 'violet', 'teal', 'pink', 'blue', 'green'];
+const TILE_TONES = ['coral', 'violet', 'teal', 'berry', 'gold', 'indigo'];
 
 export default function Onboarding() {
   const currentGrade = useAppState((s) => s.grade);

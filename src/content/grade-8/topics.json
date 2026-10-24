@@ -5,7 +5,7 @@
       "id": "g8-hasonlosag",
       "folder": "hasonlosag",
       "title": "Háromszögek hasonlósága",
-      "color": "#3b6fe0",
+      "color": "#7763bc",
       "icon": "similar",
       "subtopics": [
         {
@@ -42,7 +42,7 @@
       "id": "g8-pont-egyenes-sik",
       "folder": "pont-egyenes-sik",
       "title": "Pont, egyenes és sík",
-      "color": "#f0750f",
+      "color": "#d27049",
       "icon": "plane",
       "subtopics": [
         {
@@ -72,7 +72,7 @@
       "id": "g8-egyenletek-egyenlotlensegek",
       "folder": "egyenletek-egyenlotlensegek",
       "title": "Egyismeretlenes lineáris egyenletek és egyenlőtlenségek",
-      "color": "#2f9e44",
+      "color": "#009895",
       "icon": "equation",
       "subtopics": [
         {
@@ -109,7 +109,7 @@
       "id": "g8-hasab",
       "folder": "hasab",
       "title": "Hasáb",
-      "color": "#d6336c",
+      "color": "#b15180",
       "icon": "prism",
       "subtopics": [
         {
@@ -139,7 +139,7 @@
       "id": "g8-gula",
       "folder": "gula",
       "title": "Gúla",
-      "color": "#7950f2",
+      "color": "#c28914",
       "icon": "pyramid",
       "subtopics": [
         {
@@ -169,7 +169,7 @@
       "id": "g8-linearis-fuggveny",
       "folder": "linearis-fuggveny",
       "title": "Lineáris függvény",
-      "color": "#1098ad",
+      "color": "#4c6dc0",
       "icon": "function",
       "subtopics": [
         {
@@ -199,7 +199,7 @@
       "id": "g8-egyenletrendszerek",
       "folder": "egyenletrendszerek",
       "title": "Elsőfokú kétismeretlenes egyenletrendszerek",
-      "color": "#c92a2a",
+      "color": "#92509d",
       "icon": "system",
       "subtopics": [
         {
@@ -229,7 +229,7 @@
       "id": "g8-henger-kup-gomb",
       "folder": "henger-kup-gomb",
       "title": "Henger, kúp és gömb",
-      "color": "#8c6d1f",
+      "color": "#c35a64",
       "icon": "cylinder",
       "subtopics": [
         {

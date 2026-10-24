@@ -10,7 +10,7 @@
   --font-display: 'DynaPuff Variable', 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
 
   /* cartoon "sticker" look: ink outlines + hard offset shadows (never a colored bottom border) */
-  --outline: #33266f;
+  --outline: #31245e;
   /* color of the hard shadows (= the outline in light mode, pure black in dark mode) */
   --ink: var(--outline);
   --line: 2.5px;
@@ -18,45 +18,41 @@
   --pop-sm: 2px 2.5px 0 var(--ink);
   --pop-lg: 5px 6px 0 var(--ink);
 
-  --bg: #ece4ff;
-  --bg-pattern: rgba(108, 84, 230, 0.1);
-  /* colorful backdrop behind the squared paper: soft pink, sky and sun glows */
-  --bg-art: radial-gradient(60vmax 45vmax at 0% 0%, rgba(255, 168, 214, 0.55), transparent 70%),
-    radial-gradient(55vmax 45vmax at 100% 12%, rgba(130, 210, 255, 0.5), transparent 70%),
-    radial-gradient(70vmax 50vmax at 50% 108%, rgba(255, 210, 130, 0.5), transparent 70%),
-    linear-gradient(160deg, #efe6ff 0%, #e7e0ff 50%, #f5e8ff 100%);
+  --bg: #f1eefe;
+  --bg-pattern: rgba(108, 84, 200, 0.08);
+  /* backdrop behind the squared paper: lavender → violet → peach, left to right */
+  --bg-art: linear-gradient(90deg, #f1eefe 0%, #e8e6ff 55%, #ffe9df 100%);
   --surface: #ffffff;
-  --surface-2: #f1ecff;
-  --surface-3: #e4dcfb;
-  /* cards: white fading into lavender, with a soft inner shade at the bottom and a lit top edge */
-  --card-bottom: #ece5ff;
-  --card-bg: linear-gradient(165deg, #ffffff 0%, #fcfaff 40%, var(--card-bottom) 100%);
-  --card-shade: inset 0 -16px 24px -18px rgba(83, 58, 190, 0.32), inset 0 2px 0 rgba(255, 255, 255, 0.95);
-  /* glossy highlight laid over colored buttons and chips */
-  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(40, 20, 120, 0.08) 100%);
+  --surface-2: #f4f2fc;
+  --surface-3: #e5e2f3;
+  /* cards: a gentle left → right tint (no up/down shading) */
+  --card-bottom: #f4f2fc;
+  --card-bg: linear-gradient(90deg, var(--surface) 0%, var(--surface) 35%, var(--card-bottom) 100%);
+  /* a soft left-lit sheen over colored buttons and chips */
+  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 60%);
   /* top bar, tab bar, lesson action bar */
-  --bar-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(238, 230, 255, 0.88));
-  --text: #261c55;
-  --text-muted: #6a5e9a;
-  --border: #e1ddf2;
-  --primary: #5a4ff3;
-  --primary-strong: #4237d6;
+  --bar-bg: linear-gradient(90deg, rgba(255, 255, 255, 0.92), color-mix(in srgb, var(--primary-soft) 88%, transparent));
+  --text: #271d4a;
+  --text-muted: #625f7e;
+  --border: #dfdcea;
+  --primary: #6c4bcc;
+  --primary-strong: #5937af;
   --primary-soft: #e8e6ff;
   --on-primary: #ffffff;
-  --good: #198a4b;
-  --good-strong: #13703c;
-  --good-bg: #dff6e8;
-  --bad: #cf3d3d;
-  --bad-bg: #fde6e6;
-  --warn: #b86e00;
-  --warn-bg: #fff1d6;
-  --xp: #e6a200;
-  --xp-bg: #fff4cf;
-  --on-xp: #3d2a00;
-  --streak: #f2611d;
-  --streak-bg: #ffe9dc;
-  --remember-bg: #fff6c2;
-  --locked: #a6a1bf;
+  --good: #008664;
+  --good-strong: #00694d;
+  --good-bg: #dbf8ec;
+  --bad: #bf3957;
+  --bad-bg: #ffe8eb;
+  --warn: #a56217;
+  --warn-bg: #fff1d2;
+  --xp: #eab444;
+  --xp-bg: #fff2ca;
+  --on-xp: #54360b;
+  --streak: #d05320;
+  --streak-bg: #ffe9df;
+  --remember-bg: #fff7d5;
+  --locked: #a4a2b7;
   --shadow: 0 2px 0 rgba(40, 30, 120, 0.06), 0 6px 20px rgba(40, 30, 120, 0.08);
   --shadow-strong: 0 10px 30px rgba(40, 30, 120, 0.18);
   --radius: 18px;
@@ -64,100 +60,98 @@
   --topic: var(--primary);
 
   /* figure colors (see src/figures/scene.ts COLOR) */
-  --fig-ink: #1f2430;
-  --fig-muted: #8a90a0;
+  --fig-ink: #271d4a;
+  --fig-muted: #858397;
   --fig-accent: var(--topic);
-  --fig-hi: #e0452b;
-  --fig-good: #1f9d55;
-  --fig-bad: #d64545;
-  --fig-blue: #2f6fde;
-  --fig-green: #2e9e58;
-  --fig-orange: #f08c1a;
-  --fig-purple: #8a4fd0;
-  --fig-red: #d63c3c;
-  --fig-teal: #159a9c;
-  --fig-grid: #e3e6ee;
-  --fig-axis: #4a5060;
+  --fig-hi: #bc3a83;
+  --fig-good: #008664;
+  --fig-bad: #bf3957;
+  --fig-blue: #4c6dc0;
+  --fig-green: #009895;
+  --fig-orange: #d27049;
+  --fig-purple: #7763bc;
+  --fig-red: #c74955;
+  --fig-teal: #009895;
+  --fig-grid: #e1e0ed;
+  --fig-axis: #4c4a62;
   --fig-paper: var(--surface);
-  --fig-fill: #eef1f7;
-  --fig-s1: #2f6fde;
-  --fig-s2: #f08c1a;
-  --fig-s3: #2e9e58;
-  --fig-s4: #d63c3c;
-  --fig-s5: #8a4fd0;
-  --fig-s6: #159a9c;
-  --fig-s7: #d9a400;
-  --fig-s8: #d1488f;
+  --fig-fill: #eeedfb;
+  --fig-s1: #7763bc;
+  --fig-s2: #d27049;
+  --fig-s3: #009895;
+  --fig-s4: #b15180;
+  --fig-s5: #c28914;
+  --fig-s6: #4c6dc0;
+  --fig-s7: #92509d;
+  --fig-s8: #c35a64;
 
   color-scheme: light;
+  --primary-2: #9b46b4;
 }
 
 :root[data-theme='dark'] {
   /* lighter outlines so cards keep their shape on the dark background; shadows stay black */
-  --outline: #5d5694;
+  --outline: #635a93;
   --ink: #000;
-  --bg: #120f22;
-  --bg-pattern: rgba(160, 140, 255, 0.07);
-  --bg-art: radial-gradient(60vmax 45vmax at 0% 0%, rgba(170, 60, 170, 0.32), transparent 70%),
-    radial-gradient(55vmax 45vmax at 100% 12%, rgba(40, 110, 180, 0.32), transparent 70%),
-    radial-gradient(70vmax 50vmax at 50% 108%, rgba(160, 105, 30, 0.22), transparent 70%),
-    linear-gradient(160deg, #161132 0%, #110e21 100%);
-  --surface: #1e1b2d;
-  --surface-2: #29253d;
-  --surface-3: #343050;
-  --card-bottom: #1b182f;
-  --card-bg: linear-gradient(165deg, #2b2647 0%, #231f3b 45%, var(--card-bottom) 100%);
-  --card-shade: inset 0 -16px 24px -18px rgba(0, 0, 0, 0.65), inset 0 1.5px 0 rgba(255, 255, 255, 0.07);
-  --gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.12) 100%);
-  --bar-bg: linear-gradient(180deg, rgba(32, 28, 52, 0.92), rgba(38, 32, 66, 0.9));
-  --text: #f2f0fb;
-  --text-muted: #aaa5c6;
-  --border: #393352;
-  --primary: #8d86ff;
-  --primary-strong: #a29cff;
-  --primary-soft: #2e2a52;
+  --bg: #0f0c1d;
+  --bg-pattern: rgba(170, 150, 255, 0.06);
+  --bg-art: linear-gradient(90deg, #0f0c1d 0%, #1d1a2c 55%, var(--primary-soft) 100%);
+  --surface: #1d1a2c;
+  --surface-2: #262339;
+  --surface-3: #322f48;
+  --card-bottom: #262339;
+  --card-bg: linear-gradient(90deg, var(--surface) 0%, var(--surface) 35%, var(--card-bottom) 100%);
+  --gloss: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 60%);
+  --bar-bg: linear-gradient(90deg, color-mix(in srgb, var(--surface) 94%, transparent), color-mix(in srgb, var(--primary-soft) 90%, transparent));
+  --text: #eeedf8;
+  --text-muted: #adaac6;
+  --border: #353249;
+  --primary: #9e8cf4;
+  --primary-strong: #b0a2fe;
+  --primary-soft: #302951;
   --on-primary: #12101c;
-  --good: #52c886;
-  --good-strong: #6ad89a;
-  --good-bg: #173627;
-  --bad: #ff7d7d;
-  --bad-bg: #3e1d23;
-  --warn: #ffb547;
-  --warn-bg: #3a2b12;
-  --xp: #ffc83d;
-  --xp-bg: #3a3014;
-  --on-xp: #2b1e00;
-  --streak: #ff8a4c;
-  --streak-bg: #3c2416;
-  --remember-bg: #3a3518;
-  --locked: #5f5a7c;
+  --good: #56c9a2;
+  --good-strong: #75dbb6;
+  --good-bg: #0e3629;
+  --bad: #f3798b;
+  --bad-bg: #472026;
+  --warn: #ebb25f;
+  --warn-bg: #3c2a0e;
+  --xp: #f4c352;
+  --xp-bg: #3c2e0f;
+  --on-xp: #2e1e01;
+  --streak: #f8875a;
+  --streak-bg: #432519;
+  --remember-bg: #372d0c;
+  --locked: #626079;
   --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 6px 20px rgba(0, 0, 0, 0.3);
   --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.5);
 
-  --fig-ink: #e8eaf0;
-  --fig-muted: #9aa0b0;
-  --fig-hi: #ff7a5c;
-  --fig-good: #4cc27e;
-  --fig-bad: #ff6b6b;
-  --fig-blue: #6f9cff;
-  --fig-green: #5cc982;
-  --fig-orange: #ffab4a;
-  --fig-purple: #b78cff;
-  --fig-red: #ff6b6b;
-  --fig-teal: #3cc6c8;
-  --fig-grid: #343b4a;
-  --fig-axis: #c0c4d0;
-  --fig-fill: #2a3040;
-  --fig-s1: #6f9cff;
-  --fig-s2: #ffab4a;
-  --fig-s3: #5cc982;
-  --fig-s4: #ff6b6b;
-  --fig-s5: #b78cff;
-  --fig-s6: #3cc6c8;
-  --fig-s7: #f2c94c;
-  --fig-s8: #f07ab5;
+  --fig-ink: #e7e6f5;
+  --fig-muted: #9896aa;
+  --fig-hi: #f080b8;
+  --fig-good: #56c9a2;
+  --fig-bad: #f3798b;
+  --fig-blue: #6e91e8;
+  --fig-green: #00beba;
+  --fig-orange: #fc956d;
+  --fig-purple: #9b87e4;
+  --fig-red: #f47a81;
+  --fig-teal: #00beba;
+  --fig-grid: #353344;
+  --fig-axis: #b7b5ca;
+  --fig-fill: #2b283e;
+  --fig-s1: #9b87e4;
+  --fig-s2: #fc956d;
+  --fig-s3: #00beba;
+  --fig-s4: #da76a4;
+  --fig-s5: #eaaf49;
+  --fig-s6: #6e91e8;
+  --fig-s7: #b874c3;
+  --fig-s8: #ed7f88;
 
   color-scheme: dark;
+  --primary-2: #c57eda;
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -234,7 +228,7 @@ a {
   padding: 0.6em 1.4em;
   border: var(--line) solid var(--outline);
   border-radius: 999px;
-  background: var(--gloss), var(--primary);
+  background: var(--gloss), linear-gradient(90deg, var(--primary), var(--primary-2));
   color: var(--on-primary);
   font-family: var(--font-display);
   font-weight: 600;
@@ -247,7 +241,7 @@ a {
   touch-action: manipulation;
 }
 .btn:hover {
-  background: var(--gloss), var(--primary-strong);
+  background: var(--gloss), linear-gradient(90deg, var(--primary-strong), var(--primary-2));
   transform: translate(-1px, -1px);
   box-shadow: 4px 5px 0 var(--ink);
 }
@@ -335,7 +329,7 @@ a {
   background: var(--card-bg);
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop), var(--card-shade);
+  box-shadow: var(--pop);
   padding: 1.1rem 1.1rem;
 }
 

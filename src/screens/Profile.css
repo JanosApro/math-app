@@ -25,7 +25,7 @@
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--primary), var(--fig-s8));
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
   color: #fff;
   font-family: var(--font-display);
   font-size: 1.7rem;
@@ -35,7 +35,7 @@
   box-shadow: var(--pop-sm);
 }
 .pf-avatar.is-anon {
-  background: linear-gradient(135deg, var(--fig-s6), var(--primary));
+  background: linear-gradient(90deg, var(--fig-s3), var(--primary));
 }
 .pf-hero-text {
   flex: 1;
@@ -129,7 +129,7 @@
   border-radius: 16px;
   background: var(--card-bg);
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop-sm), var(--card-shade);
+  box-shadow: var(--pop-sm);
   animation: boing 0.55s ease-out backwards;
 }
 .pf-stat:nth-child(2) {

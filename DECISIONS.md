@@ -165,12 +165,19 @@ Architectural choices and why. Add new entries at the end of a section.
   nodes. Pressing a button pushes it into its shadow. Deliberately *not* the Duolingo look: no
   colored bottom border, no green. In dark mode the outline is a light violet (black would vanish
   on dark cards) and the shadows stay black.
-- **Color and shade instead of black on white** (teacher feedback): a fixed colorful backdrop
-  (`--bg-art` on `body::before`: pink, sky and sun glows) under the squared paper; cards, tiles
-  and keys use `--card-bg` (white fading into lavender, in lessons and map chapters into the
-  topic color) with `--card-shade` (soft inner shade at the bottom, lit top edge); colored
-  buttons, chips and nodes get a `--gloss` highlight; text and outlines are deep indigo, not
-  black. All of it is tokens in theme.css, redefined for dark mode.
+- **Palette (teacher feedback, round 2): one color family, flat with left → right effects.**
+  Built in OKLCH (perceptually even) so all hues sit at the same chroma and look equally light:
+  brand violet (290) → plum for buttons; warm accents coral (42) and gold (80); a single cool
+  counterpoint, teal (192). Chapter colors (`TOPIC_PALETTE` + topics.json) and chart series
+  alternate warm/cool: violet, coral, teal, berry, gold, indigo, plum, rose. Status colors keep
+  their meaning but are tuned into the family: success teal-green, error raspberry, XP gold,
+  streak coral; the figure highlight is berry. The old blue/orange/green/red set was dropped
+  because its hues had very different lightness and saturation and clashed.
+  60-30-10: lavender neutrals, violet as the main color, small warm accents.
+- **No up/down shading** (it looked overdone): no vertical gradients, inner shades or top
+  highlights. Allowed: gentle left → right gradients (backdrop, cards, bars, buttons) and the
+  hard offset sticker shadow. Text and outlines are deep indigo, not black.
+- `scripts/dev/figure-preview.ts` reads the figure colors from theme.css (no second copy).
 - **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
   `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
   confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star

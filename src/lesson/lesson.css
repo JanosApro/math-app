@@ -10,7 +10,7 @@
   --topic-line: color-mix(in srgb, var(--topic) 45%, var(--border));
   /* every card, tile and key in a lesson fades into a hint of the topic color */
   --card-bottom: color-mix(in srgb, var(--topic) 15%, var(--surface));
-  --card-bg: linear-gradient(165deg, var(--surface) 0%, color-mix(in srgb, var(--topic) 4%, var(--surface)) 40%, var(--card-bottom) 100%);
+  --card-bg: linear-gradient(90deg, var(--surface) 0%, color-mix(in srgb, var(--topic) 4%, var(--surface)) 40%, var(--card-bottom) 100%);
   --lesson-w: 680px;
   min-height: 100vh;
   min-height: 100dvh;
@@ -59,14 +59,6 @@
   background: var(--topic) repeating-linear-gradient(-45deg, transparent 0 8px, rgba(255, 255, 255, 0.16) 8px 16px);
   box-shadow: 2px 0 0 var(--ink);
   transition: width 0.55s cubic-bezier(0.3, 1.5, 0.5, 1);
-}
-.lesson-progress-fill::after {
-  content: '';
-  position: absolute;
-  inset: 3px 6px auto 6px;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
 }
 .lesson-top-streak {
   flex: none;
@@ -121,7 +113,7 @@
   background: var(--card-bg);
   border-radius: 22px;
   border: var(--line) solid var(--outline);
-  box-shadow: var(--pop-lg), var(--card-shade);
+  box-shadow: var(--pop-lg);
   padding: 1rem 1rem 1.1rem;
   overflow-wrap: anywhere;
 }
@@ -594,11 +586,11 @@
 }
 .lesson-sheet-good {
   --sheet-accent: var(--good);
-  background: linear-gradient(180deg, var(--good-bg), color-mix(in srgb, var(--good) 24%, var(--surface)));
+  background: linear-gradient(90deg, var(--good-bg), color-mix(in srgb, var(--good) 24%, var(--surface)));
 }
 .lesson-sheet-bad {
   --sheet-accent: var(--bad);
-  background: linear-gradient(180deg, var(--bad-bg), color-mix(in srgb, var(--bad) 22%, var(--surface)));
+  background: linear-gradient(90deg, var(--bad-bg), color-mix(in srgb, var(--bad) 22%, var(--surface)));
 }
 @keyframes lesson-sheet-in {
   from {
@@ -984,7 +976,7 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  box-shadow: var(--pop), var(--card-shade);
+  box-shadow: var(--pop);
   transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1059,7 +1051,7 @@
   color: #fff;
 }
 .lesson-partrow.is-next {
-  background: linear-gradient(165deg, var(--topic-soft) 0%, color-mix(in srgb, var(--topic) 28%, var(--surface)) 100%);
+  background: linear-gradient(90deg, var(--topic-soft) 0%, color-mix(in srgb, var(--topic) 28%, var(--surface)) 100%);
 }
 .lesson-partrow.is-next .lesson-partrow-num {
   background: var(--topic);
@@ -1347,7 +1339,7 @@
   --badge: var(--streak);
   flex-direction: column;
   gap: 0;
-  background: linear-gradient(160deg, var(--xp), var(--streak));
+  background: linear-gradient(90deg, var(--xp), var(--streak));
 }
 .lesson-badge-fire {
   font-size: 2.8rem;

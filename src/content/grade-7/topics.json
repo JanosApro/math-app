@@ -5,7 +5,7 @@
       "id": "g7-valos-szamok",
       "folder": "valos-szamok",
       "title": "Valós számok",
-      "color": "#3b6fe0",
+      "color": "#7763bc",
       "icon": "root",
       "subtopics": [
         {
@@ -63,7 +63,7 @@
       "id": "g7-pitagorasz",
       "folder": "pitagorasz",
       "title": "Pitagorasz tétele",
-      "color": "#f0750f",
+      "color": "#d27049",
       "icon": "triangle",
       "subtopics": [
         {
@@ -114,7 +114,7 @@
       "id": "g7-algebrai-kifejezesek",
       "folder": "algebrai-kifejezesek",
       "title": "Algebrai egész kifejezések",
-      "color": "#2f9e44",
+      "color": "#009895",
       "icon": "algebra",
       "subtopics": [
         {
@@ -179,7 +179,7 @@
       "id": "g7-sokszogek",
       "folder": "sokszogek",
       "title": "Sokszögek",
-      "color": "#d6336c",
+      "color": "#b15180",
       "icon": "polygon",
       "prerequisites": [
         "g7-valos-szamok",
@@ -234,7 +234,7 @@
       "id": "g7-kor",
       "folder": "kor",
       "title": "A kör",
-      "color": "#7950f2",
+      "color": "#c28914",
       "icon": "circle",
       "subtopics": [
         {
@@ -271,7 +271,7 @@
       "id": "g7-adatfeldolgozas",
       "folder": "adatfeldolgozas",
       "title": "Adatfeldolgozás",
-      "color": "#1098ad",
+      "color": "#4c6dc0",
       "icon": "chart",
       "subtopics": [
         {

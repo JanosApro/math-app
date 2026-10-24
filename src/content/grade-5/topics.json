@@ -5,7 +5,7 @@
       "id": "g5-termeszetes-szamok-1",
       "folder": "termeszetes-szamok-1",
       "title": "Természetes számok és az oszthatóság – első rész",
-      "color": "#3b6fe0",
+      "color": "#7763bc",
       "icon": "numbers",
       "subtopics": [
         {
@@ -63,7 +63,7 @@
       "id": "g5-mertani-alapfogalmak",
       "folder": "mertani-alapfogalmak",
       "title": "Mértani alapfogalmak",
-      "color": "#f0750f",
+      "color": "#d27049",
       "icon": "shapes",
       "subtopics": [
         {
@@ -114,7 +114,7 @@
       "id": "g5-termeszetes-szamok-2",
       "folder": "termeszetes-szamok-2",
       "title": "Természetes számok és az oszthatóság – második rész",
-      "color": "#2f9e44",
+      "color": "#009895",
       "icon": "divide",
       "subtopics": [
         {
@@ -158,7 +158,7 @@
       "id": "g5-tortek-1",
       "folder": "tortek-1",
       "title": "Törtek – első rész",
-      "color": "#d6336c",
+      "color": "#b15180",
       "icon": "fraction",
       "subtopics": [
         {
@@ -209,7 +209,7 @@
       "id": "g5-szogek",
       "folder": "szogek",
       "title": "Szögek",
-      "color": "#7950f2",
+      "color": "#c28914",
       "icon": "angle",
       "subtopics": [
         {
@@ -267,7 +267,7 @@
       "id": "g5-tortek-2",
       "folder": "tortek-2",
       "title": "Törtek – második rész",
-      "color": "#1098ad",
+      "color": "#4c6dc0",
       "icon": "fraction",
       "subtopics": [
         {
@@ -304,7 +304,7 @@
       "id": "g5-tengelyes-tukrozes",
       "folder": "tengelyes-tukrozes",
       "title": "Tengelyes tükrözés",
-      "color": "#c92a2a",
+      "color": "#92509d",
       "icon": "mirror",
       "subtopics": [
         {
@@ -348,7 +348,7 @@
       "id": "g5-tortek-3",
       "folder": "tortek-3",
       "title": "Törtek – harmadik rész",
-      "color": "#8c6d1f",
+      "color": "#c35a64",
       "icon": "percent",
       "subtopics": [
         {

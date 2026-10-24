@@ -10,7 +10,7 @@
  * and prints validation errors/warnings per figure.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -27,8 +27,21 @@ const dark = flags.includes('--dark');
 const outDir = resolve(outArg ?? 'screenshots-tmp');
 mkdirSync(outDir, { recursive: true });
 
-const LIGHT = `--fig-ink:#1f2430;--fig-muted:#8a90a0;--fig-accent:#2f6fde;--fig-hi:#e0452b;--fig-good:#1f9d55;--fig-bad:#d64545;--fig-blue:#2f6fde;--fig-green:#2e9e58;--fig-orange:#f08c1a;--fig-purple:#8a4fd0;--fig-red:#d63c3c;--fig-teal:#159a9c;--fig-grid:#e3e6ee;--fig-axis:#4a5060;--fig-paper:#ffffff;--fig-fill:#eef1f7;--fig-s1:#2f6fde;--fig-s2:#f08c1a;--fig-s3:#2e9e58;--fig-s4:#d63c3c;--fig-s5:#8a4fd0;--fig-s6:#159a9c;--fig-s7:#d9a400;--fig-s8:#d1488f;background:#fff;color:#1f2430`;
-const DARK = `--fig-ink:#e8eaf0;--fig-muted:#9aa0b0;--fig-accent:#6f9cff;--fig-hi:#ff7a5c;--fig-good:#4cc27e;--fig-bad:#ff6b6b;--fig-blue:#6f9cff;--fig-green:#5cc982;--fig-orange:#ffab4a;--fig-purple:#b78cff;--fig-red:#ff6b6b;--fig-teal:#3cc6c8;--fig-grid:#343b4a;--fig-axis:#c0c4d0;--fig-paper:#1e2230;--fig-fill:#2a3040;--fig-s1:#6f9cff;--fig-s2:#ffab4a;--fig-s3:#5cc982;--fig-s4:#ff6b6b;--fig-s5:#b78cff;--fig-s6:#3cc6c8;--fig-s7:#f2c94c;--fig-s8:#f07ab5;background:#1e2230;color:#e8eaf0`;
+/** The figure colors, read from the app's theme (src/styles/theme.css), so the preview matches. */
+function themeVars(mode: 'light' | 'dark'): string {
+  const css = readFileSync(resolve('src/styles/theme.css'), 'utf8');
+  const block = (sel: string) => {
+    const at = css.indexOf(sel);
+    return at < 0 ? '' : css.slice(at, css.indexOf('\n}\n', at));
+  };
+  const read = (text: string) => Object.fromEntries([...text.matchAll(/\n\s*(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]));
+  const vars: Record<string, string> = { ...read(block(':root {')), ...(mode === 'dark' ? read(block(":root[data-theme='dark'] {")) : {}) };
+  const resolveVar = (v: string, depth = 0): string => (depth < 5 ? v.replace(/var\((--[\w-]+)\)/g, (_, k: string) => resolveVar(vars[k] ?? '', depth + 1)) : v);
+  const figs = Object.keys(vars).filter((k) => k.startsWith('--fig-')).map((k) => `${k}:${resolveVar(vars[k])}`);
+  return `${figs.join(';')};background:${resolveVar(vars['--surface'])};color:${resolveVar(vars['--text'])}`;
+}
+const LIGHT = themeVars('light');
+const DARK = themeVars('dark');
 
 async function main() {
   const mod = (await import(pathToFileURL(resolve('src/dev/gallery', `${name}.ts`)).href)) as { section: GallerySection };

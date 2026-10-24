@@ -23,7 +23,7 @@ function useThemeClasses() {
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute('data-theme', settings.theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', settings.theme === 'dark' ? '#13111d' : '#5a4ff3');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', settings.theme === 'dark' ? '#0f0c1d' : '#6c4bcc');
     root.classList.toggle('reduce-motion', settings.reduceMotion);
   }, [settings.theme, settings.reduceMotion]);
 }

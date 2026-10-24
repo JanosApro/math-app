@@ -88,7 +88,7 @@
   color: var(--text);
   cursor: pointer;
   overflow: hidden;
-  box-shadow: var(--pop), var(--card-shade);
+  box-shadow: var(--pop);
   transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.15s ease, box-shadow 0.15s ease;
   touch-action: manipulation;
 }
@@ -114,23 +114,23 @@
   transform: translate(3px, 4px);
   box-shadow: 0 0 0 var(--ink);
 }
-.onb-grade.tone-orange {
+.onb-grade.tone-coral {
   --tone: var(--fig-s2);
 }
 .onb-grade.tone-violet {
-  --tone: var(--fig-s5);
-}
-.onb-grade.tone-teal {
-  --tone: var(--fig-s6);
-}
-.onb-grade.tone-pink {
-  --tone: var(--fig-s8);
-}
-.onb-grade.tone-blue {
   --tone: var(--fig-s1);
 }
-.onb-grade.tone-green {
+.onb-grade.tone-teal {
   --tone: var(--fig-s3);
+}
+.onb-grade.tone-berry {
+  --tone: var(--fig-s4);
+}
+.onb-grade.tone-gold {
+  --tone: var(--fig-s5);
+}
+.onb-grade.tone-indigo {
+  --tone: var(--fig-s6);
 }
 .onb-grade-num {
   position: relative;
