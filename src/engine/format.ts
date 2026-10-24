@@ -52,9 +52,31 @@ export function m(latex: string): string {
 /**
  * Tagged template that keeps backslashes, so you can write LaTeX naturally:
  *   tex`$\sqrt{${n}}$`  instead of  '$\\sqrt{' + n + '}$'
+ *
+ * Outside `$…$` a `\n` still means a line break (so `\n\n` starts a new paragraph);
+ * inside `$…$` everything is kept literally (`\ne`, `\neq` and `\\` stay LaTeX).
  */
 export function tex(strings: TemplateStringsArray, ...values: unknown[]): string {
-  return String.raw({ raw: strings }, ...values);
+  const raw = String.raw({ raw: strings.raw }, ...values);
+  // Split into text / math parts on unescaped $ and turn "\n" into a newline only in text parts.
+  let out = '';
+  let inMath = false;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (ch === '\\' && raw[i + 1] === '$') {
+      out += '\\$';
+      i++;
+    } else if (ch === '$') {
+      inMath = !inMath;
+      out += ch;
+    } else if (!inMath && ch === '\\' && raw[i + 1] === 'n') {
+      out += '\n';
+      i++;
+    } else {
+      out += ch;
+    }
+  }
+  return out;
 }
 
 /** LaTeX for a fraction: texFrac(3, 4) → "\frac{3}{4}", texFrac(-1, 2) → "-\frac{1}{2}". Integers stay integers when den is 1 and `keepOne` is false. */
@@ -128,4 +150,35 @@ export function article(next: number | string): 'a' | 'az' {
   if (s.length === 4 && s[0] === '1') return 'az'; // ezer...
   if (s.length === 7 && s[0] === '1') return 'az'; // egymillió
   return 'a';
+}
+
+/**
+ * Vowel harmony of a number as spoken in Hungarian, for suffixes after numbers:
+ * 'back' (három, hat, nyolc, húsz, száz …), 'front' (egy, négy, hét, kilenc, tíz, ezer …)
+ * or 'rounded' (kettő, öt — front rounded vowels).
+ */
+export function harmony(n: number): 'back' | 'front' | 'rounded' {
+  if (!Number.isInteger(n)) {
+    const places = (num(Math.abs(n)).split(',')[1] ?? '').length;
+    return places === 2 ? 'back' : 'front'; // tized, század, ezred
+  }
+  n = Math.abs(n);
+  if (n === 0) return 'back'; // nulla
+  const ones: Record<number, 'back' | 'front' | 'rounded'> = { 1: 'front', 2: 'rounded', 3: 'back', 4: 'front', 5: 'rounded', 6: 'back', 7: 'front', 8: 'back', 9: 'front' };
+  const tens: Record<number, 'back' | 'front'> = { 1: 'front', 2: 'back', 3: 'back', 4: 'front', 5: 'front', 6: 'back', 7: 'front', 8: 'back', 9: 'front' };
+  if (n % 10 !== 0) return ones[n % 10];
+  if (n % 100 !== 0) return tens[(n / 10) % 10];
+  if (n % 1000 !== 0) return 'back'; // száz
+  if (n % 1000000 !== 0) return 'front'; // ezer
+  return 'back'; // millió
+}
+
+/**
+ * Picks the suffix form that matches the number: suffix(6, 'nak', 'nek') → 'nak',
+ * suffix(4, 'nak', 'nek') → 'nek', suffix(5, 'hoz', 'hez', 'höz') → 'höz'.
+ * Use with a hyphen after the number: `${num(n)}-${suffix(n, 'nak', 'nek')}` → "6-nak".
+ */
+export function suffix(n: number, back: string, front: string, rounded: string = front): string {
+  const h = harmony(n);
+  return h === 'back' ? back : h === 'rounded' ? rounded : front;
 }

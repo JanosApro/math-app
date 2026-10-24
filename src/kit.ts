@@ -36,7 +36,7 @@ export type { Rng } from './engine/rng';
 export type * from './figures/types';
 
 // Number formatting and LaTeX builders
-export { num, signed, paren, m, tex, texFrac, texMixed, texRoot, rootText, withUnit, joinHu, article, MINUS } from './engine/format';
+export { num, signed, paren, m, tex, texFrac, texMixed, texRoot, rootText, withUnit, joinHu, article, suffix, harmony, MINUS } from './engine/format';
 
 // Exact math
 export {

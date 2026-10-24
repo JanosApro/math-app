@@ -118,6 +118,12 @@ export function richTextProblems(text: string): string[] {
   if (/\bundefined\b|\bNaN\b|\bInfinity\b|\[object Object\]/.test(text)) {
     problems.push('Text contains "undefined", "NaN", "Infinity" or "[object Object]".');
   }
+  // LaTeX command names without their backslash ("sqrt{2}" instead of "\\sqrt{2}") are valid
+  // KaTeX (plain letters), so they must be caught here.
+  for (const latex of mathSegments(text)) {
+    const m = /(^|[^\\a-zA-Z])(sqrt|frac|dfrac|tfrac|cdot|times|approx|alpha|beta|gamma|delta|left|right|begin|end|hline|square|qquad|quad|text|mathrm|neq|leq|geq|circ|overline|underline|infty)(?![a-zA-Z])/.exec(latex);
+    if (m) problems.push(`"${m[2]}" without a backslash in formula "${latex}" — a LaTeX command lost its backslash (write \\\\${m[2]} or use the tex\`...\` template).`);
+  }
   // Decimal point in numbers inside text (Hungarian uses decimal comma).
   const textOnly = text.replace(/\$[^$]*\$/g, '');
   if (/\d\.\d/.test(textOnly)) problems.push('Decimal point in text: Hungarian uses a decimal comma (use num()).');

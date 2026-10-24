@@ -89,8 +89,10 @@ after the last step. A lesson takes 10–20 minutes.
 - Decimal comma inside math is fine: `$0,5$` (shown as 0,5).
 - `**bold**`, `\n` new line, `\n\n` new paragraph, lines starting with `- ` are bullets.
 - **Backslashes!** In a normal string write two: `'$\\frac{1}{2}$'`. Easier: the `tex` tag keeps
-  backslashes and allows `${}`: ``tex`$\frac{${p}}{${q}}$` ``. A single backslash in a normal
-  string silently breaks (`'\frac'` becomes a form-feed + "rac"); `npm run check` catches it.
+  backslashes and allows `${}`: ``tex`$\frac{${p}}{${q}}$` ``. Inside a `tex` template, `\n`
+  outside `$…$` is still a line break, inside `$…$` it stays LaTeX (`\ne`, `\neq`). A single
+  backslash in a normal string silently breaks (`'\frac'` becomes a form-feed + "rac", `'\sqrt'`
+  becomes the word "sqrt"); `npm run check` catches both.
 - Multiplication: `\cdot` (·). Division: `:` . Units after a space, upright: `5 cm`, `cm²`, `m³`.
 
 ## Helpers (`src/kit.ts` — the only import you need)
@@ -108,6 +110,7 @@ after the last step. A lesson takes 10–20 minutes.
 | `withUnit(x, 'cm')` | `3,5 cm` |
 | `joinHu(['a','b','c'])` | `a, b és c` |
 | `article(x)` | Hungarian article: `article(5)` → `az`, `article(3)` → `a` |
+| `suffix(n, back, front, rounded?)` | suffix after a number with vowel harmony: `` `${num(n)}-${suffix(n, 'nak', 'nek')}` `` → `6-nak`, `4-nek`; `suffix(5, 'hoz', 'hez', 'höz')` → `höz` |
 | `gcd`, `lcm`, `round(x, d)`, `clean(x)` (removes float noise like 0.30000000004) | |
 | `frac(n, d)`, `simplify`, `fracAdd/Sub/Mul/Div`, `fracEquals`, `fracCompare`, `fracValue`, `toMixed`, `decimalToFrac`, `isTerminating` | exact fractions |
 | `simplifyRoot(50)` → `{ coef: 5, radicand: 2 }`, `isSquareFree`, `isPerfectSquare` | roots |

@@ -274,7 +274,7 @@
           "id": "g5-tortek-2-01",
           "file": "01-osszeadas-kivonas",
           "title": "Törtek összeadása és kivonása",
-          "status": "todo",
+          "status": "draft",
           "scope": "Adding and subtracting fractions: equal denominators, then unlike denominators via a common denominator (any common multiple first, LKKT as the efficient choice), mixed numbers, fraction ± whole number; adding/subtracting decimals (line up the decimal comma); commutative/associative laws and short expressions mixing both notations. Exercises: fraction input (simplified-or-not flag), decimal input, MC with typical-mistake distractors (a/b + c/d = (a+c)/(b+d)), missing addend, word problems. Denominators ≤ 12 at levels 1–2."
         },
         {
