@@ -26,6 +26,7 @@
   --warn-bg: #fff1d6;
   --xp: #e6a200;
   --xp-bg: #fff4cf;
+  --on-xp: #3d2a00;
   --streak: #f2611d;
   --streak-bg: #ffe9dc;
   --remember-bg: #fff6c2;
@@ -87,6 +88,7 @@
   --warn-bg: #3a2b12;
   --xp: #ffc83d;
   --xp-bg: #3a3014;
+  --on-xp: #2b1e00;
   --streak: #ff8a4c;
   --streak-bg: #3c2416;
   --remember-bg: #3a3518;
@@ -143,6 +145,7 @@
     --warn-bg: #3a2b12;
     --xp: #ffc83d;
     --xp-bg: #3a3014;
+  --on-xp: #2b1e00;
     --streak: #ff8a4c;
     --streak-bg: #3c2416;
     --remember-bg: #3a3518;
@@ -282,7 +285,7 @@ a {
 }
 .btn-good {
   background: var(--good);
-  color: #fff;
+  color: var(--on-primary);
   box-shadow: 0 3px 10px color-mix(in srgb, var(--good) 35%, transparent);
 }
 .btn-good:hover {
@@ -290,7 +293,11 @@ a {
 }
 .btn-bad {
   background: var(--bad);
-  color: #fff;
+  color: var(--on-primary);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--bad) 35%, transparent);
+}
+.btn-bad:hover {
+  background: color-mix(in srgb, var(--bad) 85%, var(--text));
 }
 .btn-small {
   min-height: 38px;

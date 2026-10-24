@@ -113,6 +113,18 @@ Architectural choices and why. Add new entries at the end of a section.
 - `src/content/registry.ts` has two dev-only exports (`allModulePaths`, `importModule`) so `/dev`
   can load every module file directly, including orphan files no subtopic references.
 
+## PWA / offline
+- No PWA library: a ~60-line Vite plugin in `vite.config.ts` writes `dist/sw.js` with the list of
+  emitted files (+ `public/`, woff2 fonts only — every browser that runs service workers reads
+  woff2). Page navigations are **network first** (a new deploy reaches students at once) with the
+  cached `index.html` as the offline fallback; all other same-origin GETs are **cache first**
+  (file names are content-hashed). The cache name contains a hash of the file list, old caches
+  are deleted on activate. Registered only in production (`src/pwa.ts`).
+- Icons: original logo (an "M" drawn as a path with a start dot and a star), SVG + PNG renders
+  (192, 512, maskable 512, apple-touch 180) committed in `public/`.
+- Text on bright accent backgrounds uses tokens (`--on-primary`, `--on-xp`), not `#fff`, so it keeps
+  its contrast in dark mode, where the accents are lighter.
+
 ## Hosting
 - `base: './'` in vite.config.ts so `dist/` works under any path (GitHub Pages project sites,
   Cloudflare Pages). Cloudflare Pages: build command `npm run build`, output directory `dist`
