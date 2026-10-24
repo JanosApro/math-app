@@ -1,6 +1,7 @@
 /* Onboarding / welcome screen */
 
 .onb {
+  position: relative;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -332,4 +333,11 @@
   .onb-card {
     padding: 2rem 1.75rem 1.25rem;
   }
+}
+
+.onb-theme {
+  position: absolute;
+  top: max(0.75rem, env(safe-area-inset-top));
+  right: max(0.75rem, env(safe-area-inset-right));
+  z-index: 5;
 }

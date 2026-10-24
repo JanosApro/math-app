@@ -53,7 +53,6 @@ export default function SettingsScreen() {
     showToast(t.settings.saved);
   };
   const themes: { value: Settings['theme']; label: string }[] = [
-    { value: 'auto', label: t.settings.themeAuto },
     { value: 'light', label: t.settings.themeLight },
     { value: 'dark', label: t.settings.themeDark },
   ];

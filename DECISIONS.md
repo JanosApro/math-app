@@ -120,6 +120,14 @@ Architectural choices and why. Add new entries at the end of a section.
 - `src/content/registry.ts` has two dev-only exports (`allModulePaths`, `importModule`) so `/dev`
   can load every module file directly, including orphan files no subtopic references.
 
+## Theme and sound (teacher feedback, 2026-10-24)
+- **Light mode by default**, dark only when chosen: the theme is always explicit
+  (`<html data-theme>`), set before the first paint by a tiny inline script in index.html. The
+  sun/moon toggle is in the top bar of every main screen (and on the welcome screen), and in
+  settings. "Automatic" (system) was removed — it made the app dark on dark-mode phones.
+- State version 2: v1 saves are migrated once — 'auto' → light, and sound → on (it was off by
+  default before, so a stored `false` was not a real choice).
+
 ## PWA / offline
 - No PWA library: a ~60-line Vite plugin in `vite.config.ts` writes `dist/sw.js` with the list of
   emitted files (+ `public/`, woff2 fonts only — every browser that runs service workers reads

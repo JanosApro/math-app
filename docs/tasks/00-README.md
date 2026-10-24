@@ -40,4 +40,4 @@ every change and `npm run status` after editing topics.json.
   playwright-core with a local Chromium; set `CHROME_PATH` if needed) and
   `node scripts/dev/screenshot.mjs "<url>" out.png [width] [--dark] [--full]`.
 - To skip onboarding in automated tests, set
-  `localStorage['matek-kaland:v1'] = '{"version":1,"grade":7,"nickname":"","settings":{"sound":false,"reduceMotion":false,"theme":"auto"},"grades":{}}'`.
+  `localStorage['matek-kaland:v1'] = '{"version":2,"grade":7,"nickname":"","settings":{"sound":false,"reduceMotion":false,"theme":"light"},"grades":{}}'`.

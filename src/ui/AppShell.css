@@ -336,3 +336,26 @@
     padding-bottom: 3rem;
   }
 }
+
+/* the brand gives way to the stats (theme toggle, streak, XP) on narrow phones */
+.shell-brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+@media (max-width: 420px) {
+  .shell-brand-name {
+    display: none;
+  }
+  .shell-brand-grade {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .shell-chip-unit {
+    display: none;
+  }
+  .shell-chip {
+    padding: 0 0.6rem 0 0.5rem;
+  }
+}

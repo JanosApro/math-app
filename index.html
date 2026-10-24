@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="hu">
+<html lang="hu" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -11,6 +11,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Matek Kaland" />
     <title>Matek Kaland</title>
+    <script>
+      // dark mode before the first paint (no light flash); the app keeps it in sync afterwards
+      try {
+        if (JSON.parse(localStorage.getItem('matek-kaland:v1') || '{}').settings.theme === 'dark') document.documentElement.dataset.theme = 'dark';
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

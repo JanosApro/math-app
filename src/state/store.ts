@@ -6,12 +6,16 @@
 import { useSyncExternalStore } from 'react';
 
 export const STORAGE_KEY = 'matek-kaland:v1';
-export const STATE_VERSION = 1;
+/**
+ * 2: theme is 'light' | 'dark' (default light, the old 'auto' became light) and sound is on by
+ * default — v1 saves are migrated once (their sound: false was the old default, so it is reset).
+ */
+export const STATE_VERSION = 2;
 
 export interface Settings {
   sound: boolean;
   reduceMotion: boolean;
-  theme: 'auto' | 'light' | 'dark';
+  theme: 'light' | 'dark';
 }
 
 export interface SubtopicProgress {
@@ -63,7 +67,7 @@ export function initialState(): AppState {
     version: STATE_VERSION,
     grade: null,
     nickname: '',
-    settings: { sound: false, reduceMotion: false, theme: 'auto' },
+    settings: { sound: true, reduceMotion: false, theme: 'light' },
     grades: {},
   };
 }
@@ -84,9 +88,10 @@ export function sanitizeState(raw: unknown): AppState | null {
     grade: typeof raw.grade === 'number' ? raw.grade : null,
     nickname: typeof raw.nickname === 'string' ? raw.nickname.slice(0, 30) : '',
     settings: {
-      sound: typeof settings.sound === 'boolean' ? settings.sound : base.settings.sound,
+      // v1 → v2: sound was off by default before; it is on now for everyone (one-time reset)
+      sound: raw.version >= 2 && typeof settings.sound === 'boolean' ? settings.sound : base.settings.sound,
       reduceMotion: typeof settings.reduceMotion === 'boolean' ? settings.reduceMotion : base.settings.reduceMotion,
-      theme: settings.theme === 'light' || settings.theme === 'dark' ? settings.theme : 'auto',
+      theme: settings.theme === 'dark' ? 'dark' : 'light',
     },
     grades: {},
   };

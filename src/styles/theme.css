@@ -1,6 +1,7 @@
 /*
  * Design tokens and base components. Every screen uses these variables, so colors work in
- * light and dark mode. Theme: <html data-theme="light|dark">, or automatic (system).
+ * light and dark mode. Theme: <html data-theme="light|dark"> (light by default; the toggle is in
+ * the top bar and in settings).
  */
 :root {
   --font-ui: ui-rounded, 'SF Pro Rounded', 'Nunito', 'Varela Round', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -120,64 +121,6 @@
   --fig-s8: #f07ab5;
 
   color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #13111d;
-    --bg-pattern: #1a1728;
-    --surface: #1e1b2d;
-    --surface-2: #29253d;
-    --surface-3: #343050;
-    --text: #f2f0fb;
-    --text-muted: #aaa5c6;
-    --border: #393352;
-    --primary: #8d86ff;
-    --primary-strong: #a29cff;
-    --primary-soft: #2e2a52;
-    --on-primary: #12101c;
-    --good: #52c886;
-    --good-strong: #6ad89a;
-    --good-bg: #173627;
-    --bad: #ff7d7d;
-    --bad-bg: #3e1d23;
-    --warn: #ffb547;
-    --warn-bg: #3a2b12;
-    --xp: #ffc83d;
-    --xp-bg: #3a3014;
-  --on-xp: #2b1e00;
-    --streak: #ff8a4c;
-    --streak-bg: #3c2416;
-    --remember-bg: #3a3518;
-    --locked: #5f5a7c;
-    --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 6px 20px rgba(0, 0, 0, 0.3);
-    --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.5);
-
-    --fig-ink: #e8eaf0;
-    --fig-muted: #9aa0b0;
-    --fig-hi: #ff7a5c;
-    --fig-good: #4cc27e;
-    --fig-bad: #ff6b6b;
-    --fig-blue: #6f9cff;
-    --fig-green: #5cc982;
-    --fig-orange: #ffab4a;
-    --fig-purple: #b78cff;
-    --fig-red: #ff6b6b;
-    --fig-teal: #3cc6c8;
-    --fig-grid: #343b4a;
-    --fig-axis: #c0c4d0;
-    --fig-fill: #2a3040;
-    --fig-s1: #6f9cff;
-    --fig-s2: #ffab4a;
-    --fig-s3: #5cc982;
-    --fig-s4: #ff6b6b;
-    --fig-s5: #b78cff;
-    --fig-s6: #3cc6c8;
-    --fig-s7: #f2c94c;
-    --fig-s8: #f07ab5;
-
-    color-scheme: dark;
-  }
 }
 
 /* ------------------------------------------------------------------------------------------ */

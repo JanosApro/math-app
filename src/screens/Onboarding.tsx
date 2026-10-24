@@ -11,6 +11,7 @@ import { setGrade, setNickname } from '../state/progress';
 import { useAppState } from '../state/store';
 import { navigate } from '../ui/router';
 import { Logo } from '../ui/AppShellIcons';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { WelcomeArt } from './WelcomeArt';
 import { ImportProgressButton } from './ImportProgress';
 import './screens.css';
@@ -37,6 +38,7 @@ export default function Onboarding() {
 
   return (
     <div className="onb">
+      <ThemeToggle className="onb-theme" />
       <div className="onb-hero">
         <div className="onb-brand">
           <Logo size={44} />

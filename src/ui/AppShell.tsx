@@ -15,6 +15,7 @@ import { computeStreak } from '../state/progress';
 import { todayBelgrade } from '../state/dates';
 import { GRADES } from '../content/registry';
 import { Logo, NavIcon, XpIcon, type NavIconName } from './AppShellIcons';
+import { ThemeToggle } from './ThemeToggle';
 import './AppShell.css';
 
 const NAV: { name: NavIconName; route: Route; label: string }[] = [
@@ -48,6 +49,7 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
         </a>
         {grade !== null && streak && (
           <div className="shell-stats">
+            <ThemeToggle />
             <a
               className={`shell-chip shell-chip-streak${streak.doneToday ? ' is-lit' : ''}`}
               href={routeToHash({ name: 'profile' })}

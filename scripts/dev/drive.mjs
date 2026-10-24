@@ -11,7 +11,7 @@ export const STORAGE_KEY = 'matek-kaland:v1';
 
 /** A fresh saved state with the grade already chosen (skips onboarding). */
 export const freshState = (grade = 7) =>
-  JSON.stringify({ version: 1, grade, nickname: '', settings: { sound: false, reduceMotion: false, theme: 'auto' }, grades: {} });
+  JSON.stringify({ version: 2, grade, nickname: '', settings: { sound: false, reduceMotion: false, theme: 'light' }, grades: {} });
 
 /**
  * Opens a page. `state`: a JSON string written to localStorage before the first load, or null to

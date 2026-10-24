@@ -41,6 +41,10 @@ export const t = {
     xpAria: (n: number) => `Összes XP: ${n}`,
     dailyPending: 'A mai kihívás még vár rád!',
     skipToContent: 'Ugrás a tartalomhoz',
+    toDark: 'Sötét mód bekapcsolása',
+    toLight: 'Világos mód bekapcsolása',
+    soundOn: 'Hang bekapcsolása',
+    soundOff: 'Hang kikapcsolása',
   },
 
   onboarding: {
@@ -264,7 +268,6 @@ export const t = {
     soundHint: 'Rövid hangjelzés helyes és hibás válasznál.',
     reduceMotion: 'Kevesebb animáció',
     theme: 'Megjelenés',
-    themeAuto: 'Automatikus',
     themeLight: 'Világos',
     themeDark: 'Sötét',
     data: 'Adatok mentése',
