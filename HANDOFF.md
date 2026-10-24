@@ -16,6 +16,9 @@ For content only (after tasks 01–03 exist):
 > Read AGENTS.md and CONTENT_GUIDE.md. Write the next `todo` subtopic from CONTENT_STATUS.md,
 > following the gold-standard lesson src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts.
 
+GitHub: https://github.com/JanosApro/math-app (private, remote `origin`, branch `master`). For a cloud
+session on claude.ai/code use the prompt in `docs/tasks/CLOUD_PROMPT.md`.
+
 Git: this repository has a local git identity (`git config user.name onam`,
 `user.email aprojanos2001@gmail.com`) because none was set on the machine. Change it with
 `git config user.name "…"` / `git config user.email "…"` inside this folder if needed.
