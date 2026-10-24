@@ -106,20 +106,21 @@
   width: 100%;
   min-height: 48px;
   padding: 0.45rem 0.7rem 0.45rem 0.5rem;
-  border: 2px solid var(--border);
+  border: 2px solid var(--outline);
   border-radius: 14px;
   background: var(--surface);
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+  box-shadow: var(--pop-sm);
+  transition: background 0.15s ease, transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s;
 }
 .sl-item:hover {
-  border-color: var(--topic);
-  background: color-mix(in srgb, var(--topic) 7%, var(--surface));
+  background: color-mix(in srgb, var(--topic) 9%, var(--surface));
 }
 .sl-item:active {
-  transform: scale(0.98);
+  transform: translate(2px, 2.5px);
+  box-shadow: none;
 }
 .sl-item-num {
   flex: none;

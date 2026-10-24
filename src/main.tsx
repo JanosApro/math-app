@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'katex/dist/katex.min.css';
+import './styles/fonts.css';
 import './styles/theme.css';
 import { App } from './App';
 import { registerServiceWorker } from './pwa';

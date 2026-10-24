@@ -147,6 +147,25 @@ Architectural choices and why. Add new entries at the end of a section.
 - State version 2: v1 saves are migrated once — 'auto' → light, and sound → on (it was off by
   default before, so a stored `false` was not a real choice).
 
+## Look and feel: cartoon "sticker" style (teacher feedback, 2026-10-24)
+- **Fonts are bundled** (no CDN, works offline): DynaPuff for headings, buttons and big numbers,
+  Nunito for body text (`src/styles/fonts.css`, `@fontsource-variable/*`, SIL OFL). Only the latin
+  and latin-ext subsets (~140 kB in total, variable weight). The display font must have the
+  Hungarian **ő / ű**: Fredoka, Lilita One, Sniglet and Bubblegum Sans were rejected because they
+  lack them (the browser silently fell back to another font for those two letters); DynaPuff,
+  Baloo 2 and Grandstander have them, DynaPuff is the most playful.
+- **Sticker look**: ink outlines (`--outline`, `--line`) and hard diagonal offset shadows
+  (`--pop`, `--pop-sm`, `--pop-lg` in `--ink`) on cards, buttons, answer tiles, keys, chips and map
+  nodes. Pressing a button pushes it into its shadow. Deliberately *not* the Duolingo look: no
+  colored bottom border, no green. In dark mode the outline is a light violet (black would vanish
+  on dark cards) and the shadows stay black.
+- **Popping effects** (all switched off by reduced motion, globally in theme.css): springy
+  `boing` entrances, a star burst + flying "+10" on a correct answer, a wobbling ✗ on a wrong one,
+  confetti that explodes from the middle of the screen (stars, dots, strips), a spinning star
+  medal, staggered pop-in of map nodes and part rows, a hopping ▶ on the recommended lesson.
+- Effects that leave their box (burst, "+10") live in an effects layer of the feedback sheet,
+  outside its scroll container, so they are not clipped.
+
 ## PWA / offline
 - No PWA library: a ~60-line Vite plugin in `vite.config.ts` writes `dist/sw.js` with the list of
   emitted files (+ `public/`, woff2 fonts only — every browser that runs service workers reads

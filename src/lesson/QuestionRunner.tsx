@@ -17,7 +17,7 @@ import { playSound } from '../ui/sound';
 import { pickPhrase, t } from '../i18n/hu';
 import { QuestionView } from './QuestionView';
 import { draftToAnswer, emptyDraft, type AnswerDraft } from './inputs/draft';
-import { CountUp, LessonFooter, useEnterKey } from './parts';
+import { Burst, CountUp, LessonFooter, useEnterKey } from './parts';
 import { clearCurrentQuestion, setCurrentQuestion } from './devHook';
 
 export type RunnerMode = 'lesson' | 'test' | 'daily';
@@ -210,14 +210,22 @@ export function FeedbackSheet({
       <div className="lesson-sheet-spacer" aria-hidden="true" style={sheetH !== null ? { height: sheetH + 16 } : undefined} />
       <div ref={sheet} className={`lesson-sheet ${good ? 'lesson-sheet-good' : 'lesson-sheet-bad'}`} role="status" aria-live="polite">
         <div className="lesson-sheet-inner">
+          {good && (
+            <span className="lesson-sheet-fx" aria-hidden="true">
+              <span className="lesson-sheet-fx-burst">
+                <Burst />
+              </span>
+              {result.xp > 0 && mode === 'lesson' && <span className="lesson-xp-fly">+{result.xp}</span>}
+            </span>
+          )}
           <div className="lesson-sheet-scroll">
             <div className="lesson-sheet-head">
-              <span className={`lesson-sheet-icon${good ? ' anim-pop' : ''}`} aria-hidden="true">
+              <span className={`lesson-sheet-icon${good ? ' anim-boing' : ''}`} aria-hidden="true">
                 {good ? '✓' : '✗'}
               </span>
               <strong className="lesson-sheet-title">{good ? pickPhrase(t.feedback.correct, seed) : t.feedback.wrong}</strong>
               {good && result.xp > 0 && mode === 'lesson' && (
-                <span className="lesson-xp-pill anim-pop">
+                <span className="lesson-xp-pill anim-boing">
                   +<CountUp value={result.xp} duration={600} /> {t.common.xp}
                 </span>
               )}

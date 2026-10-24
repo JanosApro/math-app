@@ -22,8 +22,10 @@
   color: var(--surface);
   border-radius: 16px;
   padding: 0.7rem 1.1rem;
-  box-shadow: var(--shadow-strong);
-  font-weight: 700;
+  border: 2px solid var(--outline);
+  box-shadow: var(--pop);
+  font-family: var(--font-display);
+  font-weight: 500;
   font-size: 0.95rem;
   line-height: 1.35;
   text-align: center;

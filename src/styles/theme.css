@@ -1,10 +1,22 @@
 /*
  * Design tokens and base components. Every screen uses these variables, so colors work in
  * light and dark mode. Theme: <html data-theme="light|dark"> (light by default; the toggle is in
- * the top bar and in settings).
+ * the top bar and in settings). Style: cartoon stickers — ink outlines (--outline, --line) and
+ * hard offset shadows (--pop*); fonts in fonts.css (DECISIONS "Look and feel").
  */
 :root {
-  --font-ui: ui-rounded, 'SF Pro Rounded', 'Nunito', 'Varela Round', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-ui: 'Nunito Variable', ui-rounded, 'SF Pro Rounded', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* headings, buttons, big numbers */
+  --font-display: 'DynaPuff Variable', 'Nunito Variable', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+
+  /* cartoon "sticker" look: ink outlines + hard offset shadows (never a colored bottom border) */
+  --outline: #2b2347;
+  /* color of the hard shadows (= the outline in light mode, pure black in dark mode) */
+  --ink: var(--outline);
+  --line: 2.5px;
+  --pop: 3px 4px 0 var(--ink);
+  --pop-sm: 2px 2.5px 0 var(--ink);
+  --pop-lg: 5px 6px 0 var(--ink);
 
   --bg: #f5f3ff;
   --bg-pattern: #ebe7ff;
@@ -68,6 +80,9 @@
 }
 
 :root[data-theme='dark'] {
+  /* lighter outlines so cards keep their shape on the dark background; shadows stay black */
+  --outline: #5d5694;
+  --ink: #000;
   --bg: #13111d;
   --bg-pattern: #1a1728;
   --surface: #1e1b2d;
@@ -161,6 +176,8 @@ textarea {
 h1,
 h2,
 h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
   line-height: 1.2;
   margin: 0 0 0.5em;
 }
@@ -174,32 +191,38 @@ a {
   outline-offset: 2px;
 }
 
-/* ---- Buttons ---- */
+/* ---- Buttons: chunky stickers — ink outline + hard diagonal shadow; pressing pushes them
+   into their shadow (no colored bottom border) ---- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5em;
-  min-height: 48px;
-  padding: 0.65em 1.4em;
-  border: none;
+  min-height: 50px;
+  padding: 0.6em 1.4em;
+  border: var(--line) solid var(--outline);
   border-radius: 999px;
   background: var(--primary);
   color: var(--on-primary);
-  font-weight: 700;
-  font-size: 1.02rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.08rem;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--primary) 35%, transparent);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, opacity 0.15s;
+  box-shadow: var(--pop);
+  transition: transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.12s ease, background 0.15s ease, opacity 0.15s;
   user-select: none;
   touch-action: manipulation;
 }
 .btn:hover {
   background: var(--primary-strong);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 5px 0 var(--ink);
 }
 .btn:active {
-  transform: scale(0.97);
+  transform: translate(3px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+  transition-duration: 0.05s;
 }
 .btn:disabled {
   opacity: 0.45;
@@ -211,9 +234,8 @@ a {
   width: 100%;
 }
 .btn-ghost {
-  background: transparent;
+  background: var(--surface);
   color: var(--primary);
-  box-shadow: inset 0 0 0 2px var(--border);
 }
 .btn-ghost:hover {
   background: var(--primary-soft);
@@ -221,15 +243,16 @@ a {
 .btn-soft {
   background: var(--primary-soft);
   color: var(--primary);
-  box-shadow: none;
+  border-width: 2px;
+  box-shadow: var(--pop-sm);
 }
 .btn-soft:hover {
   background: var(--surface-3);
+  box-shadow: 3px 3.5px 0 var(--ink);
 }
 .btn-good {
   background: var(--good);
   color: var(--on-primary);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--good) 35%, transparent);
 }
 .btn-good:hover {
   background: var(--good-strong);
@@ -237,15 +260,23 @@ a {
 .btn-bad {
   background: var(--bad);
   color: var(--on-primary);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--bad) 35%, transparent);
 }
 .btn-bad:hover {
   background: color-mix(in srgb, var(--bad) 85%, var(--text));
 }
 .btn-small {
-  min-height: 38px;
-  padding: 0.35em 1em;
-  font-size: 0.92rem;
+  min-height: 40px;
+  padding: 0.3em 1em;
+  font-size: 0.95rem;
+  border-width: 2px;
+  box-shadow: var(--pop-sm);
+}
+.btn-small:hover {
+  box-shadow: 3px 3.5px 0 var(--ink);
+}
+.btn-small:active {
+  transform: translate(2px, 2.5px);
+  box-shadow: 0 0 0 var(--ink);
 }
 .icon-btn {
   display: inline-flex;
@@ -258,16 +289,21 @@ a {
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.15s;
 }
 .icon-btn:hover {
   background: var(--surface-2);
+}
+.icon-btn:active {
+  transform: scale(0.88);
 }
 
 /* ---- Cards ---- */
 .card {
   background: var(--surface);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
   padding: 1.1rem 1.1rem;
 }
 
@@ -373,7 +409,27 @@ a {
   }
 }
 .anim-pop {
-  animation: pop 0.35s ease-out both;
+  animation: pop 0.45s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+/* springy entrance: grows from nothing with an overshoot */
+@keyframes boing {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.anim-boing {
+  animation: boing 0.6s ease-out both;
 }
 .anim-shake {
   animation: shake 0.4s ease-in-out;

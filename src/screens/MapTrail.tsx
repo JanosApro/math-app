@@ -147,11 +147,11 @@ export function MapTrail({ nodes, chapterDone, onOpen }: { nodes: TrailNode[]; c
         </svg>
       )}
       <ol className="trail-list">
-        {nodes.map((n) => {
+        {nodes.map((n, i) => {
           const x = XS[n.globalIndex % XS.length];
           const status = visibleStatus(n);
           return (
-            <li key={n.id} className={`trail-row side-${x < 0.5 ? 'left' : 'right'} st-${n.state}${n.inProgress ? ' is-progress' : ''}`} style={{ '--x': x } as CSSProperties}>
+            <li key={n.id} className={`trail-row side-${x < 0.5 ? 'left' : 'right'} st-${n.state}${n.inProgress ? ' is-progress' : ''}`} style={{ '--x': x, '--i': i } as CSSProperties}>
               <button type="button" className="node" data-node-id={n.id} onClick={() => onOpen(n.id)}>
                 <span className="node-dot" data-dot="" data-done={n.state === 'done' ? '1' : '0'}>
                   {n.bubble && (

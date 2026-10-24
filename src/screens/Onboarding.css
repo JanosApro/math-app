@@ -28,9 +28,9 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-size: 1.35rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
   margin: 0.25rem 0 0.25rem;
 }
 .onb-tagline {
@@ -46,9 +46,8 @@
   border-radius: 26px;
 }
 .onb-title {
-  font-size: 1.55rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-size: 1.75rem;
+  font-weight: 600;
   margin: 0 0 0.4rem;
   text-wrap: balance;
 }
@@ -64,8 +63,9 @@
 }
 .onb-label {
   display: block;
-  font-weight: 800;
-  font-size: 1.02rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
   margin: 0 0 0.6rem;
   padding: 0;
 }
@@ -86,13 +86,14 @@
   gap: 0.05rem;
   min-height: 118px;
   padding: 0.7rem 0.4rem;
-  border: 2px solid var(--border);
+  border: var(--line) solid var(--outline);
   border-radius: 22px;
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--pop);
+  transition: transform 0.15s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.15s ease, box-shadow 0.15s ease;
   touch-action: manipulation;
 }
 .onb-grade::before {
@@ -110,8 +111,12 @@
 .onb-grade:hover::before {
   transform: scale(1.25);
 }
+.onb-grade:hover {
+  transform: translate(-1px, -1px) rotate(-1.5deg);
+}
 .onb-grade:active {
-  transform: scale(0.96);
+  transform: translate(3px, 4px);
+  box-shadow: 0 0 0 var(--ink);
 }
 .onb-grade.tone-orange {
   --tone: var(--fig-s2);
@@ -133,16 +138,17 @@
 }
 .onb-grade-num {
   position: relative;
-  font-size: 2.4rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 2.7rem;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.03em;
   color: color-mix(in srgb, var(--tone) 72%, var(--text));
 }
 .onb-grade-label {
   position: relative;
-  font-weight: 800;
-  font-size: 0.98rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.02rem;
 }
 .onb-grade-sub {
   position: relative;
@@ -167,9 +173,9 @@
   transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 .onb-grade.is-selected {
-  border-color: color-mix(in srgb, var(--tone) 80%, var(--text));
-  background: color-mix(in srgb, var(--tone) 10%, var(--surface));
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone) 22%, transparent);
+  background: color-mix(in srgb, var(--tone) 14%, var(--surface));
+  box-shadow: 4px 5px 0 color-mix(in srgb, var(--tone) 85%, var(--outline));
+  animation: boing 0.5s ease-out;
 }
 .onb-grade.is-selected .onb-grade-check {
   transform: scale(1);

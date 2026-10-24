@@ -24,7 +24,8 @@
   position: relative;
   background: var(--surface);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
   padding: 0.95rem 1rem 1rem;
 }
 .map-card-head {
@@ -35,15 +36,17 @@
 }
 .map-card-icon {
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 11px;
+  border: 2px solid var(--outline);
+  transform: rotate(-6deg);
   display: grid;
   place-items: center;
 }
 .map-card-title {
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 1.15rem;
+  font-weight: 600;
   margin: 0;
 }
 .map-empty {
@@ -59,7 +62,8 @@
 }
 .map-goal-count {
   margin-left: auto;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .map-goal-bar {
@@ -68,6 +72,7 @@
   margin: 0.85rem 0 0.5rem;
   border-radius: 999px;
   background: var(--surface-3);
+  border: 2px solid var(--outline);
 }
 .map-goal-bar .pbar-fill {
   background: var(--primary);
@@ -125,8 +130,9 @@
   animation: none;
 }
 .map-daily-num {
-  font-size: 1.6rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--streak);
   font-variant-numeric: tabular-nums;
@@ -163,19 +169,25 @@
   padding: 0.85rem 0.95rem;
   border-radius: var(--radius);
   background: var(--topic-soft);
-  border-left: 6px solid var(--topic);
-  box-shadow: var(--shadow);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
 }
 .map-topic-icon {
   flex: none;
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 16px;
   display: grid;
   place-items: center;
   background: var(--topic);
   color: #fff;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--topic) 35%, transparent);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop-sm);
+  transform: rotate(-6deg);
+  transition: transform 0.3s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.map-topic-head:hover .map-topic-icon {
+  transform: rotate(6deg) scale(1.08);
 }
 .map-topic-text {
   flex: 1;
@@ -190,9 +202,8 @@
 }
 .map-topic-title {
   margin: 0.05rem 0 0.35rem;
-  font-size: 1.15rem;
-  font-weight: 850;
-  letter-spacing: -0.01em;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 .map-topic-progress {
   display: flex;
@@ -203,9 +214,10 @@
   position: relative;
   flex: 1;
   max-width: 180px;
-  height: 8px;
+  height: 12px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--topic) 18%, var(--surface-3));
+  border: 2px solid var(--outline);
   overflow: hidden;
 }
 .map-topic-fill {
@@ -230,7 +242,9 @@
   place-items: center;
   background: var(--xp);
   color: var(--on-xp);
-  animation: pop 0.4s ease-out both;
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop-sm);
+  animation: boing 0.6s ease-out both;
 }
 
 /* ---- the trail ---- */
@@ -256,7 +270,9 @@
   stroke-width: 9;
 }
 .trail-path-done {
-  stroke: color-mix(in srgb, var(--topic) 60%, transparent);
+  stroke: var(--topic);
+  stroke-dasharray: 0.1 16;
+  stroke-width: 11;
 }
 .trail-list {
   position: relative;
@@ -273,7 +289,7 @@
 }
 .trail-row.st-recommended {
   --dot: 76px;
-  margin-top: 1.6rem; /* room for the bubble */
+  margin-top: 2.3rem; /* room for the bubble */
 }
 
 /* a node: dot + label, the whole thing is one button */
@@ -317,21 +333,24 @@
   place-items: center;
   background: var(--surface);
   color: var(--topic);
-  border: 4px solid var(--topic);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--topic) 25%, transparent), var(--shadow);
-  transition: transform 0.15s ease;
+  border: 3px solid var(--outline);
+  box-shadow: var(--pop);
+  transition: transform 0.2s cubic-bezier(0.3, 1.8, 0.5, 1);
+  /* springy pop-in, one after the other along the trail (--i from MapTrail) */
+  animation: boing 0.6s calc(0.05s * var(--i, 0)) ease-out backwards;
 }
 .node:active .node-dot {
-  transform: scale(0.94);
+  transform: scale(0.9);
 }
 @media (hover: hover) {
   .node:hover .node-dot {
-    transform: translateY(-2px);
+    transform: scale(1.1) rotate(-6deg);
   }
 }
 .node-num {
-  font-size: 1.5rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .node-label {
@@ -341,8 +360,9 @@
   gap: 0.15rem;
 }
 .node-title {
-  font-weight: 750;
-  font-size: 0.97rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.02rem;
   line-height: 1.25;
   overflow-wrap: anywhere;
   hyphens: auto;
@@ -357,7 +377,6 @@
 .st-done .node-dot {
   background: var(--topic);
   color: #fff;
-  border-color: var(--topic);
 }
 .st-done .node-status {
   color: var(--good-strong);
@@ -365,7 +384,27 @@
 .st-recommended .node-dot {
   background: var(--topic);
   color: #fff;
-  box-shadow: 0 0 0 6px var(--surface), 0 0 0 10px var(--topic), var(--shadow-strong);
+  box-shadow: var(--pop-lg), 0 0 0 9px color-mix(in srgb, var(--topic) 22%, transparent);
+}
+/* the play triangle hops */
+.st-recommended .node-dot > svg {
+  animation: node-hop 1.6s ease-in-out infinite;
+}
+@keyframes node-hop {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  70% {
+    transform: translateY(-5px) scale(1.08, 0.95);
+  }
+  80% {
+    transform: translateY(0) scale(0.94, 1.06);
+  }
+  90% {
+    transform: translateY(-2px);
+  }
 }
 .st-recommended .node-dot::after {
   content: '';
@@ -387,13 +426,13 @@
   }
 }
 .st-recommended .node-title {
-  font-weight: 850;
-  font-size: 1.02rem;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 .st-softLocked .node-dot {
   background: var(--surface-2);
   color: var(--locked);
-  border: 3px dashed var(--locked);
+  border: 3px dashed color-mix(in srgb, var(--outline) 55%, transparent);
   box-shadow: none;
 }
 .st-softLocked .node-title {
@@ -402,7 +441,7 @@
 .st-soon .node-dot {
   background: var(--surface-2);
   color: var(--locked);
-  border: 3px solid var(--border);
+  border: 3px solid color-mix(in srgb, var(--outline) 22%, transparent);
   box-shadow: none;
   opacity: 0.85;
 }
@@ -453,7 +492,7 @@
   }
 }
 .is-progress.st-recommended .node-dot {
-  box-shadow: var(--shadow-strong);
+  box-shadow: var(--pop-lg);
 }
 @media (prefers-reduced-motion: reduce) {
   .node-ring path.is-on {
@@ -470,14 +509,16 @@
   bottom: calc(100% + 16px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.8rem;
   border-radius: 12px;
-  background: var(--text);
-  color: var(--surface);
-  font-size: 0.85rem;
-  font-weight: 850;
+  background: var(--xp);
+  color: var(--on-xp);
+  border: 2px solid var(--outline);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
   white-space: nowrap;
-  box-shadow: var(--shadow);
+  box-shadow: var(--pop-sm);
   animation: node-bob 1.8s ease-in-out infinite;
 }
 .node-bubble::after {
@@ -485,9 +526,10 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  margin-left: -7px;
-  border: 7px solid transparent;
-  border-top-color: var(--text);
+  margin-left: -8px;
+  margin-top: 2px;
+  border: 8px solid transparent;
+  border-top-color: var(--outline);
 }
 @keyframes node-bob {
   0%,
@@ -513,14 +555,14 @@
 .goal-dot {
   background: var(--surface-2);
   color: var(--locked);
-  border: 3px solid var(--border);
+  border: var(--line) solid color-mix(in srgb, var(--outline) 35%, transparent);
   box-shadow: none;
 }
 .trail-goal.is-won .goal-dot {
   background: var(--xp);
   color: var(--on-xp);
-  border-color: var(--xp);
-  animation: pop 0.4s ease-out both;
+  border-color: var(--outline);
+  box-shadow: var(--pop-sm);
 }
 
 @media (max-width: 380px) {

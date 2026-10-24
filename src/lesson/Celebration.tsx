@@ -62,7 +62,7 @@ export function Celebration({ title, subtitle, xp, score, chapter, milestone, pr
     <>
       <Confetti count={big ? 110 : small ? 40 : 60} />
       <div className={`lesson-card lesson-celebrate${big ? ' is-big' : ''}${small ? ' is-part' : ''}`}>
-        <div className="lesson-celebrate-art anim-pop">
+        <div className="lesson-celebrate-art anim-boing">
           {chapter ? (
             <div className="lesson-badge" style={{ '--badge': chapter.color } as CSSProperties}>
               <TopicIcon name={chapter.icon} size={64} />

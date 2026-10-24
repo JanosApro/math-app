@@ -34,7 +34,11 @@ Teacher feedback round (same day), done so far:
   stores finished parts + active days): overview with part list, "N. rész kész!" celebration with
   XP, every finished part counts for the streak, map node ring "2/4 rész kész". The three gold
   lessons and the demo lesson are split; `npm run check` warns about parts that are too long.
-- Still to do: visual refresh (playful bundled font, cartoony outlined style, popping effects).
+- Visual refresh: bundled DynaPuff + Nunito fonts (Hungarian ő/ű checked), cartoon sticker style
+  (ink outlines, hard offset shadows), popping effects (star burst, flying XP, exploding confetti,
+  springy entrances). See DECISIONS "Look and feel". Checked at 360/375/1280, light and dark.
+- Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
+  (default is reduced motion, which makes the e2e run fast and stable).
 
 ### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work

@@ -20,10 +20,12 @@
   place-items: center;
   background: linear-gradient(135deg, var(--primary), var(--fig-s8));
   color: #fff;
-  font-size: 1.9rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
   transform: rotate(-4deg);
-  box-shadow: var(--shadow);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
 }
 .pf-avatar.is-anon {
   background: linear-gradient(135deg, var(--fig-s6), var(--primary));
@@ -35,8 +37,9 @@
   align-items: flex-start;
 }
 .pf-name {
-  font-size: 1.25rem;
-  font-weight: 850;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 .pf-grade {
@@ -65,8 +68,9 @@
   border-radius: 14px;
   background: var(--xp);
   color: var(--on-xp);
-  font-size: 1.4rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 .pf-level-text {
@@ -77,8 +81,8 @@
 }
 .pf-level-title {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 850;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 .pf-level-sub {
   font-size: 0.86rem;
@@ -93,7 +97,9 @@
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
   background: var(--xp-bg);
-  font-weight: 850;
+  border: 2px solid var(--outline);
+  font-family: var(--font-display);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .pf-xp .xp-icon {
@@ -121,11 +127,23 @@
   padding: 0.85rem 0.9rem;
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop);
+  animation: boing 0.55s ease-out backwards;
+}
+.pf-stat:nth-child(2) {
+  animation-delay: 0.07s;
+}
+.pf-stat:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.pf-stat:nth-child(4) {
+  animation-delay: 0.21s;
 }
 .pf-stat-value {
-  font-size: 1.5rem;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .pf-stat-value small {
@@ -185,6 +203,7 @@
 .pf-cal-day.is-done {
   background: var(--streak-bg);
   color: var(--streak);
+  box-shadow: inset 0 0 0 2px var(--outline);
 }
 .pf-cal-fire {
   font-size: 1.15rem;
@@ -198,7 +217,7 @@
   font-weight: 900;
 }
 .pf-cal-day.is-today {
-  box-shadow: 0 0 0 3px var(--primary);
+  box-shadow: inset 0 0 0 2px var(--outline), 0 0 0 3px var(--primary);
   color: var(--text);
 }
 
@@ -238,13 +257,17 @@
   place-items: center;
   background: var(--surface-2);
   color: var(--locked);
-  border: 3px dashed var(--border);
+  border: 3px dashed color-mix(in srgb, var(--outline) 35%, transparent);
 }
 .pf-badge.is-earned .pf-badge-disc {
   background: var(--badge);
   color: #fff;
-  border: none;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--badge) 25%, transparent);
+  border: var(--line) solid var(--outline);
+  box-shadow: var(--pop-sm), 0 0 0 7px color-mix(in srgb, var(--badge) 22%, transparent);
+  transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.pf-badge.is-earned:hover .pf-badge-disc {
+  transform: rotate(-10deg) scale(1.08);
 }
 .pf-badge-lock {
   position: absolute;

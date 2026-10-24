@@ -16,10 +16,11 @@ export const freshState = (grade = 7) =>
 /**
  * Opens a page. `state`: a JSON string written to localStorage before the first load, or null to
  * start empty (onboarding). Console errors and page errors are collected in `errors`.
+ * Animations are off (reduced motion) unless `motion` is true — e.g. for screenshots of effects.
  */
-export async function openPage({ width = 375, height = 800, dark = false, state } = {}) {
+export async function openPage({ width = 375, height = 800, dark = false, state, motion = false } = {}) {
   const browser = await launch();
-  const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: dark ? 'dark' : 'light', deviceScaleFactor: 2, reducedMotion: 'reduce' });
+  const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: dark ? 'dark' : 'light', deviceScaleFactor: 2, reducedMotion: motion ? 'no-preference' : 'reduce' });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(`PAGE ERROR: ${e.message}`));
