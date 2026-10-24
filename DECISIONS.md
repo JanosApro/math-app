@@ -35,8 +35,15 @@ Architectural choices and why. Add new entries at the end of a section.
 - **Single import point for content**: `src/kit.ts`. Content never imports engine internals.
 - **Strings with math**: `$…$` LaTeX inside Hungarian text. The `tex` template tag avoids the
   classic "lost backslash" bug; the validator detects control characters it leaves behind.
-- **Statuses**: the Pythagoras gold lesson is `draft` until it has been played through in the
-  finished lesson player (task 02); then it becomes `done`.
+- **Statuses**: the three gold lessons (`g7-pitagorasz-01`, `g5-tortek-2-01`,
+  `g8-henger-kup-gomb-03`) were `draft` until they had been played through in the finished
+  player (task 07, 2026-10-24); they are `done` now.
+- **Inline fractions are rendered at full size** (`\frac` → `\dfrac` in `src/ui/Rich.tsx`, inline
+  math only): KaTeX's text-style fractions were too small to read on a phone for 5th graders, and
+  the printed textbooks also set fractions at full size inside sentences. Content keeps writing
+  `\frac`.
+- **List separators in math are semicolons** (`[2;\ 3] = 6`, `P(2;\ 3)`), because the comma is the
+  decimal separator.
 
 ## Answers
 - Answer checking is exact wherever possible: fractions by cross-multiplication, roots by comparing

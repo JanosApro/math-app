@@ -228,7 +228,7 @@ const diffDen: GeneratorDef = {
       answer: fracAnswer(n, L),
       hint: tex`Először hozd közös nevezőre a két törtet! A legkisebb közös nevező: a(z) $${num(b)}$ és $${num(d)}$ legkisebb közös többszöröse.`,
       solution: [
-        tex`A legkisebb közös nevező: $[${num(b)}, ${num(d)}] = ${num(L)}$.`,
+        tex`A legkisebb közös nevező: $[${num(b)};\ ${num(d)}] = ${num(L)}$.`,
         tex`Bővítjük a törteket: $${expand(a, b, L)}$ és $${expand(c, d, L)}$.`,
         tex`$${f(A, L)} ${op} ${f(C, L)} = ${f(n, L)}${tail(n, L)}$`,
         tex`Az eredmény: **$${f(rn, rd)}$**${rn > rd && rd !== 1 ? tex` $\left(= ${mixed(rn, rd)}\right)$` : ''}.`,
@@ -265,7 +265,7 @@ function threeFractions(rng: Rng): Question {
       answer: fracAnswer(n, L),
       hint: 'Mindhárom törtet ugyanarra a nevezőre kell hozni: keresd meg a három nevező legkisebb közös többszörösét!',
       solution: [
-        tex`A legkisebb közös nevező: $[${num(b)}, ${num(d)}, ${num(h)}] = ${num(L)}$.`,
+        tex`A legkisebb közös nevező: $[${num(b)};\ ${num(d)};\ ${num(h)}] = ${num(L)}$.`,
         tex`$${f(a, b)} + ${f(c, d)} - ${f(e, h)} = ${f(A, L)} + ${f(C, L)} - ${f(E, L)}$`,
         tex`$= \frac{${num(A)} + ${num(C)} - ${num(E)}}{${num(L)}} = ${f(n, L)}${tail(n, L)}$`,
         tex`Az eredmény: **$${f(rn, rd)}$**.`,
@@ -521,7 +521,7 @@ const wordProblems: GeneratorDef = {
         const [rn, rd] = reduce(n, L);
         return {
           prompt: tex`Egy üvegben $${f(a, b)}$ liter üdítő volt. Megittunk belőle $${f(c, d)}$ litert. Hány liter üdítő maradt az üvegben?`,
-          answer: fracAnswer(n, L, false, 'l'),
+          answer: fracAnswer(n, L, false, 'liter'),
           hint: 'Ami maradt = ami volt − amit megittunk. Hozd közös nevezőre a törteket!',
           solution: [
             tex`$${f(a, b)} - ${f(c, d)}$, közös nevező: $${num(L)}$.`,
@@ -628,7 +628,7 @@ export default defineSubtopic({
       title: 'Azonos nevezőjű törtek',
       body: 'Egy pizzát 8 egyforma szeletre vágtunk. Anna megevett 2 szeletet, Bence 3-at. Együtt $\\frac{2}{8} + \\frac{3}{8} = \\frac{5}{8}$ részt ettek meg.\n\nHa a nevezők **egyenlők**, a számlálókat összeadjuk (vagy kivonjuk), a nevező **nem változik**.',
       figure: { type: 'fractionModel', shape: 'circle', parts: 8, shaded: 5, label: '5/8' },
-      remember: '$\\frac{a}{n} + \\frac{b}{n} = \\frac{a + b}{n}$ $\\qquad$ $\\frac{a}{n} - \\frac{b}{n} = \\frac{a - b}{n}$',
+      remember: 'Összeadás: $\\frac{a}{n} + \\frac{b}{n} = \\frac{a + b}{n}$\nKivonás: $\\frac{a}{n} - \\frac{b}{n} = \\frac{a - b}{n}$',
     },
     {
       type: 'check',
@@ -662,7 +662,7 @@ export default defineSubtopic({
           { label: '1/3', segments: [{ value: 2, label: '2/6', color: 'red' }, { value: 4, color: 'muted' }] },
         ],
       },
-      remember: 'Különböző nevezők esetén: **1.** közös nevező (LKKT) **2.** bővítés **3.** a számlálókat összeadjuk/kivonjuk **4.** egyszerűsítünk.',
+      remember: 'Különböző nevezők esetén:\n**1.** közös nevező (LKKT)\n**2.** bővítés\n**3.** a számlálókat összeadjuk/kivonjuk\n**4.** egyszerűsítés',
     },
     {
       type: 'check',
@@ -678,7 +678,7 @@ export default defineSubtopic({
       title: 'Különböző nevezők összeadása',
       problem: 'Számítsd ki! $\\frac{1}{2} + \\frac{1}{3}$',
       steps: [
-        { text: 'A legkisebb közös nevező: $[2, 3] = 6$.' },
+        { text: 'A legkisebb közös nevező: $[2;\\ 3] = 6$.' },
         { text: 'Bővítünk: $\\frac{1}{2} = \\frac{3}{6}$ és $\\frac{1}{3} = \\frac{2}{6}$.' },
         { text: 'Összeadjuk a számlálókat: $\\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}$.' },
       ],
@@ -689,7 +689,7 @@ export default defineSubtopic({
       title: 'Különböző nevezők kivonása',
       problem: 'Számítsd ki! $\\frac{5}{6} - \\frac{1}{4}$',
       steps: [
-        { text: 'A legkisebb közös nevező: $[6, 4] = 12$.' },
+        { text: 'A legkisebb közös nevező: $[6;\\ 4] = 12$.' },
         { text: 'Bővítünk: $\\frac{5}{6} = \\frac{10}{12}$ és $\\frac{1}{4} = \\frac{3}{12}$.' },
         { text: '$\\frac{10}{12} - \\frac{3}{12} = \\frac{7}{12}$ — ez már nem egyszerűsíthető.' },
       ],
@@ -713,7 +713,7 @@ export default defineSubtopic({
         { text: '$\\frac{13}{4} - \\frac{7}{4} = \\frac{6}{4}$' },
         { text: 'Egyszerűsítünk: $\\frac{6}{4} = \\frac{3}{2} = 1\\frac{1}{2}$.' },
       ],
-      answer: 'Az eredmény $1\\frac{1}{2}$ (vagy $\\frac{3}{2}$). A válaszmezőbe így írhatod: 1 1/2.',
+      answer: 'Az eredmény $1\\frac{1}{2}$ (vagy $\\frac{3}{2}$). A válaszmezőbe így írhatod: 1 1/2.',
     },
     { type: 'practice', generator: 'mixed', level: 1 },
     { type: 'practice', generator: 'mixed', level: 2 },

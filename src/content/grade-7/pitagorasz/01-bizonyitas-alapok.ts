@@ -593,6 +593,19 @@ const converse: GeneratorDef = {
 // 3. Static figures for the theory part
 // ---------------------------------------------------------------------------------------------
 
+/** The 3–4–5 triangle with a unit grid in every square, so the areas 9, 16 and 25 can be counted. */
+const squaresOnGrid: Figure = {
+  type: 'geometry',
+  points: { A: [4, 0], B: [0, 3], C: [0, 0] },
+  items: [
+    { kind: 'squareOnSide', from: 'C', to: 'A', side: 'right', fill: 'blue', label: 'b² = 16', grid: true },
+    { kind: 'squareOnSide', from: 'B', to: 'C', side: 'right', fill: 'green', label: 'a² = 9', grid: true },
+    { kind: 'squareOnSide', from: 'A', to: 'B', side: 'right', fill: 'orange', label: 'c² = 25', grid: true },
+    { kind: 'polygon', points: ['A', 'B', 'C'], sideLabels: ['c', 'a', 'b'], fill: true },
+    { kind: 'angle', vertex: 'C', from: 'A', to: 'B', right: true },
+  ],
+};
+
 /** Two (a + b)-squares with the same four triangles: what is left is c² on the left, a² + b² on the right. */
 const proofFigure: Figure = {
   type: 'geometry',
@@ -677,7 +690,7 @@ export default defineSubtopic({
       type: 'theory',
       title: 'Pitagorasz tétele',
       body: 'Rajzoljunk mindhárom oldalra egy-egy négyzetet! A rácson megszámolhatod: a két kisebb négyzet területe $9$ és $16$, a nagyé $25$ — és $9 + 16 = 25$.\n\nEz minden derékszögű háromszögre igaz:',
-      figure: { type: 'triangle', legs: [3, 4], squares: { a: 'a² = 9', b: 'b² = 16', c: 'c² = 25' } },
+      figure: squaresOnGrid,
       remember: '**Pitagorasz tétele:** a derékszögű háromszögben a befogók négyzetének összege egyenlő az átfogó négyzetével:\n$a^2 + b^2 = c^2$',
     },
     {

@@ -514,10 +514,9 @@
   }
 }
 
-/* inline math (fractions!) is small at text size inside the big buttons */
+/* inline math a little larger inside the big answer buttons */
 .kp-choice-text .katex,
 .kp-order-text .katex,
-.kp-match-text .katex,
-.kp-seq-chip .katex {
-  font-size: 1.22em;
+.kp-match-text .katex {
+  font-size: 1.12em;
 }

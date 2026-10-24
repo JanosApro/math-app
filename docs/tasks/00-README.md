@@ -13,7 +13,7 @@ after every change, and commit after each task (`git commit`). Then tick the tas
 | 04 | [Figures: 3D solids and nets](04-figures-solids.md) | done |
 | 05 | [Figures: charts, pictogram, table](05-figures-charts.md) | done |
 | 06 | [Figures: constructions, fraction model, bar model + galleries for shapes/coordinate/number line](06-figures-construction-fraction.md) | done |
-| 07 | [Gold-standard lessons: grade 5 fractions, grade 8 cylinder; finish grade 7 Pythagoras](07-gold-lessons.md) | all 3 written (draft) — verify after 02/04/06 |
+| 07 | [Gold-standard lessons: grade 5 fractions, grade 8 cylinder; finish grade 7 Pythagoras](07-gold-lessons.md) | done (all three `done`) |
 | 08 | [Verification in a browser + final docs](08-verification.md) | todo |
 
 Suggested order: 03 (so you can check your work) → 02 → 01 → 06 → 04 → 05 → 07 → 08.

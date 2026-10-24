@@ -35,7 +35,7 @@ passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 | 04 solids | **done** (cloud session): nets (`solids-net.ts`), galleries `solids.ts` (34) + `nets.ts` (12), reviewed light/dark, CONTENT_GUIDE rows | — |
 | 05 charts | **done** (cloud session): all 30 gallery entries reviewed light/dark, 2 fixes, CONTENT_GUIDE rows; `npm run check` 0 warnings | — |
 | 06 constructions etc. | **done** (cloud session): galleries `coordinate.ts` (15) + `numberline.ts` (14), shapes/coordinate/number-line review light/dark, square-label collisions fixed (Pythagoras: 0 warnings), CONTENT_GUIDE rows | — |
-| 07 gold lessons | all three written, `draft`, 0 errors | play through in the finished player, set `done` |
+| 07 gold lessons | **done** (cloud session): all three played through at 375 px and set to `done` | — |
 | 08 verification | — | whole flow in a browser, final docs |
 
 Each task file `docs/tasks/0X-*.md` has the full spec (and a short progress log). Work in the
@@ -111,9 +111,9 @@ Milestone 2 — skeleton
 - [x] Curriculum summaries `docs/curriculum-grade-N.md`, textbook style notes `docs/materials-grade-N.md`
 
 Milestone 3 — gold-standard lessons → task 07
-- [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — written, smoke-tested (status `draft` until played in the real player)
-- [x] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`) — written (draft); figures need task 06
-- [x] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — written (draft); figure needs task 04
+- [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — **done** (played through in the player)
+- [x] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`) — **done**
+- [x] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — **done**
 
 Milestone 4–6
 - [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`

@@ -250,7 +250,7 @@
           "id": "g8-henger-kup-gomb-03",
           "file": "03-henger-terfogata",
           "title": "Az egyenes henger térfogata",
-          "status": "draft",
+          "status": "done",
           "scope": "Volume of a right cylinder = base area × height = r²π·height, by analogy with the prism. Exercises: compute volume (π-form answers, cm³, conversion to liters), height or radius from volume (L2/L3, perfect squares), equilateral cylinder, MC effect of doubling the radius or the height, real-life (tank, glass, pipe); cylinder figure with labeled radius and height that follows the numbers. Best candidate for the short gold-standard 3D example."
         },
         {
