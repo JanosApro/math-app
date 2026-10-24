@@ -6,6 +6,7 @@
  * remainder and clever mental calculation. Answers are computed by code.
  */
 import {
+  article,
   choice,
   clean,
   defineSubtopic,
@@ -199,7 +200,7 @@ const laws: GeneratorDef = {
       prompt: tex`Melyik tulajdonságot használtuk?\n\n${equation}`,
       answer: choice(rng, correct, wrongs, { count: 3 }),
       hint: 'Mi változott: a tagok sorrendje, a zárójelek helye vagy egy zárójel felbontása?',
-      solution: [why, `Ez a **${correct}** tulajdonsága.`],
+      solution: [why, `Ez ${article(correct)} **${correct}** tulajdonsága.`],
     };
   },
 };
