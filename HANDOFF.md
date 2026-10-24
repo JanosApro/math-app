@@ -1,60 +1,98 @@
 # Matek Kaland — handoff
 
 A "Duolingo-style" math practice web app for grades 5, 7 and 8 (Serbian curriculum, Hungarian
-language of instruction). Pure static site: React + Vite + TypeScript, progress stored only on
+language of instruction). Pure static site: React + Vite + TypeScript; progress is stored only on
 the student's device (localStorage). Original brief: `PROMPT.md`.
 
-> **This file is kept up to date during the build.** The "Build progress" checklist below is
-> the source of truth for what exists and what is next.
+> **Start here if you are an AI model continuing the work:** read `AGENTS.md`, this file, then
+> `docs/tasks/00-README.md` — it lists the remaining build tasks in order, each with a full spec.
 
-## Build progress
+## Current state (2026-10-24)
 
+The **foundation is done and type-checks** (`npx tsc --noEmit -p .` passes); the **screens are
+placeholders**, so the app runs but shows "Hamarosan…" pages until tasks 01–03 are built.
+
+### Build progress
 Milestone 1 — engine and app shell
-- [x] Project scaffold (Vite, React 18, TypeScript strict, KaTeX)
-- [x] Content schema `src/engine/types.ts`, seeded RNG, exact math, Hungarian number formatting
-- [x] Answer checking for every answer type (`src/engine/answers.ts`, `polynomial.ts`)
-- [x] Figure library core (`src/figures/scene.ts`, `geometry.ts`, `FigureView.tsx`)
-- [ ] Figure families: shapes/constructions/fraction & bar models, 3D solids & nets, coordinate plane/number line/charts
-- [x] Progress store, streak/XP logic, export/import (`src/state/`)
-- [x] Content catalog + registry, soft-lock prerequisite logic (`src/content/catalog.ts`, `registry.ts`)
-- [ ] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA
-- [ ] Lesson player, answer inputs + keypad, mini test, celebrations, daily challenge
-- [ ] `/dev` page, figure gallery, `npm run check` (validation + stress test)
+- [x] Project scaffold (Vite 5, React 18, TypeScript strict, KaTeX)
+- [x] Content schema `src/engine/types.ts`, seeded RNG, exact fraction/root math, Hungarian number formatting
+- [x] Answer checking for every answer type incl. expressions and multi-field (`src/engine/answers.ts`, `polynomial.ts`) — unit-tested by hand
+- [x] Rich text (`$math$`, bold, lists) parser + React renderer (`src/engine/richtext.ts`, `src/ui/Rich.tsx`)
+- [x] Figure library core: fitting, label placement, validation, React renderer, SVG export (`src/figures/scene.ts`, `FigureView.tsx`)
+- [x] Figures ready: `geometry`, `triangle`, `quadrilateral`, `regularPolygon`, `circle`, `coordinate`, `numberLine`
+- [ ] Figures missing (stubs throw): `solid`, `net` → task 04 · charts/pictogram/table → task 05 · `construction`, `fractionModel`, `barModel` + galleries → task 06
+- [x] Progress store, streak/XP, export/import, Belgrade dates (`src/state/`)
+- [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
+- [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects
+- [ ] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA → task 01
+- [ ] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
+- [ ] `/dev` page, gallery screen, `npm run check`, `npm run status` → task 03 (`npm run check` currently fails: `scripts/check.ts` is missing)
 
 Milestone 2 — skeleton
-- [x] All topics/subtopics for grades 5, 7, 8 in `src/content/grade-N/topics.json` (status `todo`)
-- [x] Curriculum summaries `docs/curriculum-grade-N.md`, style notes `docs/materials-grade-N.md`
+- [x] All topics/subtopics for grades 5 (43), 7 (33), 8 (31) in `src/content/grade-N/topics.json`, with a scope note each
+- [x] Curriculum summaries `docs/curriculum-grade-N.md`, textbook style notes `docs/materials-grade-N.md`
 
-Milestone 3 — gold-standard lessons
-- [ ] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`)
+Milestone 3 — gold-standard lessons → task 07
+- [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — written, smoke-tested (status `draft` until played in the real player)
 - [ ] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`)
-- [ ] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — short 3D example
+- [ ] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — needs the `solid` figure (task 04)
 
-Milestone 4/5/6 — dev page, docs (`CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`), browser verification
+Milestone 4–6
+- [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`
+- [ ] Browser verification of the full flow → task 08
+
+### Known issues / open questions
+- **Grade 8 solid notation** (r, H, B, M, P, V) is inferred — the teacher should confirm (see DECISIONS.md).
+- Grade 5 "Szögek 05" and "Tengelyes tükrözés 04" need degree–minute answers: use the
+  `numbers` answer type with units `°` and `′`.
+- `g5-termeszetes-szamok-1-01` and a few grade 8 lessons have very broad scopes; they may be split later.
+- `npm run check` fails until task 03 adds `scripts/check.ts`. Meanwhile:
+  `npx tsx scripts/dev/smoke-lesson.ts` smoke-tests one lesson.
 
 ## How to run (local)
 
-1. Install Node.js 18 or newer (https://nodejs.org, "LTS").
-2. In a terminal, inside this folder, run once: `npm install`
-3. Start: `npm run dev`, then open the address it prints (usually http://localhost:5173).
-4. Before committing content: `npm run check` (must print no errors) and `npm run build`.
+1. Install **Node.js 18 or newer** from https://nodejs.org (the "LTS" button).
+2. Open a terminal in this folder (on Windows: right-click the folder → "Open in Terminal").
+3. Run once: `npm install`
+4. Start: `npm run dev`, then open the address it prints (usually http://localhost:5173).
+5. Before committing content: `npm run check` (must print no errors) and `npm run build`.
+
+## The daily challenge list (for the teacher)
+Each grade has `src/content/grade-N/daily.json`:
+```json
+{ "_help": "…", "subtopics": ["g7-pitagorasz-01", "g7-pitagorasz-02"] }
+```
+Add the ids of the lessons you have covered in class (ids are in `CONTENT_STATUS.md`). The daily
+challenge only picks from these. An empty list means "every lesson that has content". Commit and
+push — the site redeploys automatically (see below).
+
+## Deployment (Cloudflare Pages, automatic on every push)
+1. Push this repository to GitHub.
+2. Cloudflare dashboard → Workers & Pages → Create → Pages → "Connect to Git" → pick the repo.
+3. Build settings: framework preset **None** (or Vite), build command **`npm run build`**,
+   output directory **`dist`**, environment variable `NODE_VERSION` = `20`.
+4. Save and deploy. Every `git push` to the main branch now rebuilds and publishes the site.
+(GitHub Pages also works: the build uses relative paths and hash URLs.)
 
 ## Folder structure
-
 ```
 src/
   engine/      content schema (types.ts), rng, math, format, answers, polynomial, richtext, session
-  figures/     SVG figure library: types.ts (all figure parameters), scene.ts (fitting, labels),
-               geometry.ts, shapes.ts, solids.ts, coordinate.ts, charts.ts, fraction.ts, construction.ts
+  figures/     SVG figure library: types.ts (all figure parameters, documented), scene.ts (fitting,
+               labels, validation), geometry.ts, shapes.ts, coordinate.ts, solids.ts*, charts.ts*,
+               fraction.ts*, construction.ts*  (* = stubs, see docs/tasks)
   state/       progress store (localStorage), progress actions, dates (Europe/Belgrade), XP
-  content/     grades.json, grade-N/topics.json, grade-N/daily.json, grade-N/<topic>/<NN-file>.ts
+  content/     grades.json, grade-N/topics.json, grade-N/daily.json, grade-N/<topic>/<NN-file>.ts,
+               catalog.ts (pure logic), registry.ts (Vite loader)
   kit.ts       the ONLY import content files need
   i18n/hu.ts   every UI string (Hungarian)
-  ui/          shared UI (router, Rich text, shell, dialogs, sound)
-  screens/     onboarding, map, profile, settings
-  lesson/      lesson player, inputs, keypad, mini test, daily challenge, celebrations
-  dev/         /dev page, figure gallery, previews (dev builds only)
-scripts/       check.ts (npm run check), dev tools (figure-preview.ts)
-docs/          curriculum summaries and textbook style notes per grade
+  ui/          router, Rich text, sound, shell (placeholder)
+  screens/     onboarding, map, profile, settings (placeholders)
+  lesson/      lesson player, daily challenge (placeholders)
+  dev/         /dev page, figure gallery (placeholders), gallery sections in dev/gallery/
+  styles/      theme.css (design tokens, light/dark, buttons, animations)
+scripts/       dev/figure-preview.ts (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser
+               automation), dev/smoke-lesson.ts; check.ts and status.ts are to be written (task 03)
+docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
 materials/     the teacher's textbook screenshots (reference only — never copy text)
 ```

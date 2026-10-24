@@ -1,0 +1,214 @@
+# Content guide — how to write a subtopic (lesson)
+
+This is the recipe for adding lesson content. **Copy the pattern of the gold-standard lesson**
+`src/content/grade-7/pitagorasz/01-bizonyitas-alapok.ts` — read it completely before you start.
+
+## Rules
+1. **Do not modify engine files** (`src/engine`, `src/figures`, `src/state`, `src/ui`, `src/lesson`,
+   `src/screens`, `src/dev`, `scripts`). You only add/edit files in `src/content/` and the status
+   files. If you think the engine needs a change, write it down in `HANDOFF.md` → "Known issues".
+2. **Never copy textbook text or exercises** from `materials/`. Write your own explanations and
+   generate your own problems. The screenshots are for structure and style only.
+3. **One subtopic per change** (one commit per lesson).
+4. All student-facing text is **Hungarian**: friendly, short sentences, for 11–14 year olds,
+   addressing the student as "te" ("Számítsd ki…!", "Döntsd el…!"). Decimal comma (`0,5`).
+
+## Step by step
+1. Pick the next `todo` subtopic in `CONTENT_STATUS.md`. Its **Scope** column says what the lesson
+   must cover. The curriculum summary is in `docs/curriculum-grade-N.md`, the textbook style in
+   `docs/materials-grade-N.md`.
+2. Find its entry in `src/content/grade-N/topics.json`: `id` (e.g. `g7-pitagorasz-02`), topic
+   `folder` (e.g. `pitagorasz`) and `file` (e.g. `02-szerkesztesek`).
+3. Create `src/content/grade-N/<folder>/<file>.ts` (copy the structure below).
+4. Run `npm run check -- --only=<id>` until it prints no errors (until task 03 exists:
+   edit and run `npx tsx scripts/dev/smoke-lesson.ts`).
+5. Open it in the browser: `npm run dev`, then `http://localhost:5173/#/dev/preview/<id>`.
+   Play it through. Check the math by hand on a few seeds (the /dev page has a sample viewer).
+6. Set `"status": "draft"` in topics.json (it becomes visible to students!) and, after the
+   checklist below, `"done"`. Run `npm run status` to refresh `CONTENT_STATUS.md`.
+
+## Module structure (annotated minimal example)
+
+```ts
+import { defineSubtopic, num, tex, choice, type GeneratorDef } from '../../../kit';
+
+// A generator: same rng + same level ⇒ same question. ALL randomness from `rng`.
+const area: GeneratorDef = {
+  id: 'rect-area',                       // unique inside this file, kebab-case
+  title: 'Téglalap területe',            // shown in /dev only
+  levels: [1, 2],                        // which difficulty levels it supports (1 easy … 3 hard)
+  generate(rng, level) {
+    const a = rng.int(2, level === 1 ? 9 : 25);
+    const b = rng.int(2, 9);
+    return {
+      prompt: tex`Egy téglalap oldalai $${num(a)}$ cm és $${num(b)}$ cm. Mekkora a területe?`,
+      figure: { type: 'quadrilateral', shape: 'rectangle', a, b, sideLabels: { a: `${num(a)} cm`, b: `${num(b)} cm` } },
+      answer: { type: 'number', value: a * b, unit: 'cm²' },   // computed by code ⇒ always right
+      inputLabel: '$T =$',
+      hint: 'A téglalap területe a két oldal szorzata: $T = a \\cdot b$.',
+      solution: [
+        tex`$T = a \cdot b$`,
+        tex`$T = ${num(a)} \cdot ${num(b)} = ${num(a * b)}$`,
+        tex`A terület **${num(a * b)} cm²**.`,
+      ],
+    };
+  },
+};
+
+export default defineSubtopic({
+  id: 'g5-pelda-01',                     // MUST equal the id in topics.json
+  goals: ['kiszámítani a téglalap területét,'],   // 2–4 items, shown on the start screen
+  steps: [
+    { type: 'theory', title: 'A téglalap területe', body: '…', figure: { … }, remember: '$T = a \\cdot b$' },
+    { type: 'check', question: { prompt: '…', answer: { type: 'truefalse', value: true }, hint: '…', solution: ['…'] } },
+    { type: 'example', title: '…', problem: '…', figure: { … }, steps: [{ text: '…' }, { text: '…' }], answer: '…' },
+    { type: 'practice', generator: 'rect-area', level: 1, count: 2 },
+    { type: 'practice', generator: 'rect-area', level: 2 },
+  ],
+  generators: [area],
+  miniTest: { items: [{ generator: 'rect-area', level: 1 }, /* … 5–8 items, mixed levels */] },
+  daily: [{ generator: 'rect-area', level: 1 }],   // optional; default = the mini test items
+});
+```
+
+### Step types (`src/engine/types.ts` has the full documentation)
+| type | use it for | fields |
+|---|---|---|
+| `theory` | a short explanation card (2–5 sentences) | `title?`, `body`, `figure?`, `remember?` (pale-yellow formula box) |
+| `check` | understanding check between theory cards (usually choice / true-false) | `question` (a static Question) |
+| `example` | worked example, revealed one step at a time | `title?`, `problem`, `figure?`, `steps: [{ text, figure? }]`, `answer` |
+| `practice` | generated exercises | `generator`, `level`, `count?` (default 1) |
+| `explore` | sliders that change a figure + formula live (use sparingly) | `title?`, `body`, `sliders`, `render(values) → { figure?, text }` |
+
+**Recommended order:** theory → check → theory → (explore) → example → practice L1 → example →
+practice L1/L2 → theory → example → practice L2 → practice L3. The mini test comes automatically
+after the last step. A lesson takes 10–20 minutes.
+
+## RichText (all student-facing text)
+- Math between `$...$` in LaTeX: `$a^2 + b^2 = c^2$`, `$\frac{3}{4}$`, `$\sqrt{2}$`, `$3 \cdot 4$`.
+- Decimal comma inside math is fine: `$0,5$` (shown as 0,5).
+- `**bold**`, `\n` new line, `\n\n` new paragraph, lines starting with `- ` are bullets.
+- **Backslashes!** In a normal string write two: `'$\\frac{1}{2}$'`. Easier: the `tex` tag keeps
+  backslashes and allows `${}`: ``tex`$\frac{${p}}{${q}}$` ``. A single backslash in a normal
+  string silently breaks (`'\frac'` becomes a form-feed + "rac"); `npm run check` catches it.
+- Multiplication: `\cdot` (·). Division: `:` . Units after a space, upright: `5 cm`, `cm²`, `m³`.
+
+## Helpers (`src/kit.ts` — the only import you need)
+| helper | what it does |
+|---|---|
+| `num(x, decimals?)` | Hungarian number: `num(0.5)` → `0,5`, `num(12500)` → `12 500`, `num(-3)` → `−3`, `num(2/3, 2)` → `0,67` |
+| `signed(x)` | `+ 3` / `− 3` for building expressions |
+| `paren(x)` | negative numbers in parentheses: `(−2)` |
+| `tex`…`` | template tag keeping backslashes |
+| `m(latex)` | wraps in `$…$` |
+| `texFrac(n, d)` / `texFrac(frac)` | `\frac{3}{4}` (integers stay integers) |
+| `texMixed(frac)` | `1\frac{3}{4}` |
+| `texRoot(coef, radicand, den?)` | `5\sqrt{2}`, `\frac{\sqrt{3}}{2}` |
+| `rootText(coef, radicand)` | `5√2` for figure labels (figures use plain text, not LaTeX) |
+| `withUnit(x, 'cm')` | `3,5 cm` |
+| `joinHu(['a','b','c'])` | `a, b és c` |
+| `article(x)` | Hungarian article: `article(5)` → `az`, `article(3)` → `a` |
+| `gcd`, `lcm`, `round(x, d)`, `clean(x)` (removes float noise like 0.30000000004) | |
+| `frac(n, d)`, `simplify`, `fracAdd/Sub/Mul/Div`, `fracEquals`, `fracCompare`, `fracValue`, `toMixed`, `decimalToFrac`, `isTerminating` | exact fractions |
+| `simplifyRoot(50)` → `{ coef: 5, radicand: 2 }`, `isSquareFree`, `isPerfectSquare` | roots |
+| `PYTHAGOREAN_TRIPLES`, `PRIMITIVE_TRIPLES` | triples with c ≤ 100 |
+| `choice(rng, correct, wrongs, opts?)` | multiple-choice answer (see below) |
+| `textChoice(correct, wrongs)` | multiple choice from fixed texts (static checks) |
+| `nearbyInt(value, spread)`, `nearbyScaled(value)` | fallback distractor makers |
+| `perpendicularFoot(p, a, b)` | foot of a perpendicular (for figure coordinates) |
+
+**Random numbers** — only through `rng`: `rng.int(min, max)` (inclusive), `rng.pick(list)`,
+`rng.shuffle(list)`, `rng.sample(list, k)`, `rng.chance(p)`, `rng.sign()`,
+`rng.intExcept(min, max, [values])`. Never `Math.random()`.
+
+**Floating point:** compute with integers where possible; for decimals use `clean()` or `round()`
+before comparing/formatting. Prefer exact fractions (`frac`) for fraction lessons.
+
+## Answer types (`answer` field of a Question)
+| type | example | checking |
+|---|---|---|
+| `number` | `{ type: 'number', value: 12.5, unit: 'cm' }` | comma or dot, spaces in 12 500, trailing unit ignored. `precision: 2` → must be rounded to 2 decimals (more decimals also OK). `acceptFraction: true` accepts 1/2 for 0,5 |
+| `numbers` | `{ type: 'numbers', fields: [{ label: '$x =$', value: 2 }, { label: '$y =$', value: -1 }] }` | several fields, all must be right (systems of equations, coordinates, 35° 48′ with `unit: '°'` / `'′'`) |
+| `fraction` | `{ type: 'fraction', num: 3, den: 4 }` | accepts `3/4`, mixed `1 3/4`, integers. `requireSimplified` (default **true**: 6/8 gets a friendly "simplify" message), `form: 'mixed' \| 'improper' \| 'any'`, `acceptDecimal: true` |
+| `root` | `{ type: 'root', coef: 5, radicand: 2 }` = 5√2; `den: 2` for √3/2; radicand 1 = no root | exact comparison (√50 = 5√2). `requireSimplified` (default true: √50 → "simplify"; set false before partial root extraction is taught), `acceptDecimal: 2` |
+| `expression` | `{ type: 'expression', value: '3x^2-2x+1' }`, `'36π'` | polynomial comparison after expansion. `form: 'expanded'` (default: no parentheses, like terms combined), `'factored'` (must be a product with parentheses), `'any'`. Keypad shows the letters in `value` (or `vars`) |
+| `choice` | `choice(rng, 10, [14, 100, 7])` | one correct option; shuffled for display |
+| `truefalse` | `{ type: 'truefalse', value: false }` | Igaz / Hamis buttons |
+| `order` | `{ type: 'order', items: ['$\\frac12$', '$\\frac23$', '$\\frac34$'], direction: 'A legkisebbtől' }` | items listed in the CORRECT order; shown shuffled |
+| `match` | `{ type: 'match', pairs: [['$\\frac12$', '$0,5$'], ['$\\frac14$', '$0,25$']] }` | pairs listed correctly matched |
+
+The canonical correct answer must pass its own checker — e.g. with `requireSimplified: true`,
+`num`/`den` may be unsimplified (the checker simplifies), but for `expression` with
+`form: 'expanded'` the `value` itself must be written expanded. `npm run check` verifies this.
+
+## Good distractors, hints and solutions
+- **Distractors = typical mistakes**, most important first: forgot the square root (c² instead
+  of c), added instead of squared (a + b), subtracted instead of added, mixed up leg and
+  hypotenuse, added numerators AND denominators (1/2 + 1/3 = 2/5), forgot to halve, wrong unit
+  (cm instead of cm²). `choice()` removes duplicates and values equal to the answer; give a
+  `fallback` when your mistake list may be too short.
+- **Hints** nudge without giving the answer: name the formula or the first step.
+- **Solutions** are the worked steps (3–5 entries), each one short; the last states the result in
+  bold with the unit. Use the generated numbers. They are shown after a wrong answer.
+- Every generator needs `hint` and `solution`.
+
+## Difficulty levels
+- **1** — direct application, small whole numbers, standard figure orientation.
+- **2** — less friendly numbers (roots, decimals, fractions), varied labels/orientation, reverse questions.
+- **3** — word problems, two-step problems, combining with earlier knowledge.
+The mini test mixes levels (5–8 items, pass mark 80 % by default).
+
+## Figures
+A figure is a plain object `{ type: '…', … }`. **The full parameter documentation is in
+`src/figures/types.ts`** (every field has a comment). Browse all types with examples and
+copy-paste code in the gallery: `npm run dev` → `http://localhost:5173/#/dev/gallery`.
+Figure labels are plain text (Unicode: `α β γ √ π ² ³ ·`), not LaTeX. Lower-case single letters
+are drawn italic automatically (variables), numbers + units upright.
+
+**Make figures follow the generated numbers:** build the figure inside `generate()` from the same
+variables (`legs: [a, b]`, `r`, `h` …) — the library keeps true proportions. If a figure cannot
+follow the numbers (e.g. extreme ratios), set `notToScale: true`.
+
+| type | status | copy-paste example |
+|---|---|---|
+| `geometry` | ready | `{ type: 'geometry', points: { A: [0, 0], B: [4, 0], C: [0, 3] }, items: [{ kind: 'polygon', points: ['A', 'B', 'C'], sideLabels: ['c', 'a', 'b'], fill: true }, { kind: 'angle', vertex: 'A', from: 'B', to: 'C', right: true }] }` — items: point, segment, ray, line, polygon, circle, arc, sector, angle, parallel, height, squareOnSide, label, region |
+| `triangle` | ready | `{ type: 'triangle', legs: [3, 4], sideLabels: { a: '3 cm', b: '4 cm', c: 'c = ?' }, highlight: ['c'] }`; also `sides: [a, b, c]`, `coords`, `vertices`, `angleLabels`, `heights`, `medians`, `ticks`, `squares` |
+| `quadrilateral` | ready | `{ type: 'quadrilateral', shape: 'rhombus', e: 8, f: 6, diagonals: { e: 'e', f: 'f' } }`; shapes: square, rectangle, rhombus, parallelogram, trapezoid, deltoid |
+| `regularPolygon` | ready | `{ type: 'regularPolygon', n: 6, side: 4, sideLabel: 'a', center: true, radius: 'r' }` |
+| `circle` | ready | `{ type: 'circle', r: 3, radius: 'r', sector: { angle: 60, label: '60°' } }` |
+| `coordinate` | ready | `{ type: 'coordinate', x: [-1, 6], y: [-1, 5], points: [{ at: [1, 1], label: 'A' }, { at: [5, 4], label: 'B' }], distances: [{ from: [1, 1], to: [5, 4], labels: { dx: '4', dy: '3', d: 'd = ?' } }] }`; functions: `{ kind: 'linear', k: 2, n: 1, label: 'y = 2x + 1' }`, `{ kind: 'inverse', k: 6 }` |
+| `numberLine` | ready | `{ type: 'numberLine', min: 0, max: 2, step: 1, subdivisions: 4, fractionDenominator: 4, points: [{ value: 0.75, label: 'A' }] }` |
+| `solid` | **not implemented yet** (task 04) | `{ type: 'solid', shape: 'cylinder', r: 3, h: 7, labels: { r: 'r = 3 cm', h: 'H = 7 cm' } }` |
+| `net` | not implemented yet (task 04) | `{ type: 'net', of: 'cube', a: 2 }` |
+| `barChart`, `lineChart`, `pieChart`, `pictogram`, `table` | not implemented yet (task 05) | `{ type: 'barChart', categories: ['H', 'K', 'Sze'], series: [{ values: [3, 5, 2] }] }` |
+| `fractionModel` | not implemented yet (task 06) | `{ type: 'fractionModel', shape: 'circle', parts: 4, shaded: 3 }` |
+| `barModel` | not implemented yet (task 06) | see `BarModelFigure` in types.ts |
+| `construction` | not implemented yet (task 06) | `{ type: 'construction', points: {…}, given: [...], steps: [{ caption: '…', items: [...] }] }` |
+
+Colors (theme-aware, never hex): `'ink'` (default), `'accent'` (topic color), `'highlight'`
+(the unknown / key segment), `'muted'`, `'good'`, `'bad'`, `'blue'`, `'green'`, `'orange'`,
+`'purple'`, `'red'`, `'teal'`.
+
+Hungarian notation: triangle sides a = BC, b = CA, c = AB; angles α, β, γ; right angle at C;
+legs "befogó", hypotenuse "átfogó"; height m; area T; perimeter K; rhombus diagonals e, f;
+circle center O, radius r; solids (grade 8): r, H (height of the solid), B (base area),
+M (lateral surface), P (surface area), V (volume) — see `DECISIONS.md`.
+
+## Prerequisites
+By default a subtopic requires every earlier subtopic of its topic and every subtopic of the
+earlier topics (a topic can narrow that with its own `prerequisites` list of topic ids). If a
+lesson only depends on specific lessons, add to its entry in topics.json:
+`"prerequisites": ["g7-pitagorasz-01", "g7-valos-szamok-02"]` (ids may be in other topics;
+`[]` = no prerequisites). Subtopics still `todo` never block anything.
+
+## Checklist before `"status": "done"`
+- [ ] `npm run check` prints **no errors** for this subtopic (and no unexplained warnings).
+- [ ] `npm run build` succeeds.
+- [ ] The scope in `CONTENT_STATUS.md` is fully covered; goals match the content.
+- [ ] Theory → checks → examples → practice L1 → L2 → L3; mini test 5–8 items with mixed levels.
+- [ ] Every generator has levels, hint, solution; answers computed by code; figures follow the numbers.
+- [ ] Distractors are typical mistakes, no duplicates.
+- [ ] Math verified **by hand** on at least 3 seeds per generator and level (/dev sample viewer).
+- [ ] Played through in the browser at phone width (`#/dev/preview/<id>`), light and dark mode.
+- [ ] Natural Hungarian, decimal comma, short sentences, no textbook text copied.
+- [ ] `npm run status` run, CONTENT_STATUS.md updated; one commit for this subtopic.
