@@ -1,0 +1,40 @@
+.dlg-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(20, 16, 40, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+@media (min-width: 600px) {
+  .dlg-backdrop {
+    align-items: center;
+  }
+}
+.dlg-panel {
+  width: 100%;
+  max-width: 440px;
+  max-height: 85vh;
+  overflow: auto;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-strong);
+  padding: 1.25rem;
+  outline: none;
+}
+.dlg-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.6rem;
+}
+.dlg-body {
+  margin-bottom: 1rem;
+}
+.dlg-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

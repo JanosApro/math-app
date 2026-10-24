@@ -6,6 +6,7 @@ import { navigate, useRoute } from './ui/router';
 import { useAppState } from './state/store';
 import { AppShell } from './ui/AppShell';
 import { t } from './i18n/hu';
+import { ToastHost } from './ui/Toast';
 
 const Onboarding = lazy(() => import('./screens/Onboarding'));
 const MapScreen = lazy(() => import('./screens/MapScreen'));
@@ -84,5 +85,10 @@ export function App() {
   }
 
   const content = <Suspense fallback={<div className="page muted">{t.common.loading}</div>}>{screen}</Suspense>;
-  return chrome ? <AppShell route={route}>{content}</AppShell> : content;
+  return (
+    <>
+      {chrome ? <AppShell route={route}>{content}</AppShell> : content}
+      <ToastHost />
+    </>
+  );
 }
