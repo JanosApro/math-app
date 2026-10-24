@@ -75,6 +75,27 @@ Architectural choices and why. Add new entries at the end of a section.
   day gives XP and counts for the streak; replays are practice.
 - XP numbers live in `src/state/xp.ts`; level n needs 50·n·(n−1) XP.
 
+## Dev tooling
+- All validation logic lives in `src/dev/validate.ts` and is **environment-independent** (no Vite
+  APIs, no DOM). `npm run check` runs it in Node via tsx (catalog JSON with fs, modules imported
+  dynamically, gallery sections included); the `/dev` page runs the *same functions* in the browser
+  in chunks (per module, per generator × level, with `setTimeout` ticks and a progress bar) so the
+  UI stays responsive. One code path — the CLI report and the browser report cannot drift apart.
+- Stress test: every generator × level × N seeds (CLI default 500; `/dev` buttons 100/500). Each
+  generated question gets the full static validation (RichText + KaTeX, answer-spec sanity,
+  canonical-input must pass its own checker, `formatAnswer`, figure checks, deep NaN/undefined
+  scan). Identical failures are aggregated (first seed + ×count). Distinct-question counting
+  compares prompt + answer JSON (some generators keep the prompt fixed and vary the figure), and
+  warns below 10 distinct questions in ≥ 50 seeds. KaTeX renders are cached per formula, so a
+  500-seed run finishes in ~1 s.
+- Warnings never fail `npm run check`; errors exit 1. This lets figure-label collisions and
+  low-variety findings stay visible without blocking content commits.
+- `CONTENT_STATUS.md` is **generated** from `src/content/grade-N/topics.json` by `npm run status`
+  (the generator reproduced the hand-written file byte-for-byte before it was switched on);
+  `npm run check` warns when it is stale. Never edit the markdown by hand.
+- `src/content/registry.ts` has two dev-only exports (`allModulePaths`, `importModule`) so `/dev`
+  can load every module file directly, including orphan files no subtopic references.
+
 ## Hosting
 - `base: './'` in vite.config.ts so `dist/` works under any path (GitHub Pages project sites,
   Cloudflare Pages). Cloudflare Pages: build command `npm run build`, output directory `dist`

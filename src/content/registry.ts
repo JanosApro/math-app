@@ -38,6 +38,18 @@ export function hasModule(grade: number, subtopicId: string): boolean {
 
 const loaded = new Map<string, Promise<SubtopicModule>>();
 
+/** All module file paths ('./grade-7/pitagorasz/01-bizonyitas-alapok.ts'). Dev tooling (/dev) only. */
+export function allModulePaths(): string[] {
+  return Object.keys(moduleFiles);
+}
+
+/** Imports one module file directly, bypassing topics.json. Dev tooling (/dev) only. */
+export function importModule(path: string): Promise<SubtopicModule> {
+  const loader = moduleFiles[path];
+  if (!loader) return Promise.reject(new Error(`Unknown module path "${path}"`));
+  return loader().then((m) => m.default);
+}
+
 /** Lazily loads a subtopic module (code-split per lesson). */
 export function loadSubtopic(grade: number, subtopicId: string): Promise<SubtopicModule> {
   const p = modulePath(grade, subtopicId);

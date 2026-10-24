@@ -23,7 +23,10 @@ Git: this repository has a local git identity (`git config user.name onam`,
 ## Current state (2026-10-24)
 
 The **foundation is done and type-checks** (`npx tsc --noEmit -p .` passes); the **screens are
-placeholders**, so the app runs but shows "Hamarosan…" pages until tasks 01–03 are built.
+placeholders**, so the app runs but shows "Hamarosan…" pages until tasks 01–02 are built. The
+**developer tooling works end to end**: `npm run check` (type check + full content validation +
+generator stress test + figure checks + gallery checks), `npm run status` and the `/dev` pages
+(validation report with stress test + sample viewer, `/dev/gallery` figure gallery).
 
 ### Build progress
 Milestone 1 — engine and app shell
@@ -42,7 +45,11 @@ Milestone 1 — engine and app shell
 - [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects
 - [ ] App shell, onboarding, map/path, soft-lock dialog, profile, settings, PWA → task 01
 - [ ] Lesson player, inputs + keypad, mini test, celebrations, daily challenge, dev preview → task 02
-- [ ] `/dev` page, gallery screen, `npm run check`, `npm run status` → task 03 (`npm run check` currently fails: `scripts/check.ts` is missing)
+- [x] `/dev` page, gallery screen, `npm run check`, `npm run status` → task 03
+      (`src/dev/validate.ts` + `scripts/check.ts` + `scripts/status.ts` + `src/dev/DevScreen.tsx` +
+      `GalleryScreen.tsx` + `dev.css`; verified at 1280/375 px, no console errors, no horizontal
+      scroll; `npm run check` passes: 0 errors, 5 warnings — all in the Pythagoras lesson figures,
+      see Known issues)
 
 Milestone 2 — skeleton
 - [x] All topics/subtopics for grades 5 (43), 7 (33), 8 (31) in `src/content/grade-N/topics.json`, with a scope note each
@@ -67,8 +74,12 @@ Milestone 4–6
   tétele" is the intercept theorem (not the semicircle theorem); a new grade 5 curriculum starts in 2027/28
   (drops vectors/translation) — not relevant this year; grade 7 "Adatfeldolgozás" is a survey project in the
   curriculum, the app practises it with given data sets and charts.
-- `npm run check` fails until task 03 adds `scripts/check.ts`. Meanwhile:
-  `npx tsx scripts/dev/smoke-lesson.ts` smoke-tests one lesson.
+- `npm run check` passes with **5 warnings in the Pythagoras lesson** (found by the new validator,
+  content fix — small, do it with the next content change): `square-areas` figures have overlapping
+  square-area labels at some sizes (e.g. "49 cm²", seeds ~11 %), and `square-areas` L2 produces only
+  9 distinct questions (add variety); the explore step 6 figure has a colliding "1" label at a=1, b=8.
+- `CONTENT_STATUS.md` is **generated** (`npm run status`) — edit statuses/scopes in
+  `src/content/grade-N/topics.json`, never in the markdown file; `npm run check` warns if it is stale.
 
 ## How to run (local)
 
@@ -110,10 +121,12 @@ src/
   ui/          router, Rich text, sound, shell (placeholder)
   screens/     onboarding, map, profile, settings (placeholders)
   lesson/      lesson player, daily challenge (placeholders)
-  dev/         /dev page, figure gallery (placeholders), gallery sections in dev/gallery/
+  dev/         /dev page (DevScreen) + figure gallery (GalleryScreen) + validate.ts (the engine
+               behind npm run check, also runs in the browser) + gallery sections in dev/gallery/
   styles/      theme.css (design tokens, light/dark, buttons, animations)
-scripts/       dev/figure-preview.ts (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser
-               automation), dev/smoke-lesson.ts; check.ts and status.ts are to be written (task 03)
+scripts/       check.ts (npm run check), status.ts (npm run status), dev/figure-preview.ts
+               (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser automation),
+               dev/smoke-lesson.ts (legacy one-lesson smoke test)
 docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
 materials/     the teacher's textbook screenshots (reference only — never copy text)
 ```

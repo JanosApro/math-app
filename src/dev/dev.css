@@ -1,0 +1,322 @@
+/*
+ * Dev pages: /dev (validation report) and /dev/gallery (figure gallery).
+ * Dev builds only — never shipped to students. Prefix: dev-.
+ */
+
+.dev-page {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1rem 1rem 4rem;
+}
+
+.dev-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+.dev-top h1 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.dev-links {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.dev-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+}
+.dev-card h2 {
+  font-size: 1.08rem;
+  margin: 0 0 0.6rem;
+}
+.dev-card h3 {
+  font-size: 0.98rem;
+  margin: 0.9rem 0 0.45rem;
+}
+
+.dev-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.dev-controls select {
+  min-height: 38px;
+  border-radius: var(--radius-small);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  padding: 0.25rem 0.5rem;
+  max-width: min(100%, 24em);
+}
+.dev-controls input[type='number'] {
+  width: 7em;
+  min-height: 38px;
+  border-radius: var(--radius-small);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  padding: 0.25rem 0.5rem;
+}
+
+.dev-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+.dev-progress > div {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.15s ease;
+}
+
+/* ---- status pills, issue counters ---- */
+.dev-badge {
+  display: inline-block;
+  padding: 0.1rem 0.55em;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.dev-badge-todo {
+  color: var(--text-muted);
+  background: var(--surface-3);
+}
+.dev-badge-draft {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.dev-badge-done {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.dev-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0.1rem 0.55em;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dev-count-ok {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.dev-count-bad {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+.dev-count-warn {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+.dev-count-muted {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+/* ---- subtopic list ---- */
+.dev-topic {
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.dev-topic .muted {
+  font-weight: 400;
+}
+.dev-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-small);
+  background: var(--surface-2);
+  margin-bottom: 0.4rem;
+}
+.dev-sub-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.dev-sub-title {
+  font-weight: 600;
+  flex: 1 1 12em;
+  min-width: 0;
+}
+.dev-sub-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 0.4rem 0.9rem;
+  flex-wrap: wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.dev-sub a {
+  font-size: 0.85rem;
+}
+
+/* ---- issue report ---- */
+.dev-issue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  padding: 0.22rem 0;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+.dev-issue > span {
+  min-width: 0;
+}
+.dev-issue .dev-where {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.dev-issue .dev-msg {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  flex: 1 1 14em;
+}
+.dev-issue-error {
+  color: var(--bad);
+}
+.dev-issue-warn {
+  color: var(--warn);
+}
+.dev-issue-list {
+  max-height: 26rem;
+  overflow: auto;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-small);
+  background: var(--surface-2);
+}
+
+/* ---- sample viewer ---- */
+.dev-q {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  margin-top: 0.7rem;
+}
+.dev-q .dev-q-prompt {
+  font-size: 1.05rem;
+}
+.dev-q h3 {
+  margin: 0.8rem 0 0.3rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.dev-q ol {
+  margin: 0.2rem 0 0;
+  padding-left: 1.4em;
+}
+.dev-kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--surface-3);
+  border-radius: 6px;
+  padding: 0.05em 0.45em;
+}
+
+.dev-json {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface-2);
+  border-radius: var(--radius-small);
+  padding: 0.6rem 0.7rem;
+  margin: 0.35rem 0 0;
+  max-height: 22rem;
+  overflow: auto;
+}
+
+/* ---- gallery ---- */
+.dev-gallery-index {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+}
+.dev-gallery-index button {
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0.1rem 0;
+  font: inherit;
+}
+.dev-gallery-index .dev-types {
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.dev-fig {
+  width: var(--dev-card-w, 360px);
+  max-width: 100%;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem;
+  margin-bottom: 0.9rem;
+  background: var(--surface);
+}
+.dev-fig .dev-fig-title {
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+.dev-fig .dev-fig-note {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.4rem;
+}
+.dev-fig-msg {
+  font-size: 0.82rem;
+  margin: 0.4rem 0 0;
+}
+.dev-fig-details {
+  margin-top: 0.45rem;
+}
+.dev-fig-details summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  user-select: none;
+}
+.dev-copy-ok {
+  color: var(--good);
+}
+
+@media (min-width: 700px) {
+  .dev-figs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--dev-card-w, 360px)), 1fr));
+    gap: 0 0.9rem;
+    align-items: start;
+  }
+  .dev-fig {
+    margin-bottom: 0.9rem;
+  }
+}

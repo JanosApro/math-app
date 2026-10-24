@@ -9,7 +9,7 @@ after every change, and commit after each task (`git commit`). Then tick the tas
 |---|------|--------|
 | 01 | [App shell, onboarding, map, soft-lock dialog, profile, settings, PWA](01-app-shell.md) | todo (placeholders exist) |
 | 02 | [Lesson player, answer inputs + keypad, mini test, celebrations, daily challenge, dev preview](02-lesson-player.md) | todo (placeholders exist) |
-| 03 | [`/dev` page, figure gallery screen, `npm run check`, `npm run status`](03-dev-tools.md) | todo (placeholders exist) |
+| 03 | [`/dev` page, figure gallery screen, `npm run check`, `npm run status`](03-dev-tools.md) | done |
 | 04 | [Figures: 3D solids and nets](04-figures-solids.md) | todo (stubs throw) |
 | 05 | [Figures: charts, pictogram, table](05-figures-charts.md) | todo (stubs throw) |
 | 06 | [Figures: constructions, fraction model, bar model + galleries for shapes/coordinate/number line](06-figures-construction-fraction.md) | todo (stubs throw) |
@@ -17,7 +17,8 @@ after every change, and commit after each task (`git commit`). Then tick the tas
 | 08 | [Verification in a browser + final docs](08-verification.md) | todo |
 
 Suggested order: 03 (so you can check your work) → 02 → 01 → 06 → 04 → 05 → 07 → 08.
-Tasks 04–06 are independent of each other.
+Tasks 04–06 are independent of each other. 03 is done (2026-10-24): use `npm run check` after
+every change and `npm run status` after editing topics.json.
 
 ## Ground rules (all tasks)
 - Read `PROMPT.md` (the original brief), `AGENTS.md`, `HANDOFF.md`, `DECISIONS.md` first.

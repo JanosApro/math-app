@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "check": "tsc --noEmit && tsx scripts/check.ts"
+    "check": "tsc --noEmit && tsx scripts/check.ts",
+    "status": "tsx scripts/status.ts"
   },
   "dependencies": {
     "katex": "0.16.22",

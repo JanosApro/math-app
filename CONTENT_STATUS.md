@@ -7,7 +7,8 @@ Every subtopic of the app. Pick the next `todo` row, write the lesson by followi
 - `done` — finished and checked (see the checklist in CONTENT_GUIDE.md).
 
 The status itself lives in `src/content/grade-N/topics.json`. This file is generated from those files
-(`npm run status` once task 03 is done; until then update the row by hand). **Scope** = what the lesson must cover (inferred from the official curriculum and the textbook's chapter lists).
+by `npm run status` — to change a status or scope, edit topics.json and run it again.
+**Scope** = what the lesson must cover (inferred from the official curriculum and the textbook's chapter lists).
 
 ## Grade 5  (43 subtopics: 0 done, 0 draft, 43 todo)
 
