@@ -238,7 +238,7 @@ function wordProblem(rng: Rng, ask: 'hypotenuse' | 'leg'): Question {
     ]);
     const saved = x + y - z;
     return {
-      prompt: tex`Egy téglalap alakú park oldalai $${num(x)}$ m és $${num(y)}$ m. Panni a park egyik sarkából az átellenes sarokba megy. Hány méterrel rövidebb az út az átlón át, mint a park két szélén körbe?`,
+      prompt: tex`Egy téglalap alakú park oldalai $${num(x)}$ m és $${num(y)}$ m. Panni átlósan megy át rajta. Hány méterrel rövidebb ez, mint a két szélén körbe?`,
       figure: {
         type: 'quadrilateral',
         shape: 'rectangle',
@@ -472,7 +472,7 @@ const squareAreas: GeneratorDef = {
     if (level === 1) {
       if (askHyp) {
         return {
-          prompt: tex`Egy derékszögű háromszög befogóira rajzolt négyzetek területe $${num(a * a)}$ cm² és $${num(b * b)}$ cm². Mekkora az átfogóra rajzolt négyzet területe?`,
+          prompt: tex`A befogókra rajzolt négyzetek területe $${num(a * a)}$ cm² és $${num(b * b)}$ cm². Mekkora az átfogóra rajzolt négyzeté?`,
           figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} cm²`, b: `${num(b * b)} cm²`, c: '?' }, notToScale: false },
           answer: { type: 'number', value: c * c, unit: 'cm²' },
           hint: 'A tétel szerint az átfogóra rajzolt négyzet területe a két kisebb négyzet területének összege.',
@@ -484,7 +484,7 @@ const squareAreas: GeneratorDef = {
         };
       }
       return {
-        prompt: tex`Egy derékszögű háromszög átfogójára rajzolt négyzet területe $${num(c * c)}$ cm², az egyik befogóra rajzolté $${num(a * a)}$ cm². Mekkora a másik befogóra rajzolt négyzet területe?`,
+        prompt: tex`Az átfogóra rajzolt négyzet területe $${num(c * c)}$ cm², az egyik befogóra rajzolté $${num(a * a)}$ cm². Mekkora a harmadik négyzeté?`,
         figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} cm²`, b: '?', c: `${num(c * c)} cm²` } },
         answer: { type: 'number', value: b * b, unit: 'cm²' },
         hint: 'A két kisebb négyzet együtt akkora, mint a nagy. Vond ki a nagyból az ismert kicsit!',
@@ -512,7 +512,7 @@ const squareAreas: GeneratorDef = {
       };
     }
     return {
-      prompt: tex`Egy derékszögű háromszög átfogójára rajzolt négyzet területe $${num(c * c)}$ ${unit}², az egyik befogóra rajzolté $${num(a * a)}$ ${unit}². Milyen hosszú a másik befogó?`,
+      prompt: tex`Az átfogóra rajzolt négyzet területe $${num(c * c)}$ ${unit}², az egyik befogóra rajzolté $${num(a * a)}$ ${unit}². Milyen hosszú a másik befogó?`,
       figure: { type: 'triangle', legs: [a, b], squares: { a: `${num(a * a)} ${unit}²`, c: `${num(c * c)} ${unit}²` }, sideLabels: { b: 'b = ?' } },
       answer: { type: 'number', value: b, unit },
       inputLabel: '$b =$',

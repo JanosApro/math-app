@@ -252,6 +252,7 @@
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
 }
 .shell-main .page {
+  padding-top: 0.8rem;
   padding-bottom: 1rem;
 }
 /* no fill-mode: a transform kept after the animation would make .shell-view the containing

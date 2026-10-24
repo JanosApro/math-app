@@ -85,7 +85,7 @@ const volume: GeneratorDef = {
   generate(rng, level): Question {
     if (level === 3) {
       const ctx = rng.pick([
-        { what: 'Egy henger alakú esővízgyűjtő tartály', r: [2, 3, 4], H: [6, 8, 9, 10] },
+        { what: 'Egy henger alakú esővízgyűjtő', r: [2, 3, 4], H: [6, 8, 9, 10] },
         { what: 'Egy henger alakú akvárium', r: [1, 2], H: [3, 4, 5] },
         { what: 'Egy henger alakú hordó', r: [2, 3], H: [5, 6, 7, 8] },
       ]);
@@ -94,11 +94,11 @@ const volume: GeneratorDef = {
       const k = r * r * H;
       const V = clean(k * 3.14);
       return {
-        prompt: tex`${ctx.what} alapkörének sugara $${num(r)}$ dm, magassága $${num(H)}$ dm. Hány liter víz fér bele? ($\pi \approx 3,14$; $1\ \text{dm}^3 = 1$ liter; egy tizedesjegyre kerekíts!)`,
+        prompt: tex`${ctx.what} alapkörének sugara $${num(r)}$ dm, magassága $${num(H)}$ dm. Hány liter fér bele? ($\pi \approx 3,14$; egy tizedesjegyre)`,
         figure: cylinder(r, H, 'dm'),
         answer: { type: 'number', value: V, precision: 1, unit: 'l' },
         inputLabel: '$V \\approx$',
-        hint: 'Számítsd ki a térfogatot dm³-ben ($V = r^2\\pi H$). Mivel 1 dm³ = 1 liter, a szám ugyanaz marad.',
+        hint: 'Számítsd ki a térfogatot dm³-ben ($V = r^2\\pi H$): $1$ dm³ $= 1$ liter.',
         solution: [
           tex`$V = r^2\pi H = ${num(r)}^2 \cdot \pi \cdot ${num(H)} = ${piTex(k)}$ dm³.`,
           tex`$\pi \approx 3,14$ értékkel: $V \approx ${num(k)} \cdot 3,14 = ${num(V)}$ dm³.`,

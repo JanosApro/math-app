@@ -240,11 +240,25 @@ function findDuplicates(values: string[]): string[] {
   return [...dupes];
 }
 
+/**
+ * Screens must fit a phone without scrolling, so student-facing texts stay short. Lengths are
+ * counted without the math ($…$ counts as 4 characters). Warnings only.
+ */
+export const TEXT_LIMITS = { prompt: 150, theory: 180, remember: 80, explore: 80, problem: 120, exampleStep: 90, exampleAnswer: 90 } as const;
+function tooLong(issues: ValidationIssue[], where: string, what: string, text: unknown, max: number): void {
+  if (typeof text !== 'string') return;
+  const len = text.replace(/\$[^$]*\$/g, 'XXXX').replace(/\*\*/g, '').length;
+  if (len > max) issues.push({ level: 'warning', where, message: `${what} is long (over ${max} characters without math) — shorten it so the screen fits a phone` });
+}
+
 /** Texts, answer spec, canonical-input check, formatAnswer, figure and deep scan of one question. */
 export function validateQuestion(q: Question, where: string, issues: ValidationIssue[]): void {
   // Texts (prompt and hint are required; inputLabel is optional)
   if (typeof q.prompt !== 'string' || q.prompt.trim() === '') issues.push({ level: 'error', where, message: 'prompt is empty' });
-  else addRich(issues, where, 'prompt', q.prompt);
+  else {
+    addRich(issues, where, 'prompt', q.prompt);
+    tooLong(issues, where, 'prompt', q.prompt, TEXT_LIMITS.prompt);
+  }
   if (typeof q.hint !== 'string' || q.hint.trim() === '') issues.push({ level: 'error', where, message: 'hint is empty' });
   else addRich(issues, where, 'hint', q.hint);
   if (typeof q.inputLabel === 'string' && q.inputLabel.trim() !== '') addRich(issues, where, 'inputLabel', q.inputLabel);
@@ -381,18 +395,23 @@ export function validateModule(mod: SubtopicModule, sub: SubtopicMeta | undefine
         else addRich(issues, stepWhere, 'body', step.body);
         addRich(issues, stepWhere, 'title', step.title);
         addRich(issues, stepWhere, 'remember', step.remember);
+        tooLong(issues, stepWhere, 'theory body', step.body, TEXT_LIMITS.theory);
+        tooLong(issues, stepWhere, 'remember box', step.remember, TEXT_LIMITS.remember);
         addFigure(issues, stepWhere, step.figure, 'theory');
         break;
       case 'example':
         if (typeof step.problem !== 'string' || step.problem.trim() === '') issues.push({ level: 'error', where: stepWhere, message: 'example problem is empty' });
         else addRich(issues, stepWhere, 'problem', step.problem);
         addRich(issues, stepWhere, 'title', step.title);
+        tooLong(issues, stepWhere, 'example problem', step.problem, TEXT_LIMITS.problem);
+        tooLong(issues, stepWhere, 'example answer', step.answer, TEXT_LIMITS.exampleAnswer);
         if (!Array.isArray(step.steps) || step.steps.length === 0) {
           issues.push({ level: 'error', where: stepWhere, message: 'example has no solution steps' });
         } else {
           step.steps.forEach((s, j) => {
             if (typeof s.text !== 'string' || s.text.trim() === '') issues.push({ level: 'error', where: stepWhere, message: `example solution step ${j + 1} is empty` });
             else addRich(issues, stepWhere, `example step ${j + 1}`, s.text);
+            tooLong(issues, stepWhere, `example step ${j + 1}`, s.text, TEXT_LIMITS.exampleStep);
             addFigure(issues, stepWhere, s.figure, `example step ${j + 1}`);
           });
         }
@@ -414,6 +433,7 @@ export function validateModule(mod: SubtopicModule, sub: SubtopicMeta | undefine
         if (typeof step.body !== 'string' || step.body.trim() === '') issues.push({ level: 'error', where: stepWhere, message: 'explore body is empty' });
         else addRich(issues, stepWhere, 'body', step.body);
         addRich(issues, stepWhere, 'title', step.title);
+        tooLong(issues, stepWhere, 'explore body', step.body, TEXT_LIMITS.explore);
         if (!Array.isArray(step.sliders) || step.sliders.length === 0) {
           issues.push({ level: 'error', where: stepWhere, message: 'explore has no sliders' });
         } else {

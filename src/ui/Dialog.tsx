@@ -9,9 +9,11 @@
  * - role="dialog" + aria-modal, labelled by the title and described by the body;
  * - focus moves to the first action (the primary one), Tab/Shift+Tab stay inside the dialog,
  *   and focus returns to the previously focused element when it closes;
- * - the page behind does not scroll while the dialog is open.
+ * - the page behind does not scroll while the dialog is open;
+ * - it is rendered into document.body (a portal), so it works inside animated cards too.
  */
 import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import './Dialog.css';
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -80,7 +82,8 @@ export function Dialog({
   }, [open]);
 
   if (!open) return null;
-  return (
+  // rendered at the page level: an animated (transformed) ancestor would trap position: fixed
+  return createPortal(
     <div className="dlg-backdrop anim-fade-in" onClick={dismissable ? onClose : undefined}>
       <div
         ref={panel}
@@ -102,6 +105,7 @@ export function Dialog({
         )}
         {actions && <div className="dlg-actions">{actions}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

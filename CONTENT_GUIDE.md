@@ -100,6 +100,19 @@ export default defineSubtopic({
 practice L1/L2 → theory → example → practice L2 → practice L3. The mini test comes automatically
 after the last part. A whole lesson takes 15–25 minutes.
 
+### Short texts: every screen must fit a phone
+A step is one phone screen (375 × 740) **without scrolling**: card + figure + answer + action bar.
+So write tight — the student reads on a phone, between other things.
+- **Theory body:** 1–2 short sentences (≤ ~180 characters without the math). No "Ebben a
+  részben…", no repeating the title. The rule itself goes into `remember` (≤ ~80 characters).
+- **Example:** problem ≤ ~120 characters; each solution step one line of math or a few words
+  (≤ ~90); answer one sentence.
+- **Explore body:** one instruction ("Húzd a csúszkákat!").
+- **Question prompts:** ≤ ~150 characters; no explanations in parentheses the figure already
+  shows (side names, labels). Keep only what the answer needs ("Gyökös alakban add meg!").
+- `npm run check` warns above these limits. Figures are scaled to the screen height
+  automatically (smaller in question cards), so very tall figures simply get smaller.
+
 ### Parts (3–5 per lesson)
 Split the step sequence into **3–5 parts of about 5 minutes each**, one idea per part (e.g.
 "the theorem", "computing the hypotenuse", "computing a leg", "is it a right triangle?"). Each

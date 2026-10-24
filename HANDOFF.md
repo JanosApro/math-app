@@ -43,6 +43,9 @@ Teacher feedback round (same day), done so far:
 - Renamed to **Zsebmatek** with a "Z" trail logo (`public/icon*.svg`, PNGs via
   `node scripts/dev/icons.mjs`). Live site: **https://janosapro.github.io/math-app/** (GitHub
   Pages, `.github/workflows/deploy-pages.yml`, deploys every push to `master`).
+- **Uncluttered UI:** small explanatory texts removed, useful ones behind ⓘ / 🔍 popups, every
+  screen fits a 375 × 740 phone without scrolling (DECISIONS "Uncluttered screens"); lesson
+  texts shortened; `npm run check` warns about long texts (CONTENT_GUIDE "Short texts").
 - Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
   (default is reduced motion, which makes the e2e run fast and stable).
 

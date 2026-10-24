@@ -86,7 +86,7 @@
   width: 100%;
   max-width: var(--lesson-w);
   margin: 0 auto;
-  padding: 1rem max(0.85rem, env(safe-area-inset-right)) 0 max(0.85rem, env(safe-area-inset-left));
+  padding: 0.65rem max(0.85rem, env(safe-area-inset-right)) 0 max(0.85rem, env(safe-area-inset-left));
 }
 .lesson-stage {
   display: flex;
@@ -130,7 +130,7 @@
   --fig-vh: 20vh;
 }
 .lesson-explore {
-  --fig-vh: 19vh;
+  --fig-vh: 18vh;
 }
 /* a worked example shrinks its figure once the solution steps appear */
 .lesson-example.is-solving {
@@ -510,7 +510,7 @@
 
 /* ---- bottom action bar ---- */
 .lesson-footer-spacer {
-  height: calc(80px + env(safe-area-inset-bottom));
+  height: calc(76px + env(safe-area-inset-bottom));
 }
 .lesson-footer {
   position: fixed;

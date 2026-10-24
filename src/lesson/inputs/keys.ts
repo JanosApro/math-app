@@ -40,6 +40,9 @@ export function specialKeys(spec: AnswerSpec): KeyDef[] {
       return [ins('√', t.input.rootKey), ins('/', t.input.fractionKey)];
     case 'expression': {
       const vars = expressionVars(spec);
+      // a multiple of π (45π, 9π·5): no powers or sums needed — 4 keys fit the side column
+      if (vars.length === 1 && vars[0] === 'π')
+        return [ins('π', 'pí', 'letter'), ins('·', t.input.timesKey), ins('(', t.input.openParenKey), ins(')', t.input.closeParenKey)];
       return [
         ...vars.map((v) => ins(v, v === 'π' ? 'pí' : v, 'letter')),
         ins('^', t.input.powerKey, 'op', 'xⁿ'),

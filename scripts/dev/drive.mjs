@@ -85,7 +85,8 @@ function typedAnswer(spec, right) {
     case 'number':
       return right ? plain(spec.value, spec.precision) : String(Math.round(spec.value) + 7);
     case 'expression':
-      return right ? spec.value.replace(/\*/g, '·') : `${(spec.vars ?? spec.value.match(/[a-zπ]/) ?? ['x'])[0]}+1`;
+      // wrong: "2·" in front doubles the value (the π-only keypad has no "+" key)
+      return right ? spec.value.replace(/\*/g, '·') : `2·(${spec.value.replace(/\*/g, '·')})`;
     case 'fraction': {
       // a different value (n+1)/d — not an equivalent fraction, which would only get the "simplify it" notice
       if (!right) return `${spec.num + 1}/${spec.den}`;
