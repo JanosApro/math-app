@@ -85,8 +85,8 @@ Milestone 2 — skeleton
 
 Milestone 3 — gold-standard lessons → task 07
 - [x] 7th › Pitagorasz tétele › 01 (`g7-pitagorasz-01`) — written, smoke-tested (status `draft` until played in the real player)
-- [ ] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`)
-- [ ] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — needs the `solid` figure (task 04)
+- [x] 5th › Törtek összeadása és kivonása (`g5-tortek-2-01`) — written (draft); figures need task 06
+- [x] 8th › Az egyenes henger térfogata (`g8-henger-kup-gomb-03`) — written (draft); figure needs task 04
 
 Milestone 4–6
 - [x] `CONTENT_GUIDE.md`, `CONTENT_STATUS.md`, `DECISIONS.md`, task specs in `docs/tasks/`

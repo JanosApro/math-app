@@ -1,5 +1,11 @@
 # Task 07 — Gold-standard example lessons
 
+> **Status (2026-10-24):** all three lessons are WRITTEN and pass the math/text/answer checks of
+> `npm run check` (status `draft`). Remaining: once tasks 02 (player), 04 (solids) and 06
+> (fraction/bar models) are done, run `npm run check` (their figures must then render without
+> errors), play each lesson in the browser at phone width, fix anything odd, and set
+> `"status": "done"` in topics.json + `npm run status`.
+
 Brief: `PROMPT.md` §8 item 3. These are the templates other models imitate — make them
 excellent: mathematically correct, pedagogically sound for 11–14 year olds, natural Hungarian,
 full range of exercise types and difficulty levels. Follow `CONTENT_GUIDE.md`.
@@ -10,7 +16,7 @@ full range of exercise types and difficulty levels. Follow `CONTENT_GUIDE.md`.
 Remaining: run `npm run check` once task 03 exists, play it through in the browser (task 02),
 fix anything odd, then set `"status": "done"` in `src/content/grade-7/topics.json`.
 
-## 2. Grade 5 › Törtek – második rész › 01 "Törtek összeadása és kivonása" (`g5-tortek-2-01`)
+## 2. Grade 5 › Törtek – második rész › 01 "Törtek összeadása és kivonása" (`g5-tortek-2-01`) — WRITTEN (draft)
 File: `src/content/grade-5/tortek-2/01-osszeadas-kivonas.ts`. Scope: see `CONTENT_STATUS.md`.
 Style notes: `docs/materials-grade-5.md` (imperatives "Számítsd ki…!", everyday hooks, dinárs).
 Suggested content:
@@ -27,7 +33,7 @@ Suggested content:
   the result must be simplified; a few L1 items may set `requireSimplified: false`.
 - mini test 6–7 items mixing levels; daily pool.
 
-## 3. Grade 8 › Henger, kúp és gömb › 03 "Az egyenes henger térfogata" (`g8-henger-kup-gomb-03`)
+## 3. Grade 8 › Henger, kúp és gömb › 03 "Az egyenes henger térfogata" (`g8-henger-kup-gomb-03`) — WRITTEN (draft)
 File: `src/content/grade-8/henger-kup-gomb/03-henger-terfogata.ts`. Short example (needs task 04
 for the cylinder figure). Notation (see `DECISIONS.md`): r radius, H height, B base area
 (B = r²π), V volume (V = B·H = r²πH); π written after the factors; units cm³.
