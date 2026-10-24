@@ -383,35 +383,75 @@ export interface NetFigure extends FigureBase {
 // 4. Coordinate plane
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * A graph on the coordinate plane. Every graph is clipped to the visible x/y range.
+ * `label` is written next to the graph (e.g. 'y = 2x + 1', 'f', 'y = 6/x'); color default 'accent'.
+ */
 export type CoordFunction =
-  /** y = k·x + n  (n = 0: direct proportionality) */
+  /** y = k·x + n  (n = 0, the default: direct proportionality, the line goes through the origin) */
   | { kind: 'linear'; k: number; n?: number; label?: string; color?: FigColor; dashed?: boolean }
-  /** y = k / x  (inverse proportionality), drawn for x ≠ 0 */
+  /**
+   * y = k / x  (inverse proportionality, k ≠ 0): both branches of the hyperbola, never drawn
+   * across the asymptote x = 0. `positiveOnly: true` draws only the x > 0 branch (real-life
+   * quantities such as speed and time).
+   */
   | { kind: 'inverse'; k: number; label?: string; color?: FigColor; dashed?: boolean; positiveOnly?: boolean }
-  /** x = c */
+  /** The vertical line x = c (given as `x`). */
   | { kind: 'vertical'; x: number; label?: string; color?: FigColor; dashed?: boolean };
 
+/**
+ * Coordinate plane with EQUAL unit length on both axes (true proportions, so distances are
+ * correct). Axes with arrowheads at the positive ends, named x and y; ticks at every `step`;
+ * numbers with decimal comma; a single 0 at the origin. Everything must lie inside the visible
+ * range (otherwise the layout throws an error naming the item).
+ *
+ *   { type: 'coordinate', x: [-1, 6], y: [-1, 5],
+ *     points: [{ at: [2, 3], label: 'A', showCoords: true, projections: true }] }
+ */
 export interface CoordinateFigure extends FigureBase {
   type: 'coordinate';
-  /** Visible x range, e.g. [-5, 5]. */
+  /**
+   * Visible x range [min, max], e.g. [-5, 5] (min < max). The range is always widened to include
+   * 0, so the origin and both axes are visible (e.g. [2, 8] is drawn as [0, 8]).
+   */
   x: [number, number];
-  /** Visible y range. */
+  /** Visible y range [min, max] (min < max); widened to include 0 like `x`. */
   y: [number, number];
-  /** Grid lines (default true). */
+  /** Light grid lines at every tick (default true). Thinned automatically if they would be denser than ~7 px. */
   grid?: boolean;
-  /** Distance between ticks (default 1). */
+  /** Distance between ticks on both axes (default 1; may be 0.5, 2, 5 …; must be > 0). */
   step?: number;
-  /** Write a number at every n-th tick (default 1; 0 = no numbers). */
+  /**
+   * Write a number at every n-th tick, counted from 0 (default 1; 0 = no numbers). This is a
+   * minimum: numbers are thinned automatically (×2, ×5, ×10 …) if they would overlap.
+   */
   labelEvery?: number;
   /** Axis names, default ['x', 'y']. */
   axisLabels?: [string, string];
+  /** Label at the origin, default '0' (use 'O' for the point O, '' to hide). Hidden if labelEvery is 0 and not given. */
+  originLabel?: string;
+  /**
+   * Points (filled dots; `hollow: true` = empty circle).
+   * - label: the name, e.g. 'A'. With `showCoords: true` the coordinates are appended: 'A(2; −3)'
+   *   (or just '(2; −3)' without a label).
+   * - color: default 'ink'. labelDir: preferred label side (default: away from the axes).
+   * - projections: dashed lines from the point to both axes (to read off the coordinates).
+   */
   points?: { at: XY; label?: string; showCoords?: boolean; color?: FigColor; hollow?: boolean; labelDir?: Dir; projections?: boolean }[];
+  /** Segments (no end dots — add the endpoints to `points` to show/name them). Color default 'ink'. */
   segments?: { from: XY; to: XY; label?: string; dashed?: boolean; color?: FigColor }[];
+  /**
+   * Polygons. fill: true = light 'accent' fill, or a color. vertexLabels: names for the vertices in
+   * order (e.g. ['A', 'B', 'C']), drawn outside the polygon with a dot; omit for no names.
+   */
   polygons?: { points: XY[]; fill?: FigColor | boolean; color?: FigColor; vertexLabels?: string[] }[];
+  /** Graphs of functions, see CoordFunction. */
   functions?: CoordFunction[];
   /**
-   * Distance between two points with the helper right triangle (Δx and Δy legs, dashed).
-   * labels: { dx: '4', dy: '3', d: 'd = 5' } (omit any to hide).
+   * Distance between two points with the helper right triangle: dashed Δx and Δy legs (accent),
+   * right-angle marker, the segment itself highlighted (color, default 'highlight').
+   * labels: { dx: '4', dy: '3', d: 'd = 5' } — each one is optional; omitted ones are not written.
+   * The endpoints get small dots unless they are also listed in `points`.
    */
   distances?: { from: XY; to: XY; labels?: { dx?: string; dy?: string; d?: string }; color?: FigColor }[];
 }
@@ -420,22 +460,50 @@ export interface CoordinateFigure extends FigureBase {
 // 5. Number line
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * A horizontal number line with an arrow at the right end, ticks and numbers below it.
+ *
+ *   { type: 'numberLine', min: -5, max: 5, step: 1, points: [{ value: -3, label: 'A' }] }
+ *   { type: 'numberLine', min: 0, max: 2, step: 1, subdivisions: 4, tickLabels: 'all', fractionDenominator: 4 }
+ */
 export interface NumberLineFigure extends FigureBase {
   type: 'numberLine';
+  /** Left end of the visible part (min < max). */
   min: number;
+  /** Right end of the visible part. */
   max: number;
-  /** Distance between labelled (major) ticks. */
+  /** Distance between major ticks (> 0). Major ticks sit at the multiples of `step` (0, ±step, …). */
   step: number;
-  /** Minor ticks per major interval (e.g. 4 → quarters). Default 1 (none). */
+  /** Minor ticks per major interval, e.g. 4 → quarters, 10 → tenths (default 1 = no minor ticks). Minor ticks are shorter. */
   subdivisions?: number;
-  /** Which ticks get numbers: 'major' (default), 'all', 'ends', 'none', or a list of values. */
+  /**
+   * Which ticks get numbers: 'major' (default), 'all' (minor ticks too), 'ends' (only the first
+   * and last major tick), 'none', or a list of values (a major tick is drawn at each).
+   * Numbers that would overlap are thinned automatically (except for an explicit list).
+   */
   tickLabels?: 'major' | 'all' | 'ends' | 'none' | number[];
-  /** Show tick numbers as fractions with this denominator (e.g. 4 → 1/4, 2/4 …) instead of decimals. */
+  /**
+   * Write tick numbers as stacked fractions with this denominator, NOT simplified: with 4 the
+   * ticks read 1/4, 2/4, 3/4, 1, 5/4 … (whole numbers are written as integers). Values that are
+   * not multiples of 1/den fall back to decimals.
+   */
   fractionDenominator?: number;
+  /**
+   * Points: a dot on the line (`open: true` = hollow circle) with its label above
+   * (`below: true` puts it under the numbers). Color default 'accent'. Value must be in [min, max].
+   */
   points?: { value: number; label?: string; color?: FigColor; open?: boolean; below?: boolean }[];
-  /** Intervals; use -Infinity / Infinity for rays. */
+  /**
+   * Intervals as thick bars just above the line: filled end dot = closed end (default),
+   * hollow = open end (`fromClosed`/`toClosed: false`). Use -Infinity / Infinity for rays
+   * (drawn with an arrow). Finite ends must be inside [min, max], from < to. Several intervals are
+   * stacked. Default colors: accent, highlight, green, purple. `label` is written above the bar.
+   */
   intervals?: { from: number; to: number; fromClosed?: boolean; toClosed?: boolean; color?: FigColor; label?: string }[];
-  /** Jump arcs above the line (e.g. +3 steps for addition). */
+  /**
+   * Jump arcs above the line with an arrowhead at `to` (addition/subtraction as steps).
+   * label default: the signed difference ('+3', '−2'); '' hides it. Color default 'highlight'.
+   */
   jumps?: { from: number; to: number; label?: string; color?: FigColor }[];
 }
 
@@ -443,25 +511,49 @@ export interface NumberLineFigure extends FigureBase {
 // 6. Data and statistics
 // ---------------------------------------------------------------------------------------------
 
+/**
+ * One data series of a bar/line chart. `values[i]` belongs to `categories[i]` (same length).
+ * `name` is shown in the legend (a legend appears when there are 2+ series).
+ * Default colors: series 1, 2, 3 … get the chart palette colors in order.
+ */
 export interface ChartSeries {
   name?: string;
   values: number[];
   color?: FigColor;
 }
 
+/**
+ * Bar chart ("oszlopdiagram"): one bar per category and series, value axis with grid lines.
+ * Long category names are wrapped onto two lines, or turned vertical if there is no room
+ * (for 12 months prefer short names: 'jan.', 'febr.' … or 'I.'–'XII.').
+ *
+ *   { type: 'barChart', categories: ['H', 'K', 'Sze'], series: [{ values: [3, 5, 2] }], yLabel: 'tanulók száma' }
+ */
 export interface BarChartFigure extends FigureBase {
   type: 'barChart';
   categories: string[];
   series: ChartSeries[];
+  /** Bottom of the value axis. Default 0 (or a rounded value below the smallest negative value). */
+  yMin?: number;
+  /** Top of the value axis. Default: the largest value rounded up to a "nice" number. All values must be ≤ yMax. */
   yMax?: number;
+  /** Distance between value-axis numbers / grid lines (> 0). Default: automatic (4–6 lines). */
   yStep?: number;
+  /** Title of the category axis, written centered under the category names. */
   xLabel?: string;
+  /** Title of the value axis (e.g. 'tanulók száma' or 'db'), written above the value axis. */
   yLabel?: string;
-  /** Write the value above each bar. */
+  /** Write the value above each bar (decimal comma). */
   showValues?: boolean;
+  /** Horizontal bars, category names on the left (good for long names). */
   horizontal?: boolean;
 }
 
+/**
+ * Line chart ("vonaldiagram"): one dot per category, joined by lines; several series allowed.
+ * Same axis rules as the bar chart. yMin default: 0 (or a rounded value below the smallest
+ * negative value) — set it (e.g. 15) to zoom in on values far from 0.
+ */
 export interface LineChartFigure extends FigureBase {
   type: 'lineChart';
   categories: string[];
@@ -471,37 +563,65 @@ export interface LineChartFigure extends FigureBase {
   yStep?: number;
   xLabel?: string;
   yLabel?: string;
+  /** Write the value above each dot. */
   showValues?: boolean;
 }
 
+/**
+ * Pie chart ("kördiagram"), slices clockwise from 12 o'clock in the given order. Values ≥ 0 (any
+ * unit — percentages are computed from the total). Small slices get their text outside with a
+ * leader line. Default slice colors: the chart palette in order.
+ */
 export interface PieChartFigure extends FigureBase {
   type: 'pieChart';
   slices: { label: string; value: number; color?: FigColor }[];
-  /** What to write on the slices: 'percent' (default), 'value', 'label', 'none'. */
+  /**
+   * What to write on the slices: 'percent' (default; rounded to 1 decimal, e.g. '12,5%'),
+   * 'value' (the given value), 'label' (the slice name), 'none'.
+   */
   show?: 'percent' | 'value' | 'label' | 'none';
-  /** Legend with the labels (default true). */
+  /** Legend with the slice names (default true, except with show: 'label'). */
   legend?: boolean;
 }
 
+/**
+ * Pictogram ("képdiagram"): a row of symbols per category; one symbol = `unit` pieces. A remainder
+ * is drawn as a partial (cut) symbol, e.g. 25 with unit 10 → 2½ symbols. Legend under it.
+ */
 export interface PictogramFigure extends FigureBase {
   type: 'pictogram';
+  /** One row per category: name and value (≥ 0). */
   rows: { label: string; value: number }[];
-  /** One symbol stands for this many (e.g. 10). Remainders are drawn as partial symbols. */
+  /** One symbol stands for this many (e.g. 10). Must be > 0. At most 40 symbols per row. */
   unit: number;
+  /** Symbol shape, default 'circle'. */
   symbol?: 'circle' | 'square' | 'star' | 'person' | 'heart';
-  /** Legend text, e.g. '= 10 tanuló'. */
+  /**
+   * Legend text after the symbol. A text starting with '=' is used as is ('= 10 tanuló'); otherwise
+   * '= <unit> ' is put in front ('tanuló' → '= 10 tanuló'). Default '= <unit>'.
+   */
   unitLabel?: string;
+  /** Symbol color (default 'accent'). */
+  color?: FigColor;
+  /** Write the value at the end of each row (default false — reading it off is often the task). */
+  showValues?: boolean;
 }
 
-/** A table, e.g. a frequency table ("gyakorisági táblázat"). */
+/**
+ * A table, e.g. a frequency table ("gyakorisági táblázat"). Column widths fit the text. Numbers
+ * may be given as numbers: they are written with a decimal comma (0.5 → '0,5').
+ *
+ *   { type: 'table', header: ['Jegy', '1', '2', '3', '4', '5'], rows: [['Gyakoriság', 1, 4, 7, 9, 5]], rowHeaders: true }
+ */
 export interface TableFigure extends FigureBase {
   type: 'table';
-  /** Header row. */
-  header?: string[];
-  rows: string[][];
-  /** Treat the first column as row headers (bold). */
+  /** Header row (bold, light background). Same number of cells as each row. */
+  header?: (string | number)[];
+  /** The body rows; every row must have the same number of cells. */
+  rows: (string | number)[][];
+  /** Treat the first column as row headers (bold, light background, left-aligned). */
   rowHeaders?: boolean;
-  /** Cells to highlight, as [row, col] (0-based, header not counted). */
+  /** Cells to highlight (accent tint, bold), as [row, col] (0-based, header row not counted). */
   highlight?: [number, number][];
 }
 
@@ -546,6 +666,57 @@ export interface ConstructionFigure extends FigureBase {
 }
 
 // ---------------------------------------------------------------------------------------------
+// 9. Bar model ("szalagmodell") for word problems, like the coloured bars of the grade 5 book
+// ---------------------------------------------------------------------------------------------
+
+/** One piece of a bar. Its width is `value` on a scale shared by all rows (true proportions). */
+export interface BarModelSegment {
+  /** Size of the piece (> 0). */
+  value: number;
+  /** Text inside the piece, e.g. 'a', '350', 'x'. Too long for the piece → written above it. */
+  label?: string;
+  /** Fill color. Default by position in the row: blue, red, green, orange, purple, teal. */
+  color?: FigColor;
+  /** The unknown piece: dashed outline, light fill, label defaults to '?'. */
+  unknown?: boolean;
+}
+
+export interface BarModelRow {
+  /** Name written left of the bar, e.g. 'Anna', 'a', '1. nap'. */
+  label?: string;
+  /** Pieces from left to right. Every row starts at the same left edge. */
+  segments: BarModelSegment[];
+}
+
+/** A curly brace along a bar, with a label (a total, a part, a difference). */
+export interface BarModelBrace {
+  /** Row index (0 = top bar). Default: the last row for 'below', the first row for 'above'. */
+  row?: number;
+  /** Segments covered, [first, last] indices in that row (inclusive). Default: the whole row. */
+  segments?: [number, number];
+  /** Or an explicit span on the value scale, e.g. [30, 50] (overrides `segments`). It may
+   *  reach past the row's end, e.g. the difference to a longer row. */
+  span?: [number, number];
+  label: string;
+  /** 'below' (default) or 'above' the bar. */
+  side?: 'above' | 'below';
+  color?: FigColor;
+}
+
+/**
+ * Bar model / tape diagram: horizontal bars made of coloured pieces, braces for totals and
+ * parts. E.g. "a + b = 120": rows: [{ segments: [{ value: 70, label: 'a' }, { value: 50, label: 'b' }] }],
+ * total: { label: '120' }.
+ */
+export interface BarModelFigure extends FigureBase {
+  type: 'barModel';
+  rows: BarModelRow[];
+  /** Shorthand for a brace under a whole row (default: the last row). */
+  total?: { label: string; row?: number; side?: 'above' | 'below' };
+  braces?: BarModelBrace[];
+}
+
+// ---------------------------------------------------------------------------------------------
 
 export type Figure =
   | GeometryFigure
@@ -563,6 +734,7 @@ export type Figure =
   | PictogramFigure
   | TableFigure
   | FractionModelFigure
-  | ConstructionFigure;
+  | ConstructionFigure
+  | BarModelFigure;
 
 export type FigureType = Figure['type'];

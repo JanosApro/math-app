@@ -9,7 +9,7 @@ import { layoutCircle, layoutQuadrilateral, layoutRegularPolygon, layoutTriangle
 import { layoutNet, layoutSolid } from './solids';
 import { layoutCoordinate, layoutNumberLine } from './coordinate';
 import { layoutBarChart, layoutLineChart, layoutPictogram, layoutPieChart, layoutTable } from './charts';
-import { layoutFractionModel } from './fraction';
+import { layoutBarModel, layoutFractionModel } from './fraction';
 import { layoutConstruction } from './construction';
 
 /** What a family layout returns: primitives, plus optional fit options and construction captions. */
@@ -40,6 +40,7 @@ const LAYOUTS: Layouts = {
   table: layoutTable,
   fractionModel: layoutFractionModel,
   construction: layoutConstruction,
+  barModel: layoutBarModel,
 };
 
 export function layoutFigure(fig: Figure): FigureLayout {

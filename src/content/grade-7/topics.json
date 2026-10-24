@@ -70,7 +70,7 @@
           "id": "g7-pitagorasz-01",
           "file": "01-bizonyitas-alapok",
           "title": "A Pitagorasz-tétel bizonyítása és alapszintű alkalmazása",
-          "status": "todo",
+          "status": "draft",
           "scope": "Right triangle parts (befogók a, b; átfogó c; right angle at C); statement c² = a² + b² with a visual area (squares) proof; find hypotenuse or a leg (integer triples and k√n answers); Pythagorean triples (infinitely many); converse: is the triangle right-angled? Vary labels and orientation of the triangle (curriculum requirement). Exercises: numeric & root input, T/F converse, MC 'which side is the hypotenuse', word problems (ladder, screen diagonal) at L3."
         },
         {
