@@ -1,6 +1,7 @@
 /**
- * Quick smoke test of ONE lesson (until scripts/check.ts exists — see docs/tasks/03-dev-tools.md).
- * Edit the import below to point at another lesson, then: npx tsx scripts/dev/smoke-lesson.ts
+ * LEGACY quick smoke test of ONE lesson — `npm run check` (scripts/check.ts, task 03) now covers
+ * everything this does, for all modules. Kept for a fast single-lesson loop while iterating:
+ *   npx tsx scripts/dev/smoke-lesson.ts   (edit the import below to point at another lesson)
  */
 import mod from '../../src/content/grade-7/pitagorasz/01-bizonyitas-alapok';
 import { checkAnswer, canonicalInput } from '../../src/engine/answers';

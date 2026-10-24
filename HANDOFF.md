@@ -28,6 +28,34 @@ placeholders**, so the app runs but shows "Hamarosan…" pages until tasks 01–
 generator stress test + figure checks + gallery checks), `npm run status` and the `/dev` pages
 (validation report with stress test + sample viewer, `/dev/gallery` figure gallery).
 
+### Session notes — 2026-10-24, OpenCode (GLM-5.3): task 03 done
+What changed in this session (commit "Task 03: /dev page, figure gallery, npm run check + status"):
+- **New** `src/dev/validate.ts` — all validation logic, environment-independent (works in Node via
+  tsx and in the browser): catalog structure (grades.json ↔ topics.json ↔ daily.json, id/file
+  patterns, prerequisites incl. cycles, module presence per status), module structure (steps,
+  RichText syntax + KaTeX render of every formula, static figures, check-step questions, answer
+  spec sanity, "canonical answer must pass its own checker", deep NaN/undefined scan) and the
+  generator stress test (N seeds per generator × level, aggregated identical failures, distinct-
+  question count with prompt+answer comparison, cached KaTeX).
+- **New** `scripts/check.ts` (`npm run check`, flags `--seeds=N --only=<id> --quiet`) and
+  `scripts/status.ts` (`npm run status`, regenerates CONTENT_STATUS.md — generator output was
+  diffed byte-for-byte against the hand-written file; `npm run check` warns when it is stale).
+- **Replaced placeholders** `src/dev/DevScreen.tsx` (chunked validation report with progress,
+  stress buttons 100/500, subtopic list with issue counts + preview links, sample viewer:
+  subtopic → generator → level → seed → rendered question + canonical input + answer JSON) and
+  `src/dev/GalleryScreen.tsx` (type index, FigureView cards, validation messages, JSON +
+  "Másolás", light/dark + --topic color + 360/600 width controls). New `src/dev/dev.css`.
+- **Registry** grew two dev-only exports (`allModulePaths`, `importModule`) so `/dev` can load
+  every module file, orphans included (documented in DECISIONS.md).
+- **Verified**: `npm run check` + `npm run build` pass; `/dev` and `/dev/gallery` checked at
+  1280 px and 375 px — no console errors, no horizontal scroll, stress test finishes in ~1.2 s
+  without freezing the UI. Dev screenshots live in `/tmp/opencode/dev-shots/`.
+- **Known follow-up**: `npm run check` reports 5 warnings in the Pythagoras lesson (figure label
+  collisions in `square-areas` + explore step 6, low variety in `square-areas` L2) — a small
+  content fix, see "Known issues" below. The dev server was left running on port 5173.
+
+Next task in the suggested order: **02 (lesson player)** → 01 (app shell) → 06 → 04 → 05 → 07 → 08.
+
 ### Build progress
 Milestone 1 — engine and app shell
 - [x] Project scaffold (Vite 5, React 18, TypeScript strict, KaTeX)
