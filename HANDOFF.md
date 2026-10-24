@@ -34,7 +34,7 @@ passes (0 errors, 7 warnings). Exact state per task — continue each from here:
 | 01 app shell | **done** (cloud session): MapScreen + map.css, Profile, Settings, PWA (manifest, icons, `sw.js` from vite.config.ts), verified at 375/1280, light/dark, offline | — |
 | 04 solids | **done** (cloud session): nets (`solids-net.ts`), galleries `solids.ts` (34) + `nets.ts` (12), reviewed light/dark, CONTENT_GUIDE rows | — |
 | 05 charts | `charts.ts`, `charts-common.ts`, `charts-pie.ts`, `charts-table.ts`; gallery `charts.ts` (30 entries, 0 errors) | visual review of gallery page 2+ (light/dark), CONTENT_GUIDE figure rows |
-| 06 constructions etc. | construction.ts, fraction.ts (fractionModel + barModel) with galleries; gallery `shapes.ts` (33 entries) | galleries `coordinate.ts` + `numberline.ts`, visual review of shapes/coordinate/number line, fix the triangle `squares` label collisions (4 Pythagoras warnings), CONTENT_GUIDE figure rows |
+| 06 constructions etc. | **done** (cloud session): galleries `coordinate.ts` (15) + `numberline.ts` (14), shapes/coordinate/number-line review light/dark, square-label collisions fixed (Pythagoras: 0 warnings), CONTENT_GUIDE rows | — |
 | 07 gold lessons | all three written, `draft`, 0 errors | play through in the finished player, set `done` |
 | 08 verification | — | whole flow in a browser, final docs |
 
@@ -89,7 +89,8 @@ Milestone 1 — engine and app shell
       examples in CONTENT_GUIDE.md and the Pythagoras lesson without validation errors, but have NOT been visually
       reviewed and have no gallery sections yet — task 06 adds the galleries; look at the screenshots and fix what looks off.)
 - [x] Figures `solid`, `net` (+ galleries `solids`, `nets`) → task 04
-- [ ] Figure reviews: charts/pictogram/table → task 05 · coordinate + number-line galleries, shapes review → task 06
+- [x] Coordinate + number-line galleries, shapes review, square-label collisions → task 06
+- [ ] Chart review (charts/pictogram/table) → task 05
 - [x] Progress store, streak/XP, export/import, Belgrade dates (`src/state/`)
 - [x] Content catalog + registry, soft-lock prerequisite logic, daily-challenge composition (`src/content/`, `src/engine/session.ts`)
 - [x] Hash router, App routing, theme tokens (light/dark), i18n file `src/i18n/hu.ts`, sound effects
@@ -128,10 +129,9 @@ Milestone 4–6
   tétele" is the intercept theorem (not the semicircle theorem); a new grade 5 curriculum starts in 2027/28
   (drops vectors/translation) — not relevant this year; grade 7 "Adatfeldolgozás" is a survey project in the
   curriculum, the app practises it with given data sets and charts.
-- `npm run check` passes with **5 warnings in the Pythagoras lesson** (found by the new validator,
-  content fix — small, do it with the next content change): `square-areas` figures have overlapping
-  square-area labels at some sizes (e.g. "49 cm²", seeds ~11 %), and `square-areas` L2 produces only
-  9 distinct questions (add variety); the explore step 6 figure has a colliding "1" label at a=1, b=8.
+- ~~5 warnings in the Pythagoras lesson~~ — fixed in task 06 (square-area labels that do not fit
+  their square move outside it; the low-variety warning had already been fixed by more variety).
+  `npm run check` now reports 0 warnings for the lessons.
 - `CONTENT_STATUS.md` is **generated** (`npm run status`) — edit statuses/scopes in
   `src/content/grade-N/topics.json`, never in the markdown file; `npm run check` warns if it is stale.
 

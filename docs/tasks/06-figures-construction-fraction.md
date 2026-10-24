@@ -51,3 +51,15 @@ Brief: `PROMPT.md` §4a (constructions; fractions for grade 5).
   Gallery `src/dev/gallery/fraction.ts` (20 entries) — 0 errors, light + dark checked.
 - scene.ts (shared): `sceneToSvg` now writes `fill-opacity`/`stroke-dasharray` for circles (PNG
   previews showed every filled circle opaque; the React renderer was already right).
+- 2026-10-24 (Claude Code, cloud session): **done.** New galleries `src/dev/gallery/coordinate.ts`
+  (15: four quadrants, −20…20 with step 5, step 0,5, steep/flat/decreasing/constant lines,
+  vertical line, y = 6/x both branches, positive-only inverse with projections, distance
+  triangles incl. negative coordinates, polygons, reflection, no grid / O origin / hollow point)
+  and `numberline.ts` (14: integers, quarters as fractions, thirds, tenths, 0,1 steps, negatives,
+  jumps, open/closed intervals, rays, thousands, `tickLabels` ends/list). Visual review of
+  shapes, coordinate, number line (+ construction spot check) in light and dark. Fixes:
+  square-area labels that do not fit inside their square move just outside its outer edge (new
+  `alt` option of fixed labels in scene.ts) — this removes the 4 Pythagoras warnings and the 2
+  shapes-gallery warnings; median labels sit at 40 % (away from the centroid); overlapping number
+  line jumps are drawn taller so chained jumps do not cross mid-arc. CONTENT_GUIDE rows for
+  fractionModel, barModel, construction and numberLine options.

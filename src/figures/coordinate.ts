@@ -561,6 +561,8 @@ export function layoutNumberLine(fig: NumberLineFigure): LayoutResult {
 
   // --- jumps -----------------------------------------------------------------------------------
   const jumpBase = intervals.length ? 14 + 13 * intervals.length : 2;
+  /** Spans and heights of the jumps drawn so far: an overlapping jump is drawn taller. */
+  const drawnJumps: { lo: number; hi: number; h: number }[] = [];
   (fig.jumps ?? []).forEach((jp, i) => {
     const f = `jumps[${i}]`;
     checkValue(jp.from, `${f}.from`);
@@ -570,7 +572,11 @@ export function layoutNumberLine(fig: NumberLineFigure): LayoutResult {
     const xa = X(jp.from);
     const xb = X(jp.to);
     const c = Math.abs(xb - xa);
-    const h = Math.min(42, Math.max(12, 0.3 * c + 6));
+    let h = Math.min(42, Math.max(12, 0.3 * c + 6));
+    const lo = Math.min(xa, xb);
+    const hi = Math.max(xa, xb);
+    for (const o of drawnJumps) if (Math.min(hi, o.hi) - Math.max(lo, o.lo) > 1) h = Math.max(h, o.h + 18);
+    drawnJumps.push({ lo, hi, h });
     const R = (c * c) / 4 / (2 * h) + h / 2;
     const cx = (xa + xb) / 2;
     const cy = jumpBase + h - R;

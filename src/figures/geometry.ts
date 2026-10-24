@@ -327,7 +327,8 @@ export function geoItemsToPrims(ctx: GeoContext, items: GeoItem[], step?: number
             out.push({ t: 'seg', a: add(A, mul(n, f)), b: add(B, mul(n, f)), color: 'muted', w: 0.8, obstacle: false, step });
           }
         }
-        if (it.label) later.push({ t: 'label', at: centroid([A, B, C, D]), text: it.label, dir: v(0, 0), gap: 0, fixed: true, bold: true, step });
+        // in the middle of the square; if it does not fit there, just outside the outer edge
+        if (it.label) later.push({ t: 'label', at: centroid([A, B, C, D]), text: it.label, dir: v(0, 0), gap: 0, fixed: true, bold: true, alt: { at: mid(C, D), dir: norm(n) }, step });
         break;
       }
       case 'label': {
