@@ -176,7 +176,6 @@ export function OrderInput({
           <Rich text={spec.direction} />
         </div>
       )}
-      {!locked && <p className="kp-help">{t.input.orderHint}</p>}
       <div className="kp-order-items">
         {display.map((i) => {
           const pos = order.indexOf(i);
@@ -288,7 +287,6 @@ export function MatchInput({
 
   return (
     <div className="kp-match">
-      {!locked && <p className="kp-help">{t.input.matchHint}</p>}
       <div className="kp-match-cols">
         <div className="kp-match-col">
           {spec.pairs.map(([left], l) => {

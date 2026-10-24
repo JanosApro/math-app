@@ -109,7 +109,6 @@ export function SoftLockDialog({
               <span className="sl-target-title">{target.sub.title}</span>
             </span>
           </div>
-          <p className="sl-body">{t.softLock.body}</p>
           {shown.length > 0 && (
             <>
               <p className="sl-missing">{t.softLock.missing}</p>

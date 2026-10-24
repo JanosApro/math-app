@@ -34,7 +34,7 @@
   margin: 0.25rem 0 0.25rem;
 }
 .onb-tagline {
-  margin: 0.1rem 0 0.75rem;
+  margin: 0 0 0.6rem;
   font-weight: 700;
   color: var(--text-muted);
 }
@@ -42,22 +42,18 @@
 .onb-card {
   width: 100%;
   max-width: 520px;
-  padding: 1.5rem 1.25rem 1.1rem;
+  padding: 1.2rem 1.1rem 0.9rem;
   border-radius: 26px;
 }
 .onb-title {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.9rem;
   text-wrap: balance;
-}
-.onb-intro {
-  margin: 0 0 1.2rem;
-  color: var(--text-muted);
 }
 .onb-fieldset {
   border: none;
-  margin: 0 0 1.2rem;
+  margin: 0 0 1rem;
   padding: 0;
   min-width: 0;
 }
@@ -84,8 +80,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.05rem;
-  min-height: 118px;
-  padding: 0.7rem 0.4rem;
+  min-height: 88px;
+  padding: 0.5rem 0.4rem;
   border: var(--line) solid var(--outline);
   border-radius: 22px;
   background: var(--surface);
@@ -182,41 +178,31 @@
 }
 
 .onb-field {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+}
+.onb-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.5rem;
+}
+.onb-label-row .onb-label {
+  margin: 0;
 }
 .onb-go {
   margin-top: 0.25rem;
   min-height: 54px;
   font-size: 1.12rem;
 }
-.onb-pick-first {
-  margin: 0.4rem 0 0;
-  text-align: center;
-  font-size: 0.88rem;
-}
-.onb-privacy {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  margin: 1.1rem 0 0;
-  padding: 0.75rem 0.9rem;
-  border-radius: 14px;
-  background: var(--surface-2);
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-.onb-privacy-icon {
-  flex: none;
-}
 .onb-restore {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   text-align: center;
 }
 
 /* ---- illustration ---- */
 .wa {
   width: 100%;
-  max-width: 300px;
+  max-width: 210px;
   height: auto;
   overflow: visible;
 }

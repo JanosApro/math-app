@@ -254,7 +254,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'A henger térfogata',
-          body: 'A hasáb térfogatát úgy számoltuk, hogy az alaplap területét megszoroztuk a magassággal. A hengernél ugyanígy teszünk!\n\nA henger alaplapja egy $r$ sugarú kör, ennek területe $B = r^2\\pi$. A henger magassága $H$.',
+          body: 'Mint a hasábnál: alaplap · magasság. Az alaplap egy $r$ sugarú kör: $B = r^2\\pi$.',
           figure: { type: 'solid', shape: 'cylinder', r: 3, h: 5, labels: { r: 'r', h: 'H' } },
           remember: '$V = B \\cdot H = r^2\\pi H$',
         },
@@ -273,7 +273,7 @@ export default defineSubtopic({
         {
           type: 'explore',
           title: 'Próbáld ki!',
-          body: 'Változtasd a sugarat és a magasságot! Figyeld meg: ha a sugarat kétszeresére növeled, a térfogat négyszeresére nő.',
+          body: 'Duplázd meg a sugarat: hányszorosára nő a térfogat?',
           sliders: [
             { name: 'r', label: '$r$ (cm)', min: 1, max: 6, step: 1, value: 2 },
             { name: 'H', label: '$H$ (cm)', min: 1, max: 10, step: 1, value: 5 },
@@ -289,11 +289,10 @@ export default defineSubtopic({
           problem: 'Egy henger alapkörének sugara $3$ cm, magassága $5$ cm. Mekkora a térfogata?',
           figure: cylinder(3, 5, 'cm'),
           steps: [
-            { text: 'Az alaplap területe: $B = r^2\\pi = 3^2\\pi = 9\\pi$ cm².' },
-            { text: 'A térfogat: $V = B \\cdot H = 9\\pi \\cdot 5 = 45\\pi$ cm³.' },
-            { text: 'Ha közelítő érték kell ($\\pi \\approx 3,14$): $V \\approx 45 \\cdot 3,14 = 141,3$ cm³.' },
+            { text: '$B = r^2\\pi = 3^2\\pi = 9\\pi$ cm²' },
+            { text: '$V = B \\cdot H = 9\\pi \\cdot 5 = 45\\pi$ cm³ $\\approx 141,3$ cm³' },
           ],
-          answer: 'A henger térfogata $45\\pi$ cm³ (kb. $141,3$ cm³). A válaszmezőbe így írhatod: 45π (a π gombbal).',
+          answer: 'A térfogat $45\\pi$ cm³. Beírva: **45π** (π gomb).',
         },
         { type: 'practice', generator: 'base-area', level: 1 },
         { type: 'practice', generator: 'volume', level: 1, count: 2 },
@@ -308,7 +307,7 @@ export default defineSubtopic({
           problem: 'Egy henger alapkörének átmérője $10$ cm, magassága $12$ cm. Mekkora a térfogata?',
           figure: cylinder(5, 12, 'cm', { useDiameter: true }),
           steps: [
-            { text: 'A sugár az átmérő fele: $r = 10 : 2 = 5$ cm.' },
+            { text: '$r = 10 : 2 = 5$ cm' },
             { text: '$V = r^2\\pi H = 5^2 \\cdot \\pi \\cdot 12 = 25 \\cdot 12 \\cdot \\pi = 300\\pi$ cm³.' },
           ],
           answer: 'A térfogat $300\\pi$ cm³ (kb. $942$ cm³).',
@@ -326,8 +325,8 @@ export default defineSubtopic({
           problem: 'Egy henger térfogata $72\\pi$ cm³, alapkörének sugara $3$ cm. Milyen magas?',
           figure: cylinder(3, 8, 'cm', { unknownH: true }),
           steps: [
-            { text: 'Az alaplap területe: $B = 3^2\\pi = 9\\pi$ cm².' },
-            { text: '$V = B \\cdot H$, ezért $H = V : B = 72\\pi : 9\\pi = 8$.' },
+            { text: '$B = 3^2\\pi = 9\\pi$ cm²' },
+            { text: '$H = V : B = 72\\pi : 9\\pi = 8$' },
           ],
           answer: 'A henger $8$ cm magas.',
         },

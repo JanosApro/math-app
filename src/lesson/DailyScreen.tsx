@@ -16,6 +16,7 @@ import { navigate } from '../ui/router';
 import { t } from '../i18n/hu';
 import { Celebration } from './Celebration';
 import { LessonMessage } from './LessonScreen';
+import { InfoButton } from '../ui/InfoButton';
 import { LessonFooter, LessonTopBar, scrollTop, StepChip, useEnterKey } from './parts';
 import { QuestionRunner } from './QuestionRunner';
 import './lesson.css';
@@ -124,13 +125,6 @@ export default function DailyScreen({ grade }: { grade: number }) {
           question={q.question}
           seed={q.seed}
           mode="daily"
-          header={
-            <StepChip icon="🔥">
-              {t.daily.title}
-              <span className="lesson-chip-count">{t.common.of(index + 1, n)}</span>
-              {q.subtopicTitle && <span className="lesson-chip-sub">{q.subtopicTitle}</span>}
-            </StepChip>
-          }
           onDone={(r) => answered(r.correct)}
         />
       </div>
@@ -140,7 +134,7 @@ export default function DailyScreen({ grade }: { grade: number }) {
       <div className="lesson-stage">
         <Celebration
           title={practice ? t.daily.result(correct, n) : t.daily.complete}
-          subtitle={practice ? t.daily.practiceMode : outcome?.counted ? t.daily.streakKept : undefined}
+          subtitle={practice ? t.daily.practiceMode : undefined}
           xp={practice ? undefined : outcome?.xpGained ?? 0}
           score={{ correct, total: n }}
           streak={practice ? undefined : { current: outcome?.streak.current ?? streak }}
@@ -207,11 +201,16 @@ function Intro({ today, count, streak, onStart }: { today: string; count: number
     <div className="lesson-stage">
       <div className="lesson-card lesson-daily-intro">
         <StreakHero streak={streak} />
-        <h1 className="lesson-start-title">{t.daily.title}</h1>
-        <p className="lesson-daily-date muted">{formatDateHu(today)}</p>
-        <p className="lesson-body">{t.daily.intro}</p>
-        <p className="lesson-body muted">{t.daily.questions(count)}</p>
-        <p className="lesson-body muted lesson-small">{t.streak.explain}</p>
+        <h1 className="lesson-start-title">
+          {t.daily.title}
+          <InfoButton title={t.daily.title}>
+            <p>{t.daily.intro}</p>
+            <p>{t.streak.explain}</p>
+          </InfoButton>
+        </h1>
+        <p className="lesson-daily-date muted">
+          {formatDateHu(today)} · {t.daily.questions(count)}
+        </p>
       </div>
       <LessonFooter>
         <button type="button" className="btn lesson-main-btn" onClick={onStart}>
@@ -227,9 +226,13 @@ function DoneToday({ correct, total, streak, onPractice, onExit }: { correct: nu
     <div className="lesson-stage">
       <div className="lesson-card lesson-daily-intro">
         <StreakHero streak={streak} />
-        <h1 className="lesson-start-title">{t.daily.doneToday}</h1>
+        <h1 className="lesson-start-title">
+          {t.daily.doneToday}
+          <InfoButton title={t.daily.title}>
+            <p>{t.daily.doneTodayBody}</p>
+          </InfoButton>
+        </h1>
         <p className="lesson-body">{t.daily.todayResult(correct, total)}</p>
-        <p className="lesson-body muted">{t.daily.doneTodayBody}</p>
       </div>
       <LessonFooter>
         <button type="button" className="btn btn-ghost lesson-side-btn" onClick={onExit}>

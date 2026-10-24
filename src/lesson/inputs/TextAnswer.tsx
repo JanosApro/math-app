@@ -1,6 +1,7 @@
 /**
  * Typed answers (number, fraction, root, expression) and multi-field `numbers` answers:
- * a display (no <input>, so the phone keyboard never opens) + live KaTeX preview + keypad.
+ * a display (no <input>, so the phone keyboard never opens) with a live KaTeX preview at its
+ * right end (no extra line, so question + keypad fit one phone screen) + keypad.
  * The physical keyboard works too while the question is active.
  */
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
@@ -58,6 +59,7 @@ function Display({
   verdict,
   onClick,
   className,
+  previewHtml,
 }: {
   text: string;
   label: string;
@@ -65,6 +67,8 @@ function Display({
   verdict: Verdict;
   onClick?: () => void;
   className?: string;
+  /** Rendered KaTeX of the typed text ("how I read it"), shown at the right end. */
+  previewHtml?: string;
 }) {
   const cls = ['kp-display', text ? '' : 'is-empty', focused ? 'is-focused' : '', verdict ? `is-${verdict}` : '', className ?? '']
     .filter(Boolean)
@@ -74,6 +78,7 @@ function Display({
       <span className="kp-text">{displayText(text)}</span>
       {focused && <span className="kp-caret" aria-hidden="true" />}
       {!text && !focused && <span className="kp-placeholder">…</span>}
+      {previewHtml && !verdict && <span className="kp-display-preview math" aria-live="polite" dangerouslySetInnerHTML={{ __html: previewHtml }} />}
       {verdict && (
         <span className="kp-verdict" aria-hidden="true">
           {verdict === 'correct' ? '✓' : '✗'}
@@ -114,7 +119,8 @@ export function TextAnswer({
   usePhysicalKeys(!locked, keys, onKey);
 
   const showsPreview = spec.type === 'fraction' || spec.type === 'root' || spec.type === 'expression' || (spec.type === 'number' && !!spec.acceptFraction);
-  const tex = showsPreview ? inputToTex(spec, text) : '';
+  // only worth showing when the rendering differs from what was typed (fraction bar, root, power…)
+  const tex = showsPreview && /[^\d,.\s-]/.test(text) ? inputToTex(spec, text) : '';
   const unit = 'unit' in spec ? spec.unit : undefined;
   return (
     <div className="kp-text-answer" ref={ref}>
@@ -124,20 +130,9 @@ export function TextAnswer({
             <RichInline text={inputLabel} />
           </span>
         )}
-        <Display text={text} label={plain(inputLabel) || t.input.placeholder} focused={!locked} verdict={verdict ?? null} />
+        <Display text={text} label={plain(inputLabel) || t.input.placeholder} focused={!locked} verdict={verdict ?? null} previewHtml={tex ? renderMath(tex) : undefined} />
         {unit && <span className="kp-unit">{unit}</span>}
       </div>
-      {showsPreview && (
-        <div className="kp-preview" aria-live="polite">
-          {tex && (
-            <>
-              <span className="kp-preview-label">{t.input.preview}</span>{' '}
-              <span className="math" dangerouslySetInnerHTML={{ __html: renderMath(tex) }} />
-              {unit && <span className="kp-preview-unit"> {unit}</span>}
-            </>
-          )}
-        </div>
-      )}
       {notice}
       {!locked && <Keypad specials={specials} onKey={onKey} />}
     </div>

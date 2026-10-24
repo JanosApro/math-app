@@ -629,7 +629,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Azonos nevezőjű törtek',
-          body: 'Egy pizzát 8 egyforma szeletre vágtunk. Anna megevett 2 szeletet, Bence 3-at. Együtt $\\frac{2}{8} + \\frac{3}{8} = \\frac{5}{8}$ részt ettek meg.\n\nHa a nevezők **egyenlők**, a számlálókat összeadjuk (vagy kivonjuk), a nevező **nem változik**.',
+          body: 'Anna $2$, Bence $3$ szeletet evett a $8$ szeletes pizzából: $\\frac{2}{8} + \\frac{3}{8} = \\frac{5}{8}$.\n\nAzonos nevezőnél a számlálókat adjuk össze, a nevező **nem változik**.',
           figure: { type: 'fractionModel', shape: 'circle', parts: 8, shaded: 5, label: '5/8' },
           remember: 'Összeadás: $\\frac{a}{n} + \\frac{b}{n} = \\frac{a + b}{n}$\nKivonás: $\\frac{a}{n} - \\frac{b}{n} = \\frac{a - b}{n}$',
         },
@@ -647,10 +647,10 @@ export default defineSubtopic({
           title: 'Összeadás, utána egyszerűsítés',
           problem: 'Számítsd ki! $\\frac{2}{9} + \\frac{4}{9}$',
           steps: [
-            { text: 'A nevezők egyenlők, a számlálókat összeadjuk: $\\frac{2}{9} + \\frac{4}{9} = \\frac{6}{9}$.' },
-            { text: 'A $6$ és a $9$ is osztható $3$-mal, ezért egyszerűsítünk: $\\frac{6}{9} = \\frac{2}{3}$.' },
+            { text: '$\\frac{2}{9} + \\frac{4}{9} = \\frac{6}{9}$' },
+            { text: 'Egyszerűsítünk $3$-mal: $\\frac{6}{9} = \\frac{2}{3}$' },
           ],
-          answer: 'Az eredmény $\\frac{2}{3}$. Mindig a **legegyszerűbb alakot** add meg!',
+          answer: 'Az eredmény $\\frac{2}{3}$ — mindig egyszerűsíts!',
         },
         { type: 'practice', generator: 'same-den', level: 1, count: 2 },
         { type: 'practice', generator: 'same-den', level: 2 },
@@ -662,7 +662,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Különböző nevezőjű törtek',
-          body: 'A $\\frac{1}{2}$ és az $\\frac{1}{3}$ szeletei különböző méretűek, így nem adhatjuk össze őket közvetlenül.\n\nElőbb **közös nevezőre hozzuk** őket bővítéssel. Közös nevező minden olyan szám, amely mindkét nevezőnek többszöröse. A legkényelmesebb a **legkisebb közös többszörös** (LKKT).',
+          body: 'A $\\frac{1}{2}$ és az $\\frac{1}{3}$ szeletei különböző méretűek. Előbb **közös nevezőre hozzuk** őket bővítéssel — a legjobb a **legkisebb közös többszörös** (LKKT).',
           figure: {
             type: 'barModel',
             rows: [
@@ -670,7 +670,7 @@ export default defineSubtopic({
               { label: '1/3', segments: [{ value: 2, label: '2/6', color: 'red' }, { value: 4, color: 'muted' }] },
             ],
           },
-          remember: 'Különböző nevezők esetén:\n**1.** közös nevező (LKKT)\n**2.** bővítés\n**3.** a számlálókat összeadjuk/kivonjuk\n**4.** egyszerűsítés',
+          remember: 'LKKT → bővítés → számlálók összeadása → egyszerűsítés',
         },
         {
           type: 'check',
@@ -688,7 +688,7 @@ export default defineSubtopic({
           steps: [
             { text: 'A legkisebb közös nevező: $[2;\\ 3] = 6$.' },
             { text: 'Bővítünk: $\\frac{1}{2} = \\frac{3}{6}$ és $\\frac{1}{3} = \\frac{2}{6}$.' },
-            { text: 'Összeadjuk a számlálókat: $\\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}$.' },
+            { text: '$\\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}$' },
           ],
           answer: 'Az eredmény $\\frac{5}{6}$.',
         },
@@ -715,7 +715,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Egész számok és vegyes számok',
-          body: '**Egész ± tört:** az egészet törtként írjuk fel, például $1 = \\frac{8}{8}$, így $1 - \\frac{3}{8} = \\frac{5}{8}$.\n\n**Vegyes számok:** átírjuk őket törtté (egész · nevező + számláló), és úgy számolunk. Például $2\\frac{1}{3} = \\frac{7}{3}$.\n\nA végeredményt megadhatod törtként vagy vegyes számként is.',
+          body: '**Egész ± tört:** $1 = \\frac{8}{8}$, így $1 - \\frac{3}{8} = \\frac{5}{8}$.\n\n**Vegyes szám:** törtté írjuk: $2\\frac{1}{3} = \\frac{7}{3}$.',
         },
         {
           type: 'example',
@@ -726,7 +726,7 @@ export default defineSubtopic({
             { text: '$\\frac{13}{4} - \\frac{7}{4} = \\frac{6}{4}$' },
             { text: 'Egyszerűsítünk: $\\frac{6}{4} = \\frac{3}{2} = 1\\frac{1}{2}$.' },
           ],
-          answer: 'Az eredmény $1\\frac{1}{2}$ (vagy $\\frac{3}{2}$). A válaszmezőbe így írhatod: 1 1/2.',
+          answer: 'Az eredmény $1\\frac{1}{2}$. Beírva: **1 1/2**.',
         },
         { type: 'practice', generator: 'mixed', level: 1 },
         { type: 'practice', generator: 'mixed', level: 2 },
@@ -738,7 +738,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Tizedes törtek',
-          body: 'Tizedes törteket úgy adunk össze és vonunk ki, hogy a **tizedesvesszőt a tizedesvessző alá** írjuk. Így az egészek az egészek alá, a tizedek a tizedek alá kerülnek. A hiányzó helyekre $0$-t írhatunk.',
+          body: 'A **tizedesvesszőt a tizedesvessző alá** írjuk; a hiányzó helyekre $0$ kerül.',
           remember: '$\\begin{array}{r} 2,35 \\\\ +\\,1,40 \\\\ \\hline 3,75 \\end{array}$',
         },
         {
@@ -746,7 +746,7 @@ export default defineSubtopic({
           title: 'Kivonás egész számból',
           problem: 'Számítsd ki! $5 - 1,25$',
           steps: [
-            { text: 'Az $5$ helyett $5,00$-t írunk, hogy mindkét számnak két tizedesjegye legyen.' },
+            { text: '$5$ helyett $5,00$-t írunk.' },
             { text: '$\\begin{array}{r} 5,00 \\\\ -\\,1,25 \\\\ \\hline 3,75 \\end{array}$' },
           ],
           answer: 'Az eredmény $3,75$.',

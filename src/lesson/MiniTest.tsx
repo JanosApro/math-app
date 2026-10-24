@@ -12,7 +12,8 @@ import { Rich } from '../ui/Rich';
 import { playSound } from '../ui/sound';
 import { t } from '../i18n/hu';
 import { describeAnswer } from './inputs/draft';
-import { LessonFooter, StepChip, useEnterKey } from './parts';
+import { InfoButton } from '../ui/InfoButton';
+import { LessonFooter, useEnterKey } from './parts';
 import { QuestionRunner } from './QuestionRunner';
 
 export interface TestAnswer {
@@ -99,18 +100,11 @@ export function MiniTest({
   if (failed) return <TestFailed result={failed} onRetry={retry} onExit={onExit} />;
 
   const cur = questions[index];
-  const header = (
-    <StepChip icon="📝">
-      {t.test.title}
-      <span className="lesson-chip-count">{t.test.question(index + 1, n)}</span>
-    </StepChip>
-  );
   if (!cur.question) {
     // A broken generator must not block the test: count it as correct and move on.
     return (
       <>
         <div className="lesson-card">
-          {header}
           <p className="lesson-notice">{t.lesson.generatorError}</p>
         </div>
         <LessonFooter>
@@ -127,50 +121,61 @@ export function MiniTest({
       question={cur.question}
       seed={cur.seed}
       mode="test"
-      header={header}
       onDone={(r) => record({ question: cur.question!, answer: r.answer, correct: r.correct })}
     />
   );
 }
 
-/** List of wrong answers with the student's answer, the correct one and the solution. */
+/**
+ * The wrong answers, one short row each (number + the correct answer); 🔍 opens the task, the
+ * student's answer and the worked solution.
+ */
 export function ReviewList({ answers }: { answers: TestAnswer[] }) {
   const wrong = answers.map((a, i) => ({ ...a, no: i + 1 })).filter((a) => !a.correct);
   if (wrong.length === 0) return null;
   return (
     <div className="lesson-review">
       <h3 className="lesson-review-title">{t.test.review}</h3>
-      {wrong.map((a) => (
-        <div key={a.no} className="lesson-review-item">
-          <div className="lesson-review-no">{a.no}.</div>
-          <div className="lesson-review-body">
-            <Rich text={a.question.prompt} />
-            {a.question.figure && <FigureView figure={a.question.figure} />}
-            <div className="lesson-review-row lesson-review-yours">
-              <span className="lesson-review-mark" aria-hidden="true">
-                ✗
-              </span>
-              <span className="lesson-sheet-label">{t.feedback.yourAnswer}</span> <Rich text={describeAnswer(a.question.answer, a.answer)} className="lesson-inline-rich" />
-            </div>
-            <div className="lesson-review-row lesson-review-correct">
+      <ul className="lesson-review-list">
+        {wrong.map((a) => (
+          <li key={a.no} className="lesson-review-item">
+            <span className="lesson-review-no">{a.no}.</span>
+            <span className="lesson-review-answer">
               <span className="lesson-review-mark" aria-hidden="true">
                 ✓
               </span>
-              <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(a.question.answer)} className="lesson-inline-rich" />
-            </div>
-            <details className="lesson-review-solution">
-              <summary>{t.feedback.showSolution}</summary>
-              <ol>
-                {a.question.solution.map((s, j) => (
-                  <li key={j}>
-                    <Rich text={s} />
-                  </li>
-                ))}
-              </ol>
-            </details>
-          </div>
-        </div>
-      ))}
+              <span className="sr-only">{t.feedback.correctAnswer} </span>
+              <Rich text={formatAnswer(a.question.answer)} className="lesson-inline-rich" />
+            </span>
+            <InfoButton title={t.test.question(a.no, answers.length)} icon="search" label={t.test.reviewItem(a.no)}>
+              <Rich text={a.question.prompt} />
+              {a.question.figure && <FigureView figure={a.question.figure} />}
+              <div className="lesson-review-row lesson-review-yours">
+                <span className="lesson-review-mark" aria-hidden="true">
+                  ✗
+                </span>
+                <span className="lesson-sheet-label">{t.feedback.yourAnswer}</span> <Rich text={describeAnswer(a.question.answer, a.answer)} className="lesson-inline-rich" />
+              </div>
+              <div className="lesson-review-row lesson-review-correct">
+                <span className="lesson-review-mark" aria-hidden="true">
+                  ✓
+                </span>
+                <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(a.question.answer)} className="lesson-inline-rich" />
+              </div>
+              <div className="lesson-solution">
+                <div className="lesson-solution-title">{t.feedback.solutionTitle}</div>
+                <ol>
+                  {a.question.solution.map((s, j) => (
+                    <li key={j}>
+                      <Rich text={s} />
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </InfoButton>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -190,7 +195,6 @@ function TestFailed({ result, onRetry, onExit }: { result: TestResult; onRetry: 
             {t.test.score(result.correct, result.total)} · {t.test.needed(result.passPercent)}
           </span>
         </div>
-        <p className="lesson-body">{t.test.failedBody}</p>
         <ReviewList answers={result.answers} />
       </div>
       <LessonFooter>

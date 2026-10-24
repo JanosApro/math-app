@@ -1,7 +1,7 @@
 /**
- * Route #/settings: grade (progress is kept per grade), nickname, sound, reduced motion, theme,
- * export / import of the progress file (with the permanent "clearing browser data deletes your
- * progress" warning), reset, about.
+ * Route #/settings — fits one phone screen: grade (progress is kept per grade) + nickname; sound,
+ * reduced motion, dark mode; export / import of the progress file and reset. The "clearing
+ * browser data deletes your progress" warning and the about text are behind ⓘ buttons.
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import pkg from '../../package.json';
@@ -10,6 +10,7 @@ import { t } from '../i18n/hu';
 import { downloadProgress, resetProgress, setGrade, setNickname, setSetting } from '../state/progress';
 import { isStorageAvailable, useAppState, type Settings } from '../state/store';
 import { Dialog } from '../ui/Dialog';
+import { InfoButton } from '../ui/InfoButton';
 import { showToast } from '../ui/Toast';
 import { playSound } from '../ui/sound';
 import { navigate, routeToHash } from '../ui/router';
@@ -17,11 +18,12 @@ import { ImportProgressButton } from './ImportProgress';
 import './screens.css';
 import './Settings.css';
 
-function Section({ id, icon, title, children }: { id: string; icon: string; title: string; children: ReactNode }) {
+function Section({ id, title, info, children }: { id: string; title: string; info?: ReactNode; children: ReactNode }) {
   return (
     <section className="card st-section" aria-labelledby={id}>
       <h2 id={id} className="section-title">
-        <span aria-hidden="true">{icon}</span> {title}
+        {title}
+        {info && <InfoButton title={title}>{info}</InfoButton>}
       </h2>
       {children}
     </section>
@@ -29,13 +31,10 @@ function Section({ id, icon, title, children }: { id: string; icon: string; titl
 }
 
 /** An on/off switch row (real checkbox, styled). */
-function Toggle({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void }) {
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="st-toggle">
-      <span className="st-toggle-text">
-        <span className="st-toggle-label">{label}</span>
-        {hint && <span className="field-hint">{hint}</span>}
-      </span>
+      <span className="st-toggle-label">{label}</span>
       <input type="checkbox" role="switch" className="st-switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
     </label>
   );
@@ -53,14 +52,10 @@ export default function SettingsScreen() {
     setSetting(key, value);
     showToast(t.settings.saved);
   };
-  const themes: { value: Settings['theme']; label: string }[] = [
-    { value: 'light', label: t.settings.themeLight },
-    { value: 'dark', label: t.settings.themeDark },
-  ];
 
   return (
     <div className="page st">
-      <h1 className="screen-title">{t.settings.title}</h1>
+      <h1 className="sr-only">{t.settings.title}</h1>
 
       {!isStorageAvailable() && (
         <p className="st-banner" role="alert">
@@ -68,7 +63,7 @@ export default function SettingsScreen() {
         </p>
       )}
 
-      <Section id="st-grade" icon="🎒" title={t.settings.grade}>
+      <Section id="st-me" title={t.settings.me} info={<p>{t.settings.gradeHint}</p>}>
         <div className="st-grades" role="radiogroup" aria-label={t.settings.grade}>
           {GRADES.map((g) => (
             <button
@@ -77,20 +72,17 @@ export default function SettingsScreen() {
               role="radio"
               aria-checked={grade === g.grade}
               className={`st-grade${grade === g.grade ? ' is-selected' : ''}`}
+              aria-label={g.label}
               onClick={() => {
                 if (grade === g.grade) return;
                 setGrade(g.grade);
                 showToast(t.settings.saved);
               }}
             >
-              {g.label}
+              {g.grade}.
             </button>
           ))}
         </div>
-        <p className="field-hint">{t.settings.gradeHint}</p>
-      </Section>
-
-      <Section id="st-nick" icon="🙂" title={t.settings.nickname}>
         <form
           className="st-nick"
           onSubmit={(e) => {
@@ -106,77 +98,43 @@ export default function SettingsScreen() {
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
-            placeholder={t.onboarding.nicknamePlaceholder}
+            placeholder={t.settings.nickname}
             aria-label={t.settings.nickname}
-            aria-describedby="st-nick-hint"
             onChange={(e) => setNick(e.target.value)}
           />
           <button type="submit" className="btn" disabled={nick.trim() === nickname}>
             {t.settings.nicknameSave}
           </button>
         </form>
-        <p id="st-nick-hint" className="field-hint">
-          {t.onboarding.nicknameHint}
-        </p>
       </Section>
 
-      <Section id="st-look" icon="🎨" title={t.settings.appearance}>
+      <Section id="st-look" title={t.settings.appearance}>
         <Toggle
           label={t.settings.sound}
-          hint={t.settings.soundHint}
           checked={settings.sound}
           onChange={(v) => {
             set('sound', v);
             if (v) setTimeout(() => playSound('tap'), 0); // audible confirmation
           }}
         />
-        {settings.sound && (
-          <div className="st-sound-test">
-            {(
-              [
-                ['tap', t.settings.soundTap],
-                ['correct', t.settings.soundCorrect],
-                ['wrong', t.settings.soundWrong],
-                ['lessonComplete', t.settings.soundDone],
-              ] as const
-            ).map(([name, label]) => (
-              <button key={name} type="button" className="btn btn-small btn-soft" onClick={() => playSound(name)} data-sound="off">
-                ▶ {label}
-              </button>
-            ))}
-          </div>
-        )}
         <Toggle label={t.settings.reduceMotion} checked={settings.reduceMotion} onChange={(v) => set('reduceMotion', v)} />
-        <div className="st-theme">
-          <span className="st-toggle-label" id="st-theme-label">
-            {t.settings.theme}
-          </span>
-          <div className="st-segment" role="radiogroup" aria-labelledby="st-theme-label">
-            {themes.map((th) => (
-              <button
-                key={th.value}
-                type="button"
-                role="radio"
-                aria-checked={settings.theme === th.value}
-                className={`st-seg${settings.theme === th.value ? ' is-selected' : ''}`}
-                onClick={() => set('theme', th.value)}
-              >
-                {th.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <Toggle label={t.settings.darkMode} checked={settings.theme === 'dark'} onChange={(v) => set('theme', v ? 'dark' : 'light')} />
       </Section>
 
-      <Section id="st-data" icon="💾" title={t.settings.data}>
-        <p className="st-warning">
-          <span aria-hidden="true">⚠️</span> {t.settings.storageWarning}
-        </p>
-        <p className="field-hint st-data-hint">{t.settings.dataHint}</p>
+      <Section
+        id="st-data"
+        title={t.settings.data}
+        info={
+          <>
+            <p>{t.settings.storageWarning}</p>
+            <p>{t.settings.dataHint}</p>
+          </>
+        }
+      >
         <div className="st-buttons">
           <button
             type="button"
-            className="btn btn-block"
+            className="btn"
             onClick={() => {
               downloadProgress();
               showToast(t.settings.exportDone);
@@ -184,24 +142,24 @@ export default function SettingsScreen() {
           >
             ⬇ {t.settings.exportBtn}
           </button>
-          <ImportProgressButton label={`⬆ ${t.settings.importBtn}`} />
-          <button type="button" className="btn btn-ghost btn-block st-reset" onClick={() => setResetOpen(true)}>
-            {t.settings.reset}
-          </button>
+          <ImportProgressButton label={`⬆ ${t.settings.importBtn}`} className="btn btn-ghost" />
         </div>
+        <button type="button" className="link-btn st-reset" onClick={() => setResetOpen(true)}>
+          {t.settings.reset}
+        </button>
       </Section>
 
-      <Section id="st-about" icon="ℹ️" title={t.settings.about}>
-        <p className="st-about">{t.settings.aboutText}</p>
-        <p className="field-hint">
-          {t.appName} · {t.settings.version} {pkg.version}
-        </p>
+      <p className="st-about">
+        {t.appName} {pkg.version}
+        <InfoButton title={t.settings.about}>
+          <p>{t.settings.aboutText}</p>
+        </InfoButton>
         {import.meta.env.DEV && (
           <a className="link-btn" href={routeToHash({ name: 'dev' })}>
             {t.settings.devPage} ›
           </a>
         )}
-      </Section>
+      </p>
 
       <Dialog
         open={resetOpen}

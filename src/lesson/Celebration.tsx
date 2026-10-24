@@ -119,7 +119,6 @@ export function Celebration({ title, subtitle, xp, score, chapter, milestone, pr
             </div>
           </div>
         )}
-        {!small && <p className="lesson-keep-going">{t.celebrate.keepGoing}</p>}
         {children}
       </div>
       <LessonFooter>{actions}</LessonFooter>

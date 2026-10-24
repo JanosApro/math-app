@@ -252,7 +252,7 @@
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
 }
 .shell-main .page {
-  padding-bottom: 2.5rem;
+  padding-bottom: 1rem;
 }
 /* no fill-mode: a transform kept after the animation would make .shell-view the containing
    block of position: fixed descendants (dialogs, bars) */

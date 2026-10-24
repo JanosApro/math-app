@@ -448,7 +448,7 @@ const sideNames: GeneratorDef = {
     const correct = tex`$${p}^2 + ${q}^2 = ${r}^2$`;
     const wrongs = [tex`$${p}^2 + ${r}^2 = ${q}^2$`, tex`$${q}^2 + ${r}^2 = ${p}^2$`, tex`$${p} + ${q} = ${r}$`];
     return {
-      prompt: tex`Melyik egyenlőség igaz erre a derékszögű háromszögre? (Minden oldalt a vele szemközti csúcs kisbetűje jelöl.)`,
+      prompt: tex`Melyik egyenlőség igaz erre a derékszögű háromszögre?`,
       figure: rightTriangle({ a, b, names, turn, labels: { a: p, b: q, c: r } }),
       answer: choice(rng, correct, wrongs),
       hint: 'Keresd meg a derékszöget! A vele szemközti oldal az átfogó, és az kerül egyedül az egyenlőség egyik oldalára.',
@@ -676,7 +676,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'A derékszögű háromszög oldalai',
-          body: 'Egy háromszög **derékszögű**, ha az egyik szöge $90°$.\n\nA derékszöget közrefogó két oldal a két **befogó** (általában $a$ és $b$). A derékszöggel szemközti oldal az **átfogó** ($c$). Az átfogó mindig a **leghosszabb** oldal.',
+          body: 'A derékszöget közrefogó két oldal a két **befogó** ($a$, $b$), a vele szemközti oldal az **átfogó** ($c$). Az átfogó mindig a **leghosszabb**.',
           figure: rightTriangle({ a: 3, b: 4, labels: { a: 'a (befogó)', b: 'b (befogó)', c: 'c (átfogó)' }, highlight: ['c'] }),
         },
         {
@@ -692,14 +692,14 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Pitagorasz tétele',
-          body: 'Rajzoljunk mindhárom oldalra egy-egy négyzetet! A rácson megszámolhatod: a két kisebb négyzet területe $9$ és $16$, a nagyé $25$ — és $9 + 16 = 25$.\n\nEz minden derékszögű háromszögre igaz:',
+          body: 'A két kisebb négyzet területe $9$ és $16$, a nagyé $25$ — és $9 + 16 = 25$.',
           figure: squaresOnGrid,
-          remember: '**Pitagorasz tétele:** a derékszögű háromszögben a befogók négyzetének összege egyenlő az átfogó négyzetével:\n$a^2 + b^2 = c^2$',
+          remember: 'Minden derékszögű háromszögben: $a^2 + b^2 = c^2$',
         },
         {
           type: 'theory',
           title: 'Miért igaz? — egy szemléletes bizonyítás',
-          body: 'Vegyünk két egyforma, $a + b$ oldalú négyzetet, és tegyünk mindkettőbe **ugyanazt a négy** derékszögű háromszöget (szürkék).\n\nBalra a háromszögek között egy $c$ oldalú négyzet marad ki: $c^2$. Jobbra két négyzet marad ki: $a^2$ és $b^2$.\n\nA nagy négyzetek egyformák, a négy háromszög is ugyanaz, tehát a kimaradó részek területe is egyenlő: $a^2 + b^2 = c^2$.',
+          body: 'Mindkét nagy négyzetben ugyanaz a **négy háromszög** van. Ami kimarad: balra $c^2$, jobbra $a^2 + b^2$ — tehát ezek egyenlők.',
           figure: proofFigure,
         },
         {
@@ -714,7 +714,7 @@ export default defineSubtopic({
         {
           type: 'explore',
           title: 'Próbáld ki!',
-          body: 'Húzd a csúszkákat, és figyeld, hogyan változnak a négyzetek!',
+          body: 'Húzd a csúszkákat!',
           sliders: [
             { name: 'a', label: '$a$ befogó', min: 1, max: 8, step: 1, value: 3 },
             { name: 'b', label: '$b$ befogó', min: 1, max: 8, step: 1, value: 4 },
@@ -737,7 +737,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Hogyan számolunk vele?',
-          body: '**Ha az átfogó hiányzik:** összeadjuk a befogók négyzetét, és gyököt vonunk.\n$c = \\sqrt{a^2 + b^2}$\n\n**Ha egy befogó hiányzik:** az átfogó négyzetéből kivonjuk a másik befogó négyzetét, és gyököt vonunk.\n$a = \\sqrt{c^2 - b^2}$',
+          body: '**Átfogó:** $c = \\sqrt{a^2 + b^2}$\n\n**Befogó:** $a = \\sqrt{c^2 - b^2}$',
           remember: 'Átfogó: **összeadunk**. Befogó: **kivonunk**. Végül mindig **gyököt vonunk**!',
         },
         {
@@ -746,10 +746,10 @@ export default defineSubtopic({
           problem: 'Egy derékszögű háromszög befogói $6$ cm és $8$ cm. Milyen hosszú az átfogó?',
           figure: rightTriangle({ a: 6, b: 8, labels: { a: '6 cm', b: '8 cm', c: 'c = ?' }, highlight: ['c'] }),
           steps: [
-            { text: 'Az átfogó hiányzik, ezért **összeadjuk** a befogók négyzetét: $c^2 = a^2 + b^2$.' },
+            { text: 'Az átfogó hiányzik → **összeadunk**: $c^2 = a^2 + b^2$' },
             { text: '$c^2 = 6^2 + 8^2 = 36 + 64 = 100$' },
             { text: 'Gyököt vonunk: $c = \\sqrt{100} = 10$.' },
-            { text: 'Ellenőrzés: az átfogó a leghosszabb oldal — $10 > 8$, rendben.' },
+            { text: 'Ellenőrzés: $10 > 8$, az átfogó a leghosszabb. ✓' },
           ],
           answer: 'Az átfogó **10 cm** hosszú.',
         },
@@ -760,7 +760,7 @@ export default defineSubtopic({
           problem: 'Egy derékszögű háromszög átfogója $13$ cm, az egyik befogója $5$ cm. Mekkora a másik befogó?',
           figure: rightTriangle({ a: 12, b: 5, labels: { a: 'a = ?', b: '5 cm', c: '13 cm' }, highlight: ['a'] }),
           steps: [
-            { text: 'Most egy befogó hiányzik, ezért **kivonunk**: $a^2 = c^2 - b^2$.' },
+            { text: 'Egy befogó hiányzik → **kivonunk**: $a^2 = c^2 - b^2$' },
             { text: '$a^2 = 13^2 - 5^2 = 169 - 25 = 144$' },
             { text: 'Gyököt vonunk: $a = \\sqrt{144} = 12$.' },
             { text: 'Ellenőrzés: $5^2 + 12^2 = 25 + 144 = 169 = 13^2$. ✓' },
@@ -782,10 +782,9 @@ export default defineSubtopic({
           figure: rightTriangle({ a: 3, b: 5, labels: { a: '3 cm', b: '5 cm', c: 'c = ?' }, highlight: ['c'] }),
           steps: [
             { text: '$c^2 = 3^2 + 5^2 = 9 + 25 = 34$' },
-            { text: 'A $34$ nem négyzetszám, ezért a gyököt meghagyjuk: $c = \\sqrt{34}$.' },
-            { text: 'Ha közelítő érték kell: $c \\approx 5{,}83$ cm.' },
+            { text: 'A $34$ nem négyzetszám, a gyök marad: $c = \\sqrt{34} \\approx 5{,}83$' },
           ],
-          answer: 'Az átfogó $\\sqrt{34}$ cm, vagyis kb. $5{,}83$ cm. A válaszmezőbe a $\\sqrt{\\ }$ gombbal írhatod be: √34.',
+          answer: 'Az átfogó $\\sqrt{34}$ cm. Beírva: **√** gomb, majd **34**.',
         },
         { type: 'practice', generator: 'hypotenuse', level: 2, count: 2 },
         { type: 'practice', generator: 'leg', level: 2 },
@@ -799,7 +798,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Megfordítva is igaz!',
-          body: 'Ha egy háromszög oldalaira teljesül, hogy a két rövidebb oldal négyzetösszege egyenlő a leghosszabb oldal négyzetével, akkor a háromszög **derékszögű**. Ez a tétel **megfordítása**.\n\nAz ilyen egész számokat **pitagoraszi számhármasoknak** hívjuk, például:\n- $3;\\ 4;\\ 5$\n- $5;\\ 12;\\ 13$\n- $8;\\ 15;\\ 17$\n\nEgy hármas minden többszöröse is jó ($6;\\ 8;\\ 10$, $9;\\ 12;\\ 15$ …), ezért végtelen sok ilyen hármas van.',
+          body: 'Ha a két rövidebb oldal négyzetösszege egyenlő a leghosszabb oldal négyzetével, a háromszög **derékszögű**.\n\n**Pitagoraszi számhármasok:** $3;\\ 4;\\ 5$ · $5;\\ 12;\\ 13$ · $8;\\ 15;\\ 17$ és ezek többszörösei.',
         },
         {
           type: 'example',

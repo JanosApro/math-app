@@ -70,20 +70,24 @@ function Item({ it, isNew }: { it: SvgItem; isNew: boolean }) {
   );
 }
 
-/** Largest rendered figure height in CSS px. */
+/**
+ * Largest rendered figure height: 340 px, and at most `--fig-vh` of the screen height (default
+ * 36vh; question cards use less, so prompt + figure + answer fit one phone screen).
+ */
 const MAX_FIG_H = 340;
 
 export function SceneSvg({ scene, step, alt }: { scene: Scene; step?: number; alt?: string }) {
   const vb = scene.viewBox;
   const visible = step === undefined ? scene.items : scene.items.filter((it) => (it.step ?? 0) <= step);
-  // Up to 1.35× on wide screens, but never taller than MAX_FIG_H (tall, thin figures would
-  // push the answer off a phone screen).
+  // Up to 1.35× on wide screens, but never taller than the height cap (tall, thin figures would
+  // push the answer off a phone screen): the cap becomes a width limit through the aspect ratio.
   const maxW = Math.min(vb.w * 1.35, (vb.w * MAX_FIG_H) / vb.h);
+  const ratio = (vb.w / vb.h).toFixed(4);
   return (
     <svg
       className="fig-svg"
       viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-      style={{ maxWidth: `${Math.round(maxW)}px` }}
+      style={{ maxWidth: `min(${Math.round(maxW)}px, calc(var(--fig-vh, 36vh) * ${ratio}))` }}
       role="img"
       aria-label={alt ?? t.figure.alt}
     >
@@ -120,7 +124,7 @@ function FigureViewInner({ figure }: { figure: Figure }) {
       {isConstruction && (
         <div className="fig-steps">
           <div className="fig-step-caption">
-            {step === 0 ? <Rich text={t.figure.constructionStart} /> : <Rich text={`**${step}.** ${steps[step - 1]}`} />}
+            {step > 0 && <Rich text={`**${step}.** ${steps[step - 1]}`} />}
           </div>
           <div className="fig-step-buttons">
             <button type="button" className="btn btn-small btn-ghost" disabled={step === 0} onClick={() => setStep(step - 1)} aria-label={t.figure.prevStep}>

@@ -69,7 +69,7 @@
 .map-goal-bar {
   position: relative;
   height: 16px;
-  margin: 0.85rem 0 0.5rem;
+  margin: 0.75rem 0 0.2rem;
   border-radius: 999px;
   background: var(--surface-3);
   border: 2px solid var(--outline);
@@ -97,11 +97,6 @@
   height: 8px;
   border-radius: 0 3px 3px 0;
   background: var(--streak);
-}
-.map-goal-note {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--text-muted);
 }
 
 /* daily challenge */

@@ -1,10 +1,10 @@
 /**
- * Route #/profile: nickname, level + XP, lessons/chapters done, current and best streak,
- * a calendar of the last 5 weeks (Monday first, days with a finished lesson part, mini test or
- * daily challenge marked with 🔥 — not only by color),
- * chapter badges and streak badges (7 / 30 / 100). Everything is for the current grade.
+ * Route #/profile — fits one phone screen: nickname + level + XP bar, four small stats (lessons,
+ * chapters, current and best streak), a calendar of the last weeks (days with a finished lesson
+ * part, mini test or daily challenge marked with 🔥 — not only by color; the streak rule behind
+ * ⓘ) and one swipeable row of badges (earned first; tap one for its name). Current grade only.
  */
-import { useMemo, type CSSProperties } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { flatten, topicColor } from '../content/catalog';
 import { GRADES, getGradeTopics } from '../content/registry';
 import { t } from '../i18n/hu';
@@ -13,12 +13,14 @@ import { addDays, formatDateHu, todayBelgrade, weekdayMon0 } from '../state/date
 import { gradeProgress, useAppState, type GradeProgress } from '../state/store';
 import { levelFromXp, STREAK_MILESTONES } from '../state/xp';
 import { LockIcon, XpIcon } from '../ui/AppShellIcons';
+import { Dialog } from '../ui/Dialog';
+import { InfoButton } from '../ui/InfoButton';
 import { TopicIcon } from '../ui/TopicIcon';
 import { routeToHash } from '../ui/router';
 import './screens.css';
 import './Profile.css';
 
-const WEEKS = 5;
+const WEEKS = 4;
 
 function Calendar({ gp, today }: { gp: GradeProgress; today: string }) {
   // Monday of the week (WEEKS − 1) weeks ago … Sunday of this week
@@ -67,6 +69,7 @@ export default function ProfileScreen() {
   const today = useMemo(() => todayBelgrade(), []);
   const topics = grade === null ? undefined : getGradeTopics(grade);
   const streak = useMemo(() => (gp ? gradeStreak(gp, today) : null), [gp, today]);
+  const [badgeOpen, setBadgeOpen] = useState<string | null>(null);
   if (grade === null || !gp || !streak) return null;
 
   const lv = levelFromXp(gp.xp);
@@ -77,127 +80,158 @@ export default function ProfileScreen() {
   const gradeLabel = GRADES.find((g) => g.grade === grade)?.label ?? t.common.grade(grade);
   const initial = (nickname.trim()[0] ?? '?').toUpperCase();
 
+  type Badge = { key: string; name: string; earned: boolean; color?: string; icon?: string; streak?: number };
+  const badges: Badge[] = [
+    ...(topics?.topics ?? []).map((tp) => ({ key: tp.id, name: t.badges.chapter(tp.title), earned: !!gp.chapters[tp.id], color: topicColor(topics!, tp), icon: tp.icon })),
+    ...STREAK_MILESTONES.map((m) => ({
+      key: `streak-${m}`,
+      name: m === 7 ? t.badges.streak7 : m === 30 ? t.badges.streak30 : t.badges.streak100,
+      earned: gp.streakBadges.includes(m),
+      streak: m,
+    })),
+  ];
+  const earnedFirst = [...badges.filter((b) => b.earned), ...badges.filter((b) => !b.earned)];
+  const open = badges.find((b) => b.key === badgeOpen);
+
   return (
     <div className="page pf">
-      <h1 className="screen-title">{t.profile.title}</h1>
+      <h1 className="sr-only">{t.profile.title}</h1>
 
-      <section className="card pf-hero">
-        <span className={`pf-avatar${nickname ? '' : ' is-anon'}`} aria-hidden="true">
-          {nickname ? initial : '★'}
-        </span>
-        <div className="pf-hero-text">
-          <span className="pf-name">{nickname || t.profile.anonymous}</span>
-          <span className="pf-grade">{gradeLabel}</span>
-          <a className="link-btn pf-edit" href={routeToHash({ name: 'settings' })}>
-            {t.profile.editNickname}
-          </a>
-        </div>
-      </section>
-
-      <section className="card pf-level" aria-labelledby="pf-level-title">
-        <div className="pf-level-head">
-          <span className="pf-level-badge" aria-hidden="true">
-            {lv.level}
+      <section className="card pf-hero" aria-label={t.profile.title}>
+        <div className="pf-hero-top">
+          <span className={`pf-avatar${nickname ? '' : ' is-anon'}`} aria-hidden="true">
+            {nickname ? initial : '★'}
           </span>
-          <div className="pf-level-text">
-            <h2 id="pf-level-title" className="pf-level-title">
-              {t.profile.level(lv.level)}
-            </h2>
-            <span className="pf-level-sub">{t.profile.xpToNext(lv.next - gp.xp)}</span>
+          <div className="pf-hero-text">
+            <span className="pf-name">
+              {nickname || t.profile.anonymous}
+              <a className="pf-edit" href={routeToHash({ name: 'settings' })} aria-label={t.profile.editNickname} title={t.profile.editNickname}>
+                ✏️
+              </a>
+            </span>
+            <span className="pf-grade">{gradeLabel}</span>
           </div>
+          <span className="pf-level-badge" title={t.profile.level(lv.level)}>
+            <span className="sr-only">{t.profile.level(lv.level)}</span>
+            <span aria-hidden="true">{lv.level}</span>
+          </span>
+        </div>
+        <div className="pf-level-row">
           <span className="pf-xp">
-            <XpIcon size={18} />
+            <XpIcon size={16} />
             {gp.xp} {t.common.xp}
           </span>
-        </div>
-        <div className="pbar pf-level-bar" role="progressbar" aria-valuemin={lv.current} aria-valuemax={lv.next} aria-valuenow={gp.xp} aria-label={t.profile.level(lv.level)}>
-          <div className={`pbar-fill${gp.xp === lv.current ? ' is-zero' : ''}`} style={{ width: `${lvPct}%` }} />
+          <div className="pbar pf-level-bar" role="progressbar" aria-valuemin={lv.current} aria-valuemax={lv.next} aria-valuenow={gp.xp} aria-label={t.profile.level(lv.level)}>
+            <div className={`pbar-fill${gp.xp === lv.current ? ' is-zero' : ''}`} style={{ width: `${lvPct}%` }} />
+          </div>
         </div>
       </section>
 
-      <section className="pf-stats" aria-label={t.profile.title}>
+      <section className="pf-stats" aria-label={t.profile.stats}>
         <div className="pf-stat">
           <span className="pf-stat-value">
             {lessonsDone}
-            <small> / {all.length}</small>
+            <small>/{all.length}</small>
           </span>
-          <span className="pf-stat-label">{t.profile.lessonsDone}</span>
+          <span className="pf-stat-label">{t.profile.statLessons}</span>
         </div>
         <div className="pf-stat">
           <span className="pf-stat-value">
             {chaptersDone}
-            <small> / {topics?.topics.length ?? 0}</small>
+            <small>/{topics?.topics.length ?? 0}</small>
           </span>
-          <span className="pf-stat-label">{t.profile.chaptersDone}</span>
+          <span className="pf-stat-label">{t.profile.statChapters}</span>
         </div>
         <div className="pf-stat pf-stat-streak">
           <span className="pf-stat-value">
-            <span aria-hidden="true">🔥</span> {streak.current}
+            <span aria-hidden="true">🔥</span>
+            {streak.current}
           </span>
-          <span className="pf-stat-label">{t.streak.current}</span>
+          <span className="pf-stat-label">{t.profile.statStreak}</span>
         </div>
         <div className="pf-stat">
-          <span className="pf-stat-value">{streak.best}</span>
-          <span className="pf-stat-label">{t.streak.best}</span>
+          <span className="pf-stat-value">
+            <span aria-hidden="true">🏆</span>
+            {streak.best}
+          </span>
+          <span className="pf-stat-label">{t.profile.statBest}</span>
         </div>
       </section>
 
-      <section className="card" aria-labelledby="pf-cal-title">
+      <section className="card pf-cal-card" aria-labelledby="pf-cal-title">
         <h2 id="pf-cal-title" className="section-title">
-          <span aria-hidden="true">📅</span> {t.streak.calendar}
+          {t.streak.calendar}
+          <InfoButton title={t.streak.label}>
+            <p>{t.streak.explain}</p>
+          </InfoButton>
         </h2>
         <Calendar gp={gp} today={today} />
-        <p className="field-hint">{t.streak.explain}</p>
       </section>
 
-      <section className="card" aria-labelledby="pf-badges-title">
+      <section className="card pf-badges-card" aria-labelledby="pf-badges-title">
         <h2 id="pf-badges-title" className="section-title">
-          <span aria-hidden="true">🏅</span> {t.profile.badges}
+          {t.profile.badges}
+          <span className="pf-badges-count">
+            {badges.filter((b) => b.earned).length}/{badges.length}
+          </span>
         </h2>
-        {chaptersDone === 0 && gp.streakBadges.length === 0 && <p className="pf-nobadges">{t.profile.noBadges}</p>}
-        <h3 className="pf-badges-sub">{t.profile.chapterBadges}</h3>
         <ul className="pf-badges">
-          {topics?.topics.map((tp) => {
-            const earned = !!gp.chapters[tp.id];
-            return (
-              <li key={tp.id} className={`pf-badge${earned ? ' is-earned' : ''}`} style={{ '--badge': topicColor(topics, tp) } as CSSProperties}>
-                <span className="pf-badge-disc" aria-hidden="true">
-                  <TopicIcon name={tp.icon} size={30} />
-                  {!earned && (
-                    <span className="pf-badge-lock">
-                      <LockIcon size={14} />
-                    </span>
-                  )}
-                </span>
-                <span className="pf-badge-name">{t.badges.chapter(tp.title)}</span>
-                <span className="pf-badge-state">{earned ? t.profile.earned : t.profile.notEarned}</span>
-              </li>
-            );
-          })}
-        </ul>
-        <h3 className="pf-badges-sub">{t.profile.streakBadges}</h3>
-        <ul className="pf-badges">
-          {STREAK_MILESTONES.map((m) => {
-            const earned = gp.streakBadges.includes(m);
-            const name = m === 7 ? t.badges.streak7 : m === 30 ? t.badges.streak30 : t.badges.streak100;
-            return (
-              <li key={m} className={`pf-badge pf-badge-streak${earned ? ' is-earned' : ''}`}>
-                <span className="pf-badge-disc" aria-hidden="true">
-                  <span className="pf-badge-fire">🔥</span>
-                  <span className="pf-badge-num">{m}</span>
-                  {!earned && (
-                    <span className="pf-badge-lock">
-                      <LockIcon size={14} />
-                    </span>
-                  )}
-                </span>
-                <span className="pf-badge-name">{name}</span>
-                <span className="pf-badge-state">{earned ? t.profile.earned : t.profile.notEarned}</span>
-              </li>
-            );
-          })}
+          {earnedFirst.map((b) => (
+            <li key={b.key}>
+              <button
+                type="button"
+                className={`pf-badge${b.earned ? ' is-earned' : ''}${b.streak ? ' pf-badge-streak' : ''}`}
+                style={b.color ? ({ '--badge': b.color } as CSSProperties) : undefined}
+                onClick={() => setBadgeOpen(b.key)}
+                aria-label={`${b.name} – ${b.earned ? t.profile.earned : t.profile.notEarned}`}
+                title={b.name}
+              >
+                <BadgeDisc b={b} />
+              </button>
+            </li>
+          ))}
         </ul>
       </section>
+
+      <Dialog
+        open={!!open}
+        title={open?.name ?? ''}
+        onClose={() => setBadgeOpen(null)}
+        actions={
+          <button type="button" className="btn" onClick={() => setBadgeOpen(null)}>
+            {t.common.ok}
+          </button>
+        }
+      >
+        {open && (
+          <div className="pf-badge-detail">
+            <span className={`pf-badge${open.earned ? ' is-earned' : ''}${open.streak ? ' pf-badge-streak' : ''}`} style={open.color ? ({ '--badge': open.color } as CSSProperties) : undefined}>
+              <BadgeDisc b={open} />
+            </span>
+            <p>{open.earned ? t.profile.badgeEarned : open.streak ? t.profile.badgeStreakHow(open.streak) : t.profile.badgeChapterHow}</p>
+          </div>
+        )}
+      </Dialog>
     </div>
+  );
+}
+
+function BadgeDisc({ b }: { b: { earned: boolean; icon?: string; streak?: number } }) {
+  return (
+    <span className="pf-badge-disc" aria-hidden="true">
+      {b.streak ? (
+        <>
+          <span className="pf-badge-fire">🔥</span>
+          <span className="pf-badge-num">{b.streak}</span>
+        </>
+      ) : (
+        <TopicIcon name={b.icon} size={28} />
+      )}
+      {!b.earned && (
+        <span className="pf-badge-lock">
+          <LockIcon size={12} />
+        </span>
+      )}
+    </span>
   );
 }

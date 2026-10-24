@@ -119,8 +119,22 @@
   border-radius: 22px;
   border: var(--line) solid var(--outline);
   box-shadow: var(--pop-lg);
-  padding: 1.1rem 1.05rem 1.25rem;
+  padding: 1rem 1rem 1.1rem;
   overflow-wrap: anywhere;
+}
+/* question cards share the screen with the answer: smaller figures */
+.lesson-card {
+  --fig-vh: 32vh;
+}
+.lesson-qcard {
+  --fig-vh: 20vh;
+}
+.lesson-explore {
+  --fig-vh: 19vh;
+}
+/* a worked example shrinks its figure once the solution steps appear */
+.lesson-example.is-solving {
+  --fig-vh: 19vh;
 }
 .lesson-card > :last-child {
   margin-bottom: 0;
@@ -197,23 +211,21 @@
 
 /* ---- theory ---- */
 .lesson-remember {
-  margin-top: 0.85rem;
-  padding: 0.75rem 0.95rem;
+  position: relative;
+  margin-top: 0.7rem;
+  padding: 0.6rem 0.85rem 0.6rem 2.3rem;
   border-radius: 16px;
   background: var(--remember-bg);
   border: 2px dashed var(--outline);
-  font-size: 1.06rem;
+  font-size: 1.04rem;
 }
-.lesson-remember-title {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.3rem;
-  font-size: 0.86rem;
-  font-weight: 800;
-  color: var(--warn);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.lesson-remember-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 0.55rem;
+  color: var(--xp);
+  font-size: 1.15rem;
+  -webkit-text-stroke: 1px var(--outline);
 }
 .lesson-remember .katex {
   font-size: 1.15em;
@@ -309,9 +321,9 @@
 .lesson-sliders {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  margin: 0.6rem 0 0.4rem;
-  padding: 0.75rem 0.9rem 0.5rem;
+  gap: 0.3rem;
+  margin: 0.5rem 0 0.3rem;
+  padding: 0.5rem 0.85rem 0.3rem;
   border-radius: 16px;
   background: var(--surface-2);
 }
@@ -387,7 +399,7 @@
   border-radius: 12px;
 }
 .lesson-explore-text {
-  padding: 0.65rem 0.9rem;
+  padding: 0.5rem 0.85rem;
   border-radius: 14px;
   border: 2px dashed var(--topic-line);
   font-size: 1.07rem;
@@ -395,8 +407,8 @@
 
 /* ---- questions ---- */
 .lesson-prompt {
-  font-size: 1.12rem;
-  line-height: 1.5;
+  font-size: 1.08rem;
+  line-height: 1.45;
 }
 .lesson-input-label {
   margin-top: 0.6rem;
@@ -404,7 +416,7 @@
   font-weight: 700;
 }
 .lesson-answer {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 .lesson-shake-a {
   animation: shake 0.4s ease-in-out;
@@ -498,7 +510,7 @@
 
 /* ---- bottom action bar ---- */
 .lesson-footer-spacer {
-  height: calc(92px + env(safe-area-inset-bottom));
+  height: calc(80px + env(safe-area-inset-bottom));
 }
 .lesson-footer {
   position: fixed;
@@ -506,7 +518,7 @@
   right: 0;
   bottom: 0;
   z-index: 30;
-  padding: 0.7rem max(0.85rem, env(safe-area-inset-right)) calc(0.7rem + env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
+  padding: 0.6rem max(0.85rem, env(safe-area-inset-right)) calc(0.6rem + env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
@@ -520,7 +532,7 @@
   margin: 0 auto;
 }
 .lesson-footer-inner > .btn {
-  min-height: 54px;
+  min-height: 50px;
   line-height: 1.15;
   text-align: center;
 }
@@ -632,6 +644,14 @@
 }
 .lesson-sheet-bad .lesson-sheet-icon {
   animation: lesson-wobble 0.6s ease-in-out both;
+}
+.lesson-sheet-solution {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+}
+.lesson-xp-pill + .lesson-sheet-solution {
+  margin-left: 0.5rem;
 }
 @keyframes lesson-wobble {
   0%,
@@ -793,7 +813,8 @@
   font-weight: 600;
 }
 .lesson-sheet-answer {
-  padding: 0.55rem 0.85rem;
+  margin-top: 0.55rem;
+  padding: 0.5rem 0.85rem;
   border-radius: 14px;
   background: var(--surface);
   font-size: 1.08rem;
@@ -839,16 +860,16 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
   font-weight: 800;
   font-size: 0.95rem;
   color: var(--text-muted);
 }
 .lesson-start-icon {
   flex: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
   background: var(--topic);
   color: #fff;
   display: flex;
@@ -859,10 +880,24 @@
   transform: rotate(-6deg);
 }
 .lesson-start-title {
-  font-size: 1.75rem;
+  font-size: 1.45rem;
   font-weight: 600;
   letter-spacing: 0;
-  margin: 0 0 0.75rem;
+  margin: 0;
+}
+.lesson-start-title .info-btn {
+  margin-left: 0.3rem;
+  vertical-align: 0.1em;
+}
+.lesson-start-done {
+  margin-top: 0.6rem;
+}
+.lesson-goals-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.lesson-goals-list li {
+  margin: 0.3em 0;
 }
 .lesson-start-done {
   display: inline-flex;
@@ -926,19 +961,19 @@
 /* ---- part list on the overview ---- */
 .lesson-partlist {
   list-style: none;
-  margin: 0.9rem 0 0;
+  margin: 0.2rem 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 .lesson-partrow {
   width: 100%;
-  min-height: 64px;
+  min-height: 56px;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.7rem 0.9rem 0.7rem 0.75rem;
+  gap: 0.7rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.65rem;
   border-radius: var(--radius);
   border: var(--line) solid var(--outline);
   background: var(--surface);
@@ -978,8 +1013,8 @@
 }
 .lesson-partrow-num {
   flex: none;
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1140,9 +1175,9 @@
   margin-bottom: 0.4rem;
 }
 .lesson-result-emoji {
-  font-size: 3.4rem;
+  font-size: 3rem;
   line-height: 1.15;
-  margin: 0.3rem 0 0.4rem;
+  margin: 0.1rem 0 0.3rem;
 }
 .lesson-message .btn {
   margin-top: 0.75rem;
@@ -1166,21 +1201,39 @@
   font-weight: 700;
 }
 
-/* ---- review of wrong answers ---- */
+/* ---- review of wrong answers: one row each, details behind 🔍 ---- */
 .lesson-review {
-  margin-top: 1.1rem;
+  margin-top: 0.9rem;
   text-align: left;
 }
 .lesson-review-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+}
+.lesson-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .lesson-review-item {
   display: flex;
-  gap: 0.65rem;
-  padding: 0.85rem 0;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 46px;
+  padding: 0.3rem 0;
   border-top: 1.5px solid var(--border);
+}
+.lesson-review-answer {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+.lesson-review-answer .lesson-review-mark {
+  color: var(--good);
 }
 .lesson-review-no {
   flex: none;
@@ -1222,19 +1275,8 @@
 .lesson-review-correct .lesson-review-mark {
   color: var(--good);
 }
-.lesson-review-solution {
-  margin-top: 0.35rem;
-}
-.lesson-review-solution summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--primary);
-  font-weight: 800;
-  cursor: pointer;
-}
-.lesson-review-solution ol {
-  margin-top: 0.2rem;
+.info-body .lesson-solution {
+  margin-top: 0.7rem;
 }
 
 /* ---- celebration ---- */

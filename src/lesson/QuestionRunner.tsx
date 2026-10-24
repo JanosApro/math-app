@@ -17,6 +17,7 @@ import { playSound } from '../ui/sound';
 import { pickPhrase, t } from '../i18n/hu';
 import { QuestionView } from './QuestionView';
 import { draftToAnswer, emptyDraft, type AnswerDraft } from './inputs/draft';
+import { InfoButton } from '../ui/InfoButton';
 import { Burst, CountUp, LessonFooter, useEnterKey } from './parts';
 import { clearCurrentQuestion, setCurrentQuestion } from './devHook';
 
@@ -164,7 +165,6 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
 function Solution({ steps }: { steps: string[] }) {
   return (
     <div className="lesson-solution">
-      <div className="lesson-solution-title">{t.feedback.solutionTitle}</div>
       <ol>
         {steps.map((s, i) => (
           <li key={i}>
@@ -191,7 +191,6 @@ export function FeedbackSheet({
   willRequeue?: boolean;
   onContinue: () => void;
 }) {
-  const [showSolution, setShowSolution] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
   const sheet = useRef<HTMLDivElement>(null);
   // the spacer keeps the question scrollable above the (fixed) sheet, whatever its height
@@ -229,24 +228,14 @@ export function FeedbackSheet({
                   +<CountUp value={result.xp} duration={600} /> {t.common.xp}
                 </span>
               )}
+              <InfoButton title={t.feedback.solutionTitle} icon="search" label={t.feedback.showSolution} className="lesson-sheet-solution">
+                <Solution steps={question.solution} />
+              </InfoButton>
             </div>
             {!good && (
-              <>
-                <p className="lesson-sheet-text">{pickPhrase(t.feedback.wrongEncourage, seed >>> 3)}</p>
-                <div className="lesson-sheet-answer">
-                  <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(question.answer)} className="lesson-inline-rich" />
-                </div>
-                {willRequeue && <p className="lesson-sheet-note">↻ {t.feedback.tryAgainLater}</p>}
-                <Solution steps={question.solution} />
-              </>
-            )}
-            {good && (
-              <>
-                {showSolution && <Solution steps={question.solution} />}
-                <button type="button" className="lesson-link-btn" onClick={() => setShowSolution((s) => !s)}>
-                  {showSolution ? t.feedback.hideSolution : t.feedback.showSolution}
-                </button>
-              </>
+              <div className="lesson-sheet-answer">
+                <span className="lesson-sheet-label">{t.feedback.correctAnswer}</span> <Rich text={formatAnswer(question.answer)} className="lesson-inline-rich" />
+              </div>
             )}
           </div>
           <button ref={btn} type="button" className={`btn btn-block ${good ? 'btn-good' : ''}`} onClick={onContinue}>
