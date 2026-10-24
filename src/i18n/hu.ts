@@ -1,0 +1,247 @@
+/**
+ * Every student-facing UI string, in Hungarian. Fix wording here, in one place.
+ * (Lesson content lives in src/content/**, not here.)
+ *
+ * Plain strings may contain RichText ($math$, **bold**) where they are rendered with <Rich>.
+ */
+export const t = {
+  appName: 'Matek Kaland',
+  tagline: 'Gyakorolj játékosan, minden nap egy kicsit!',
+
+  common: {
+    continue: 'Tovább',
+    check: 'Ellenőrzés',
+    back: 'Vissza',
+    close: 'Bezárás',
+    cancel: 'Mégse',
+    ok: 'Rendben',
+    start: 'Kezdjük!',
+    retry: 'Újra',
+    yes: 'Igen',
+    no: 'Nem',
+    loading: 'Betöltés…',
+    xp: 'XP',
+    soon: 'Hamarosan…',
+    of: (a: number, b: number) => `${a} / ${b}`,
+    grade: (g: number) => `${g}. osztály`,
+  },
+
+  nav: {
+    map: 'Térkép',
+    daily: 'Napi kihívás',
+    profile: 'Profil',
+    settings: 'Beállítások',
+  },
+
+  onboarding: {
+    welcome: 'Szia! Üdv a Matek Kalandban!',
+    intro: 'Itt lépésről lépésre gyakorolhatod az év matekanyagát. Válaszd ki, hányadikos vagy!',
+    pickGrade: 'Hányadik osztályba jársz?',
+    nicknameLabel: 'Becenév (nem kötelező)',
+    nicknameHint: 'Ne a valódi nevedet írd be, csak egy becenevet!',
+    nicknamePlaceholder: 'pl. Matekzseni',
+    go: 'Indulás!',
+    privacy: 'Az eredményeid csak ezen az eszközön tárolódnak. Nem kell regisztrálni, és semmilyen adatot nem küldünk el.',
+  },
+
+  map: {
+    yearGoal: 'Éves cél',
+    yearGoalText: (done: number, total: number) => `${done} / ${total} lecke kész`,
+    yearGoalPace: (expected: number) => `Az év ezen pontján kb. ${expected} lecke a terv.`,
+    startHere: 'Kezdd itt!',
+    continueHere: 'Folytasd!',
+    completed: 'Kész',
+    inProgress: 'Folyamatban',
+    notStarted: 'Még nem kezdted el',
+    locked: 'Előbb az előzőeket érdemes megcsinálni',
+    soon: 'Hamarosan…',
+    topicProgress: (done: number, total: number) => `${done}/${total} lecke`,
+    topicDone: 'Fejezet kész!',
+    noContentYet: 'Ehhez a leckéhez még készül a tananyag.',
+  },
+
+  softLock: {
+    title: 'Előreugranál?',
+    body: 'Ez a lecke a később következők közé tartozik. Lehet, hogy olyan tudás kell hozzá, amit az előző leckékben tanulsz meg.',
+    missing: 'Ezeket érdemes előbb befejezni:',
+    andMore: (n: number) => `…és még ${n} lecke`,
+    backToRecommended: 'Vissza az ajánlotthoz',
+    openAnyway: 'Mégis megnyitom',
+  },
+
+  lesson: {
+    goals: 'Ebben a leckében megtanulod:',
+    start: 'Kezdjük!',
+    resume: 'Folytatás',
+    restart: 'Elölről',
+    theory: 'Elmélet',
+    example: 'Kidolgozott példa',
+    exampleLabel: (n: number) => `${n}. példa`,
+    solution: 'Megoldás:',
+    nextStep: 'Következő lépés',
+    showAll: 'Mutasd az egészet',
+    check: 'Ellenőrző kérdés',
+    practice: 'Gyakorlás',
+    explore: 'Próbáld ki!',
+    remember: 'Jegyezd meg!',
+    hint: 'Segítség',
+    hintTitle: 'Tipp',
+    quit: 'Kilépés',
+    quitConfirm: 'Biztosan kilépsz? A lecke állása megmarad.',
+    progress: (i: number, n: number) => `${i}. lépés / ${n}`,
+    toTest: 'Jöhet a minidolgozat!',
+    toTestBody: 'Ügyes vagy! Most egy rövid minidolgozat következik, segítség nélkül. 80%-tól sikeres.',
+    loadError: 'Ezt a leckét nem sikerült betölteni.',
+    notReady: 'Ez a lecke még készül. Nézz vissza később!',
+  },
+
+  feedback: {
+    correct: ['Helyes!', 'Szuper!', 'Pontosan!', 'Ügyes!', 'Így van!', 'Nagyszerű!', 'Telitalálat!'],
+    wrong: 'Nem egészen.',
+    wrongEncourage: ['Semmi baj, ebből tanulunk!', 'Nézzük meg együtt!', 'Majdnem! Nézd meg a megoldást.', 'Hibázni szabad – így tanulunk.'],
+    correctAnswer: 'A helyes válasz:',
+    yourAnswer: 'A te válaszod:',
+    showSolution: 'Megoldás megtekintése',
+    hideSolution: 'Megoldás elrejtése',
+    solutionTitle: 'Így oldjuk meg:',
+    notSimplified: 'Az érték jó, de még egyszerűsíthető! Írd fel a legegyszerűbb alakban.',
+    wrongForm: 'Az érték jó, de más alakban kérjük. Olvasd el újra a feladatot!',
+    parseError: 'Ezt nem értem. Ellenőrizd, hogy jól írtad-e be!',
+    tryAgainLater: 'Ezt a feladattípust még egyszer megkapod.',
+    xpGain: (n: number) => `+${n} XP`,
+  },
+
+  input: {
+    placeholder: 'Írd be a választ',
+    trueLabel: 'Igaz',
+    falseLabel: 'Hamis',
+    orderHint: 'Koppints az elemekre a helyes sorrendben!',
+    matchHint: 'Koppints egy bal oldali, majd a hozzá illő jobb oldali elemre!',
+    reset: 'Újrakezdés',
+    backspace: 'Törlés',
+    clear: 'Mindent töröl',
+    fractionKey: 'törtvonal',
+    rootKey: 'gyökjel',
+    mixedKey: 'vegyes szám (szóköz)',
+    powerKey: 'hatvány',
+    preview: 'Így értem:',
+  },
+
+  test: {
+    title: 'Minidolgozat',
+    intro: (n: number, pass: number) => `${n} feladat, segítség nélkül. A sikerhez legalább ${pass}% kell. Hajrá!`,
+    question: (i: number, n: number) => `${i}. feladat / ${n}`,
+    resultTitle: 'Eredmény',
+    passed: 'Sikerült! Lecke teljesítve!',
+    failed: 'Most még nem sikerült – de nem baj!',
+    failedBody: 'Nézd át a hibás feladatokat, aztán próbáld újra. Annyiszor próbálkozhatsz, ahányszor csak szeretnéd.',
+    score: (c: number, n: number) => `${c} / ${n} helyes`,
+    review: 'Nézzük át a hibákat:',
+    retry: 'Újrapróbálom',
+    backToMap: 'Vissza a térképre',
+  },
+
+  celebrate: {
+    lessonDone: 'Lecke teljesítve!',
+    chapterDone: 'Fejezet teljesítve!',
+    chapterBadge: (title: string) => `Új jelvény: ${title}`,
+    xpEarned: 'Szerzett XP',
+    yearProgress: 'Éves cél',
+    streakMilestone: (n: number) => `${n} napos sorozat! 🔥`,
+    keepGoing: 'Csak így tovább!',
+    next: 'Tovább',
+  },
+
+  daily: {
+    title: 'Napi kihívás',
+    intro: 'Minden nap új, rövid feladatsor. Ma mindenkinek ugyanaz jut az osztályodból!',
+    questions: (n: number) => `${n} feladat · kb. 5–10 perc`,
+    start: 'Indulhat!',
+    doneToday: 'A mai kihívást már teljesítetted! 🎉',
+    doneTodayBody: 'Holnap új feladatok várnak. Gyakorlásnak újra megcsinálhatod, de XP-t és sorozatnapot csak egyszer kapsz.',
+    practiceAgain: 'Gyakorlásként újra',
+    result: (c: number, n: number) => `${c} / ${n} helyes`,
+    streakKept: 'A sorozatod megmaradt!',
+    noContent: 'Még nincs elég tananyag a napi kihíváshoz ebben az osztályban.',
+    practiceMode: 'Gyakorló mód – ezért nem jár XP',
+  },
+
+  streak: {
+    label: 'Sorozat',
+    days: (n: number) => `${n} nap`,
+    current: 'Jelenlegi sorozat',
+    best: 'Leghosszabb sorozat',
+    calendar: 'Teljesített napok',
+    explain: 'A sorozat akkor nő, ha minden nap teljesíted a napi kihívást.',
+    weekdays: ['H', 'K', 'Sze', 'Cs', 'P', 'Szo', 'V'],
+  },
+
+  profile: {
+    title: 'Profil',
+    level: (n: number) => `${n}. szint`,
+    totalXp: 'Összes XP',
+    badges: 'Jelvények',
+    noBadges: 'Még nincs jelvényed – teljesíts egy fejezetet vagy egy 7 napos sorozatot!',
+    lessonsDone: 'Kész leckék',
+    chaptersDone: 'Kész fejezetek',
+  },
+
+  badges: {
+    chapter: (title: string) => title,
+    streak7: '7 napos sorozat',
+    streak30: '30 napos sorozat',
+    streak100: '100 napos sorozat',
+  },
+
+  settings: {
+    title: 'Beállítások',
+    grade: 'Osztály',
+    gradeHint: 'Az előrehaladásod osztályonként külön megmarad.',
+    nickname: 'Becenév',
+    sound: 'Hangok',
+    soundHint: 'Rövid hangjelzés helyes és hibás válasznál.',
+    reduceMotion: 'Kevesebb animáció',
+    theme: 'Megjelenés',
+    themeAuto: 'Automatikus',
+    themeLight: 'Világos',
+    themeDark: 'Sötét',
+    data: 'Adatok mentése',
+    exportBtn: 'Haladás mentése fájlba',
+    importBtn: 'Haladás visszatöltése fájlból',
+    exportDone: 'A mentés elkészült. Tedd biztonságos helyre a fájlt!',
+    importDone: 'A haladásod visszatöltve!',
+    importError: 'Ezt a fájlt nem sikerült beolvasni. Biztosan a Matek Kaland mentése?',
+    importConfirm: 'A betöltés felülírja a jelenlegi haladást ezen az eszközön. Folytatod?',
+    storageWarning:
+      'Fontos: a haladásod csak ebben a böngészőben van elmentve. Ha törlöd a böngészési adatokat, a haladás is elvész. Időnként mentsd el fájlba!',
+    storageUnavailable: 'A böngésző nem engedi az adatok mentését (pl. privát mód). A haladás a lap bezárásakor elvész.',
+    reset: 'Haladás törlése',
+    resetConfirm: 'Biztosan törölsz minden haladást ezen az eszközön? Ezt nem lehet visszavonni.',
+    resetDone: 'A haladás törölve.',
+    about: 'Névjegy',
+    aboutText: 'Gyakorló alkalmazás 5., 7. és 8. osztályos tanulóknak. Nincs regisztráció, nincs adatgyűjtés.',
+    version: 'Verzió',
+  },
+
+  figure: {
+    alt: 'Ábra',
+    error: 'Az ábrát nem sikerült megjeleníteni.',
+    notToScale: 'nem méretarányos',
+    constructionStart: 'Koppints a **Kezdés** gombra, és lépésenként megmutatjuk a szerkesztést!',
+    startConstruction: 'Kezdés',
+    nextStep: 'Következő lépés',
+    prevStep: 'Előző lépés',
+  },
+
+  sound: {
+    on: 'Hang bekapcsolva',
+    off: 'Hang kikapcsolva',
+  },
+} as const;
+
+export type Strings = typeof t;
+
+/** Picks a random-looking but stable item from a list (e.g. praise words) based on a number. */
+export function pickPhrase(list: readonly string[], n: number): string {
+  return list[Math.abs(Math.floor(n)) % list.length];
+}

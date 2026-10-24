@@ -1,0 +1,294 @@
+{
+  "grade": 8,
+  "topics": [
+    {
+      "id": "g8-hasonlosag",
+      "folder": "hasonlosag",
+      "title": "Háromszögek hasonlósága",
+      "color": "#3b6fe0",
+      "icon": "similar",
+      "subtopics": [
+        {
+          "id": "g8-hasonlosag-01",
+          "file": "01-aranyos-mennyisegek",
+          "title": "Arányos mennyiségek",
+          "status": "todo",
+          "scope": "Ratio of two segments (simplified a : b), proportion a : b = c : d and its basic property (ad = bc), 4th proportional computed numerically, map scale (méretarány) with unit conversion, commensurable vs incommensurable segments (side vs diagonal of a square) as a concept check. Exercises: simplify a ratio, solve for the missing term (integer/fraction input), scale distance tasks, T/F and MC on proportions. L1 integer ratios, L2 fractions/decimals and map scale, L3 multi-step word problems."
+        },
+        {
+          "id": "g8-hasonlosag-02",
+          "file": "02-thalesz-tetel",
+          "title": "Thalész párhuzamos szelők tétele",
+          "status": "todo",
+          "scope": "Intercept theorem (Serbian Talesova teorema; NOT the Hungarian semicircle 'Thalész-tétel'): parallels cutting the arms of an angle cut proportional segments; converse to decide parallelism; dividing a segment into n equal parts or in a given ratio by construction (tap-through construction steps); constructing the 4th proportional. Theorem stated, not proved. Exercises: missing segment from a labeled angle-with-two-parallels figure that follows the numbers, T/F 'are the lines parallel' via ratio check, ordering construction steps, shadow/height tasks. L1 adjacent segments, L2 whole arm vs part, L3 ratio of the parallel segments and word problems."
+        },
+        {
+          "id": "g8-hasonlosag-03",
+          "file": "03-haromszogek-hasonlosaga",
+          "title": "Háromszögek hasonlósága",
+          "status": "todo",
+          "scope": "Similar figures in everyday life (photos, maps, models); definition of similar triangles (equal corresponding angles, proportional sides), similarity ratio k, notation △ABC ~ △A₁B₁C₁, matching corresponding sides and angles; perimeter ratio = k (area ratio k² only as L3 extension). Exercises: find k, missing sides and angles of the similar triangle, perimeter, MC on correspondence, T/F 'are these similar'; figure of two similar triangles with labeled sides."
+        },
+        {
+          "id": "g8-hasonlosag-04",
+          "file": "04-hasonlosagi-tetelek",
+          "title": "A háromszögek hasonlóságának tételei",
+          "status": "todo",
+          "scope": "Similarity criteria (three proportional sides; two proportional sides + equal included angle; two equal angles; two proportional sides + equal angle opposite the larger one), choosing the right criterion; applications: height of a pyramid/tree/building from shadows (Thales legend), width of a river, similarity in a right triangle (altitude to the hypotenuse vs the hypotenuse segments, legs vs segments; similarity proof of Pythagoras). Exercises: MC which criterion applies, compute unknown lengths in real-context figures, right-triangle altitude relations (a√b answers at L3)."
+        }
+      ]
+    },
+    {
+      "id": "g8-pont-egyenes-sik",
+      "folder": "pont-egyenes-sik",
+      "title": "Pont, egyenes és sík",
+      "color": "#f0750f",
+      "icon": "plane",
+      "subtopics": [
+        {
+          "id": "g8-pont-egyenes-sik-01",
+          "file": "01-kolcsonos-helyzet",
+          "title": "A pont, az egyenes és a sík kölcsönös helyzete",
+          "status": "todo",
+          "scope": "Relations in space: point–line and point–plane (∈, ∉); what determines a plane (3 non-collinear points, line + point, two intersecting or two parallel lines); two lines (intersecting, parallel, skew = kitérő); line–plane (lies in, parallel, meets at a döféspont, perpendicular); two planes (parallel, intersecting, perpendicular); distance of a point from a plane; symbols ∈, ⊂, ∥, ⊥. Exercises on a labeled cube/cuboid figure (MC/T-F about edges, diagonals and faces), count planes determined by given points. L1 recognize, L2 name relations in notation, L3 counting and distances via Pythagoras."
+        },
+        {
+          "id": "g8-pont-egyenes-sik-02",
+          "file": "02-meroleges-vetites",
+          "title": "Merőleges vetítés a síkra",
+          "status": "todo",
+          "scope": "Orthogonal projection onto a plane of a point, a segment (3 cases: slanted → shorter, parallel → equal, perpendicular → a single point A₁ ≡ B₁) and a line; angle between a line and a plane (angle with its projection); Pythagoras with projections: segment length from its projection and the difference of the endpoints' distances to the plane, and the reverse. Exercises: compute projection or segment length (integer and a√b answers), T/F on the cases, MC on plane figures (rounded parallelogram plane α, projections labeled with subscript 1). L3: 45° and 30°–60° special triangles."
+        },
+        {
+          "id": "g8-pont-egyenes-sik-03",
+          "file": "03-poliederek",
+          "title": "Poliéderek",
+          "status": "todo",
+          "scope": "Heavy lesson (book sections: surface and solid in space; polyhedra; concept of surface area; concept of volume and volume units; cube and cuboid volume, liter). Polyhedron = part of space bounded by polygons; faces, edges, vertices, polyhedra vs curved solids; surface area as the area of the net; volume units mm³–cm³–dm³–m³ (factor 1000), 1 l = 1 dm³, 1 ml = 1 cm³, hl; cube (6a², a³) and cuboid (2(ab + bc + ca), abc). Exercises: count faces/edges/vertices from a figure, unit conversions with decimal comma, capacity word problems (aquarium, tank), L3 cuboid space diagonal."
+        }
+      ]
+    },
+    {
+      "id": "g8-egyenletek-egyenlotlensegek",
+      "folder": "egyenletek-egyenlotlensegek",
+      "title": "Egyismeretlenes lineáris egyenletek és egyenlőtlenségek",
+      "color": "#2f9e44",
+      "icon": "equation",
+      "subtopics": [
+        {
+          "id": "g8-egyenletek-egyenlotlensegek-01",
+          "file": "01-linearis-egyenletek",
+          "title": "Egyismeretlenes lineáris egyenletek",
+          "status": "todo",
+          "scope": "Heavy lesson (book sections: equivalent expressions; equalities and identities; equations in one unknown, equivalent equations and the 4 equivalent transformations; linear expression and the linear equation; solving, incl. equations reducible to linear). Must cover: checking a solution, transformations written as '/ −3' steps, ax = b cases (one solution / none / every real number), brackets, numeric denominators, equations where squares cancel (binomial square, difference of squares), |x − a| = b, product or quotient = 0; no parameters. Exercises: solve (integer/fraction input), MC number of solutions, MC 'which transformation was used', T/F identity. L1 one or two steps, L2 brackets and fractions, L3 reducible types."
+        },
+        {
+          "id": "g8-egyenletek-egyenlotlensegek-02",
+          "file": "02-egyenletek-alkalmazasa",
+          "title": "Egyismeretlenes elsőfokú (lineáris) egyenletek alkalmazása",
+          "status": "todo",
+          "scope": "Word problems solved with a linear equation: numbers and consecutive integers, ages, prices and percentages, geometry (perimeter, angles of triangles/polygons), motion (s = v·t), joint work, mixtures, rearranging physics formulas; always check the answer in the text. Exercises: numeric answers with units, MC 'which equation models the text', ordering solution steps. L1 one relation, L2 two related quantities, L3 motion/work/mixture."
+        },
+        {
+          "id": "g8-egyenletek-egyenlotlensegek-03",
+          "file": "03-linearis-egyenlotlensegek",
+          "title": "Egyismeretlenes lineáris egyenlőtlenségek",
+          "status": "todo",
+          "scope": "Linear inequalities in one unknown: equivalent transformations, the sign flips when multiplying or dividing by a negative number, solution set on a number line and in set notation, special cases (no solution / all reals), smallest or largest integer solution, natural-number solutions; brackets and fractions; L3: simple |x| < a. Exercises: solve and enter the boundary plus direction, MC matching a number-line figure, count natural solutions, T/F 'is 3 a solution'."
+        },
+        {
+          "id": "g8-egyenletek-egyenlotlensegek-04",
+          "file": "04-egyenlotlensegek-alkalmazasa",
+          "title": "Egyismeretlenes lineáris egyenlőtlenségek alkalmazása",
+          "status": "todo",
+          "scope": "Word problems leading to linear inequalities: 'at least / at most / more than', budgets, comparing two tariffs (when is offer A cheaper), triangle inequality and other geometric conditions, required test score for an average; interpret the solution set in context (often integers only). Exercises: smallest/largest valid integer, MC 'which inequality models the text'. L1 direct, L2 two tariffs, L3 two conditions combined."
+        }
+      ]
+    },
+    {
+      "id": "g8-hasab",
+      "folder": "hasab",
+      "title": "Hasáb",
+      "color": "#d6336c",
+      "icon": "prism",
+      "subtopics": [
+        {
+          "id": "g8-hasab-01",
+          "file": "01-hasab-fogalma",
+          "title": "A hasáb fogalma, elemei és fajtái",
+          "status": "todo",
+          "scope": "Heavy lesson (book sections: concept and elements; number of faces/vertices/edges; right and oblique prism; height; equal-edged prism; regular prism; space diagonal and diagonal section of right prisms: regular 4-sided, cube, regular 6-sided; nets of regular 3-, 4-, 6-sided prisms). An n-sided prism has n + 2 faces, 2n vertices, 3n edges; cube diagonals a√2, a√3; cuboid and regular-prism diagonals via Pythagoras; diagonal-section area; recognizing nets. Exercises: counting (integer), MC classification with prism figures, space diagonal or diagonal-section area (a√b answers), MC on nets."
+        },
+        {
+          "id": "g8-hasab-02",
+          "file": "02-hasab-felszine",
+          "title": "Az egyenes hasáb felszíne",
+          "status": "todo",
+          "scope": "Surface area of a right prism = 2·base area + lateral surface, lateral surface = base perimeter × height; required bodies: right triangular (right-angled and equilateral base, a²√3/4), right quadrilateral (square, rectangle, rhombus) and regular hexagonal prism (6 · a²√3/4). Exercises: compute from given elements (L1–L2), missing element via Pythagoras or a diagonal first (L3, root answers), reverse (height from surface area), real-life (paint, packaging); labeled prism figure that follows the numbers."
+        },
+        {
+          "id": "g8-hasab-03",
+          "file": "03-hasab-terfogata",
+          "title": "Az egyenes hasáb térfogata",
+          "status": "todo",
+          "scope": "Volume of a right prism = base area × height, linked to the cuboid formula; same required bodies as the surface-area lesson. Exercises: compute volume, height or base edge from volume, capacity in liters, comparing volumes, elements from a space diagonal or diagonal section first (L3), word problems (pool, tent, tank)."
+        }
+      ]
+    },
+    {
+      "id": "g8-gula",
+      "folder": "gula",
+      "title": "Gúla",
+      "color": "#7950f2",
+      "icon": "pyramid",
+      "subtopics": [
+        {
+          "id": "g8-gula-01",
+          "file": "01-gula-fogalma",
+          "title": "A gúla fogalma, elemei és fajtái",
+          "status": "todo",
+          "scope": "Heavy lesson (book sections: concept and elements; number of faces/vertices/edges; right and oblique pyramid; height and lateral face heights (oldalmagasság); equal-edged pyramid; regular 3-, 4-, 6-sided pyramids; diagonal section of right 4-sided and regular 6-sided pyramids; nets). An n-sided pyramid has n + 1 faces, n + 1 vertices, 2n edges. Key right triangles: height–face height–inradius (a/2); height–lateral edge–circumradius (half diagonal); lateral edge–face height–a/2. Exercises: counting, MC identify the highlighted right triangle, compute face height / lateral edge / height (a√b answers), diagonal-section area, nets."
+        },
+        {
+          "id": "g8-gula-02",
+          "file": "02-gula-felszine",
+          "title": "Az egyenes gúla felszíne",
+          "status": "todo",
+          "scope": "Surface area = base area + lateral surface (sum of the triangular faces); required bodies: 4-sided pyramid with a rectangular (incl. square) base, which has two different face heights, and regular triangular and hexagonal pyramids. Exercises: compute from given elements (L1–L2), face height from the height via Pythagoras first (L3), equal-edged pyramids, real-life (roof, tent)."
+        },
+        {
+          "id": "g8-gula-03",
+          "file": "03-gula-terfogata",
+          "title": "Az egyenes gúla térfogata",
+          "status": "todo",
+          "scope": "Volume = base area × height / 3, one third of the prism with the same base and height; same required bodies. Exercises: compute volume, height from volume, height from face height or lateral edge via Pythagoras first (L3), MC pyramid vs prism comparison, real-life (Cheops pyramid, attic space)."
+        }
+      ]
+    },
+    {
+      "id": "g8-linearis-fuggveny",
+      "folder": "linearis-fuggveny",
+      "title": "Lineáris függvény",
+      "color": "#1098ad",
+      "icon": "function",
+      "subtopics": [
+        {
+          "id": "g8-linearis-fuggveny-01",
+          "file": "01-linearis-osszefugges",
+          "title": "A mennyiségek lineáris összefüggése",
+          "status": "todo",
+          "scope": "Recall direct proportionality y = kx (grade 7), then relations y = kx + n from real contexts (taxi fare, phone tariff, filling a tank, burning candle, temperature scales); tables with constant differences; writing the rule from text or a table; predicting values. Exercises: fill a table, give k and n, T/F 'is this relation linear', MC graph reading. L1 tables, L2 formula from text, L3 formula from two data points."
+        },
+        {
+          "id": "g8-linearis-fuggveny-02",
+          "file": "02-linearis-fuggveny",
+          "title": "A lineáris függvény",
+          "status": "todo",
+          "scope": "Linear function y = kx + n (no general function concept): values, coefficient k and constant n, zero (zérushely) x = −n/k, sign, increasing/decreasing/constant by the sign of k, implicit form ax + by = c rewritten as y = kx + n. Exercises: compute values (integer/fraction), find the zero, MC monotonicity, implicit to explicit (enter k and n), k from one point and n. L3: k and n from two points."
+        },
+        {
+          "id": "g8-linearis-fuggveny-03",
+          "file": "03-grafikon",
+          "title": "A lineáris függvény grafikonja",
+          "status": "todo",
+          "scope": "The graph is a line; drawing it from two points or from n and k; intersections with the axes; effect of k and n (k = 0, n = 0, signs), parallel graphs have equal k; reading k, n, zero, sign and monotonicity off a graph; is a point on the graph; L3 function through two given points. Exercises: coordinate-plane figures that follow the generated k and n, MC 'which graph belongs to the formula', read-off values, T/F point on line."
+        }
+      ]
+    },
+    {
+      "id": "g8-egyenletrendszerek",
+      "folder": "egyenletrendszerek",
+      "title": "Elsőfokú kétismeretlenes egyenletrendszerek",
+      "color": "#c92a2a",
+      "icon": "system",
+      "subtopics": [
+        {
+          "id": "g8-egyenletrendszerek-01",
+          "file": "01-egyenletrendszer-fogalma",
+          "title": "Két elsőfokú, kétismeretlenes egyenlet rendszere – az egyenletrendszer fogalma, megoldása, ekvivalenciája",
+          "status": "todo",
+          "scope": "Linear equation in two unknowns ax + by = c: solutions are ordered pairs (infinitely many), its graph is a line; system of two such equations, solution = ordered pair satisfying both, checking a pair; equivalent systems; graphical interpretation: intersecting lines (1 solution), parallel (none), coincident (infinitely many). Exercises: T/F 'is (x, y) a solution', find y for a given x, MC number of solutions from a graph or the coefficients, read the solution off a graph."
+        },
+        {
+          "id": "g8-egyenletrendszerek-02",
+          "file": "02-megoldasi-modszerek",
+          "title": "Az elsőfokú kétismeretlenes egyenletrendszer megoldása",
+          "status": "todo",
+          "scope": "Solving by substitution (behelyettesítő módszer), by opposite coefficients (adding the equations) and graphically; systems with brackets and fractions; special cases (no solution / infinitely many). Answer is an ordered pair (engine needs a pair answer or two fields). Exercises: solve, MC 'which multiplier makes the coefficients opposite', ordering steps. L1 one variable already isolated, L2 standard systems, L3 fractions/brackets and special cases."
+        },
+        {
+          "id": "g8-egyenletrendszerek-03",
+          "file": "03-alkalmazas",
+          "title": "Az elsőfokú kétismeretlenes egyenletrendszer alkalmazása",
+          "status": "todo",
+          "scope": "Word problems modelled by two equations: two numbers (sum/difference), ages, prices and quantities (tickets, fruit), coins, rectangle from perimeter and a side relation, angles, mixtures, boat with/against the current, the linear function through two points. Exercises: numeric answers (often a pair), MC 'which system models the text'. L1 sum/difference, L2 prices/ages, L3 motion/mixtures."
+        }
+      ]
+    },
+    {
+      "id": "g8-henger-kup-gomb",
+      "folder": "henger-kup-gomb",
+      "title": "Henger, kúp és gömb",
+      "color": "#8c6d1f",
+      "icon": "cylinder",
+      "subtopics": [
+        {
+          "id": "g8-henger-kup-gomb-01",
+          "file": "01-henger",
+          "title": "A henger",
+          "status": "todo",
+          "scope": "Cylinder as a solid of revolution (rectangle rotated about a side); elements: two congruent base circles, lateral surface (palást), radius, height, axis, generatrix (= height in a right cylinder); axial section = rectangle 2r × height; equilateral cylinder (height = 2r, square axial section); net = two circles + rectangle (base circumference × height). Exercises: MC naming elements on a labeled figure, axial-section area or diagonal (Pythagoras, a√b), net rectangle sides (π-form answers); figure: vertical axis, flat elliptical bases, back half of the bottom ellipse dashed."
+        },
+        {
+          "id": "g8-henger-kup-gomb-02",
+          "file": "02-henger-felszine",
+          "title": "Az egyenes henger felszíne",
+          "status": "todo",
+          "scope": "Surface area of a right cylinder = 2·base + lateral surface = 2r²π + 2rπ·height = 2rπ(r + height), by analogy with the prism. Exercises: compute from radius (or diameter) and height with π-form answers (e.g. 48π cm²; π ≈ 3,14 only when stated), lateral surface alone (label of a can), from the axial section (L3), reverse: height from surface area (L3); cylinder figure with labeled radius and height that follows the generated numbers."
+        },
+        {
+          "id": "g8-henger-kup-gomb-03",
+          "file": "03-henger-terfogata",
+          "title": "Az egyenes henger térfogata",
+          "status": "todo",
+          "scope": "Volume of a right cylinder = base area × height = r²π·height, by analogy with the prism. Exercises: compute volume (π-form answers, cm³, conversion to liters), height or radius from volume (L2/L3, perfect squares), equilateral cylinder, MC effect of doubling the radius or the height, real-life (tank, glass, pipe); cylinder figure with labeled radius and height that follows the numbers. Best candidate for the short gold-standard 3D example."
+        },
+        {
+          "id": "g8-henger-kup-gomb-04",
+          "file": "04-kup",
+          "title": "A kúp",
+          "status": "todo",
+          "scope": "Cone as a solid of revolution (right triangle rotated about a leg); elements: base circle, apex, height, radius, slant height/generatrix (alkotó), axis; key right triangle: slant² = r² + height²; axial section = isosceles triangle with base 2r; equilateral cone (slant = 2r); net = circle + sector with radius = slant height and arc = base circumference (central angle = 360° · r / slant). Exercises: slant height / height / radius via Pythagoras (triples and a√b answers), axial-section area, sector angle, MC elements with the right triangle highlighted on the figure."
+        },
+        {
+          "id": "g8-henger-kup-gomb-05",
+          "file": "05-kup-felszine",
+          "title": "Az egyenes kúp felszíne",
+          "status": "todo",
+          "scope": "Surface area of a right cone = base + lateral surface = r²π + rπ·slant = rπ(r + slant); lateral surface as a circular sector, by analogy with the pyramid. Exercises: compute with π-form answers, slant height via Pythagoras first (L2/L3), equilateral cone, lateral surface only (party hat, tower roof), reverse tasks (L3)."
+        },
+        {
+          "id": "g8-henger-kup-gomb-06",
+          "file": "06-kup-terfogata",
+          "title": "Az egyenes kúp térfogata",
+          "status": "todo",
+          "scope": "Volume of a right cone = base area × height / 3 = r²π·height/3, one third of the cylinder with the same base and height (pyramid analogy). Exercises: compute (π-form), height from slant height via Pythagoras first (L3), MC cone vs cylinder comparison, reverse tasks, real-life (funnel, sand pile, ice-cream cone)."
+        },
+        {
+          "id": "g8-henger-kup-gomb-07",
+          "file": "07-gomb",
+          "title": "A gömb",
+          "status": "todo",
+          "scope": "Sphere surface vs solid ball (Serbian sfera / lopta; check the book's Hungarian terms), centre, radius, diameter; solid of revolution of a semicircle; every plane section is a circle, great circle (főkör) through the centre, section radius from r and the plane's distance d: ρ² = r² − d²; tangent plane. Exercises: section radius or distance (triples / a√b), MC concepts and real-world shapes, T/F about sections."
+        },
+        {
+          "id": "g8-henger-kup-gomb-08",
+          "file": "08-gomb-felszine-terfogata",
+          "title": "A gömb felszíne és térfogata",
+          "status": "todo",
+          "scope": "Formulas stated without proof: surface area 4r²π, volume 4r³π/3. Exercises: compute (π-form answers), radius from surface area (L2), radius from volume (L3, perfect cubes), effect of doubling the radius (×4, ×8), hemisphere, real-life (ball, Earth), L3 combinations with the cylinder or cube (ball in a box)."
+        }
+      ]
+    }
+  ]
+}

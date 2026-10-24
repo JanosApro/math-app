@@ -1,0 +1,294 @@
+{
+  "grade": 7,
+  "topics": [
+    {
+      "id": "g7-valos-szamok",
+      "folder": "valos-szamok",
+      "title": "Valós számok",
+      "color": "#3b6fe0",
+      "icon": "root",
+      "subtopics": [
+        {
+          "id": "g7-valos-szamok-01",
+          "file": "01-racionalis-szam-negyzete",
+          "title": "A racionális szám négyzete",
+          "status": "todo",
+          "scope": "Square of integers, fractions p/q and decimals (equal weight to both forms); square as area of a square with side p/q; squares are never negative; (-a)² vs -a² trap. Exercises: numeric/fraction input, MC with sign/doubling distractors (a² vs 2a), T/F. L1 integers & simple decimals, L2 negative fractions/decimals, L3 short expressions and area word problems."
+        },
+        {
+          "id": "g7-valos-szamok-02",
+          "file": "02-negyzetgyok",
+          "title": "Négyzetgyök",
+          "status": "todo",
+          "scope": "√a (a ≥ 0) as the non-negative number whose square is a; roots of perfect squares incl. fractions and decimals (√0,49, √(9/25)); equation x² = a has 2/1/0 solutions; difference between √4 and the solutions of x² = 4; √(a²) = |a|. Exercises: numeric/fraction input, enter solutions of x² = a, MC 'how many solutions', T/F traps (√(a²) = a). L3: roots of products/quotients of perfect squares."
+        },
+        {
+          "id": "g7-valos-szamok-03",
+          "file": "03-valos-szamok-halmaza",
+          "title": "R, a valós számok halmaza",
+          "status": "todo",
+          "scope": "x² = 2 has no rational solution -> irrational numbers (no proof required); R = Q ∪ I; finite/periodic decimals (rational) vs infinite non-periodic (irrational), π as irrational; real number line, locating √n between consecutive integers; N ⊂ Z ⊂ Q ⊂ R. Exercises: classify numbers (MC/matching/T-F), compare and order reals incl. roots, number-line figures."
+        },
+        {
+          "id": "g7-valos-szamok-04",
+          "file": "04-kozelito-ertek",
+          "title": "A valós szám közelítő értéke",
+          "status": "todo",
+          "scope": "Approximate value (lower/upper) to a given precision, absolute error |x - x'|, rounding rule motivated by choosing the smaller absolute error; estimating roots (√7 ≈ 2,65); calculator allowed for irrational roots. Exercises: round to n decimals (decimal-comma input), compute absolute error, MC 'which approximation is better', interval on number line. Precision defined per exercise."
+        },
+        {
+          "id": "g7-valos-szamok-05",
+          "file": "05-muveletek-valos-szamokkal",
+          "title": "Számtani műveletek valós számokkal",
+          "status": "todo",
+          "scope": "Properties of + and · in R (compare with Q); root rules for a, b ≥ 0: √(ab) = √a·√b, √(a/b) = √a/√b; √(a+b) ≠ √a + √b; simplifying to k√n form (√12 = 2√3), adding/subtracting like roots, evaluating expressions with roots and |a|; setting up a numeric expression from a real situation. Exercises: root input (a√b), MC with typical-mistake distractors, T/F. Keep denominator rationalization out (not in curriculum)."
+        },
+        {
+          "id": "g7-valos-szamok-06",
+          "file": "06-egyenes-aranyossag",
+          "title": "Az egyenes arányosság függvénye",
+          "status": "todo",
+          "scope": "Function y = kx, k ∈ R\\{0}, from real contexts (distance–time at constant speed, price–quantity); value table, dotted graph for discrete values -> line through the origin; finding k from a point/table; k > 0 increasing, k < 0 decreasing; is a point on the graph. Exercises: fill table (numeric), find k (fraction/decimal), T/F point-on-graph, MC choose the graph (coordinate-plane figures)."
+        },
+        {
+          "id": "g7-valos-szamok-07",
+          "file": "07-kibovitett-arany",
+          "title": "A kibővített arány",
+          "status": "todo",
+          "scope": "Proportion a : b = c : d, outer/inner terms (kültagok/beltagok) and a·d = b·c; extended ratio a : b : c — definition and properties (multiply/divide all terms), simplifying; extended ratio of directly/inversely proportional quantities; combining simple ratios (a:b and b:c) into an extended ratio; dividing a quantity in a given ratio, triangle angles in ratio, alloys. Exercises: find missing term, divide a sum (numeric input), MC simplified ratio."
+        }
+      ]
+    },
+    {
+      "id": "g7-pitagorasz",
+      "folder": "pitagorasz",
+      "title": "Pitagorasz tétele",
+      "color": "#f0750f",
+      "icon": "triangle",
+      "subtopics": [
+        {
+          "id": "g7-pitagorasz-01",
+          "file": "01-bizonyitas-alapok",
+          "title": "A Pitagorasz-tétel bizonyítása és alapszintű alkalmazása",
+          "status": "todo",
+          "scope": "Right triangle parts (befogók a, b; átfogó c; right angle at C); statement c² = a² + b² with a visual area (squares) proof; find hypotenuse or a leg (integer triples and k√n answers); Pythagorean triples (infinitely many); converse: is the triangle right-angled? Vary labels and orientation of the triangle (curriculum requirement). Exercises: numeric & root input, T/F converse, MC 'which side is the hypotenuse', word problems (ladder, screen diagonal) at L3."
+        },
+        {
+          "id": "g7-pitagorasz-02",
+          "file": "02-szerkesztesek",
+          "title": "A Pitagorasz-tétel alkalmazása szerkesztéseknél",
+          "status": "todo",
+          "scope": "Constructing segments of irrational length √2, √3, √5, … with right triangles (legs 1 and 1, 1 and √2, 1 and 2…, square-root spiral); marking √n on the number line with compass; choosing legs whose squares sum to n. Exercises: MC 'which right triangle gives √n', ordering construction steps, compute the length produced, tap-through construction figures."
+        },
+        {
+          "id": "g7-pitagorasz-03",
+          "file": "03-negyzet-teglalap",
+          "title": "A Pitagorasz-tétel alkalmazása négyzetre és téglalapra",
+          "status": "todo",
+          "scope": "Square diagonal d = a√2 and rectangle diagonal d² = a² + b²; isosceles right triangle as half a square (45°); reverse problems (side from diagonal, missing side from diagonal + side, then perimeter/area). Exercises: root input (k√2), numeric, MC with typical mistakes (d = 2a, a² + b² without root), figures with dashed diagonal and highlighted right triangle."
+        },
+        {
+          "id": "g7-pitagorasz-04",
+          "file": "04-egyenlo-szaru-oldalu-haromszog",
+          "title": "A Pitagorasz-tétel alkalmazása egyenlő szárú és egyenlő oldalú háromszögre",
+          "status": "todo",
+          "scope": "Height to the base of an isosceles triangle m² = b² − (a/2)²; equilateral triangle m = a√3/2, T = a²√3/4; 30°–60°–90° triangle as half of an equilateral one (sides a, a/2, a√3/2); reverse problems (side from height); perimeter/area. Exercises: root input, numeric, MC distractors forgetting to halve the base; figures with dashed height and right-angle marker."
+        },
+        {
+          "id": "g7-pitagorasz-05",
+          "file": "05-rombusz-trapez",
+          "title": "A Pitagorasz-tétel alkalmazása rombuszra és trapézra",
+          "status": "todo",
+          "scope": "Rhombus: diagonals e, f bisect each other at right angles, a² = (e/2)² + (f/2)², T = e·f/2, height from area; isosceles and right trapezoid: height/leg/diagonal from bases (overhang (a − c)/2), perimeter and area. Exercises: numeric & root input, multi-step at L2–L3, MC; figures with dashed diagonals/heights and the used right triangle highlighted."
+        },
+        {
+          "id": "g7-pitagorasz-06",
+          "file": "06-pontok-tavolsaga",
+          "title": "Pontok egymástól való távolsága a koordináta-rendszerben",
+          "status": "todo",
+          "scope": "Distance of A(x₁, y₁) and B(x₂, y₂) via the right triangle with legs |x₂ − x₁| and |y₂ − y₁|; segment lengths, perimeter of a triangle on the grid, checking whether a triangle is right/isosceles. Exercises: root/numeric input, MC, coordinate-plane figures with marked legs; L1 points in the first quadrant, L2–L3 negative coordinates and perimeters."
+        }
+      ]
+    },
+    {
+      "id": "g7-algebrai-kifejezesek",
+      "folder": "algebrai-kifejezesek",
+      "title": "Algebrai egész kifejezések",
+      "color": "#2f9e44",
+      "icon": "algebra",
+      "subtopics": [
+        {
+          "id": "g7-algebrai-kifejezesek-01",
+          "file": "01-hatvanyok",
+          "title": "Hatványok – a hatványkitevő természetes szám",
+          "status": "todo",
+          "scope": "aⁿ with natural n (base, exponent), a¹ = a; powers of negative numbers and fractions (sign rule), (−2)⁴ vs −2⁴; rules aᵐ·aⁿ, aᵐ : aⁿ (m > n), (aᵐ)ⁿ, (ab)ⁿ, (a : b)ⁿ. Exercises: evaluate (numeric/fraction), give the resulting exponent (integer input), MC with typical mistakes (aᵐ·aⁿ = aᵐⁿ), T/F. Zero/negative exponents only for base 10 (next lesson)."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-02",
+          "file": "02-tiz-hatvanyai",
+          "title": "A tízes egység egész kitevőjű hatványa",
+          "status": "todo",
+          "scope": "10ⁿ for integer n: 10⁰ = 1, 10⁻ⁿ = 1/10ⁿ = 0,0…01; writing very large/small numbers as a·10ⁿ (1 ≤ a < 10) with physics examples; expanded decimal form as a sum of multiples of powers of ten; products/quotients of powers of ten. Exercises: convert decimal ↔ a·10ⁿ (exponent/decimal input), compare magnitudes (MC), T/F."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-03",
+          "file": "03-algebrai-kifejezesek",
+          "title": "Algebrai egész kifejezések",
+          "status": "todo",
+          "scope": "Algebraic expressions with variables; integral (egész) expressions = no variable in a denominator; evaluating expressions for given values (incl. negatives and fractions); translating words/geometry (perimeter, area) into expressions; vocabulary monom/polinom. Exercises: numeric evaluation, MC match description to expression, T/F 'is it an integral expression'."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-04",
+          "file": "04-monomok",
+          "title": "Műveletek monomokkal",
+          "status": "todo",
+          "scope": "Monomial: coefficient, variable part, degree; like monomials; adding/subtracting like monomials, multiplying and dividing monomials, power of a monomial. Engine has no free algebra input: use MC with typical-mistake distractors, or numeric input for the resulting coefficient/exponent; T/F 'are these like terms'."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-05",
+          "file": "05-polinomok",
+          "title": "Műveletek polinomokkal",
+          "status": "todo",
+          "scope": "Polynomial, standard (rendezett) form: collecting like terms, ordering by degree, degree; addition and subtraction (sign change when removing brackets), monomial × polynomial, polynomial × polynomial ((a+b)(x+y) = ax+ay+bx+by); area models. Exercises: MC simplified form, numeric 'coefficient of x² after simplifying', evaluate after simplifying; L3 geometric word problems."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-06",
+          "file": "06-binom-negyzete",
+          "title": "A binom négyzete",
+          "status": "todo",
+          "scope": "(a ± b)² = a² ± 2ab + b² with a square-area figure; expanding (2x − 3)²-type binomials; mental arithmetic (51², 99²); classic mistake (a + b)² = a² + b². Exercises: MC expansions, fill the missing term (numeric coefficient), T/F, quick computations (integer input)."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-07",
+          "file": "07-negyzetek-kulonbsege",
+          "title": "Négyzetek különbsége",
+          "status": "todo",
+          "scope": "(a − b)(a + b) = a² − b² with an area (cut-and-move) figure; recognizing and applying it; mental arithmetic (49·51, 103·97). Exercises: MC products, integer input for computations, fill the missing term, T/F."
+        },
+        {
+          "id": "g7-algebrai-kifejezesek-08",
+          "file": "08-tenyezore-bontas",
+          "title": "Polinomok tényezőre bontása",
+          "status": "todo",
+          "scope": "Factoring by common factor (ax + bx), grouping (ax + ay + bx + by), difference of squares, perfect-square trinomials; applications: solving ax² + bx = 0 and x² − c² = 0 (product is zero), simplifying numeric computations (e.g. 57² − 43²). Incomplete quadratic trinomials are enrichment only — exclude. Exercises: MC factored forms, enter solutions of equations (integer/fraction), numeric shortcuts."
+        }
+      ]
+    },
+    {
+      "id": "g7-sokszogek",
+      "folder": "sokszogek",
+      "title": "Sokszögek",
+      "color": "#d6336c",
+      "icon": "polygon",
+      "prerequisites": [
+        "g7-valos-szamok",
+        "g7-pitagorasz"
+      ],
+      "subtopics": [
+        {
+          "id": "g7-sokszogek-01",
+          "file": "01-sokszog-fogalma",
+          "title": "A sokszög fogalma és elemei",
+          "status": "todo",
+          "scope": "Polygon as plane region bounded by a closed polygonal line; vertices, sides, interior/exterior angles, diagonals; convex vs concave (work with convex); diagonals from one vertex n − 3, total n(n − 3)/2; interior angle sum (n − 2)·180°, exterior angle sum 360°. Exercises: numeric input, reverse (find n from angle sum / diagonal count), T/F, polygon figures with diagonals."
+        },
+        {
+          "id": "g7-sokszogek-02",
+          "file": "02-magassagpont-sulypont",
+          "title": "A háromszög magasságpontja és súlypontja",
+          "status": "todo",
+          "scope": "Altitudes m_a, m_b, m_c and the orthocenter (magasságpont) — inside/on a vertex/outside for acute/right/obtuse triangles; medians (súlyvonal) and the centroid (súlypont) dividing each median 2 : 1; their constructions. Exercises: MC position by triangle type, numeric lengths using 2 : 1, ordering construction steps; figures with dashed altitudes/medians."
+        },
+        {
+          "id": "g7-sokszogek-03",
+          "file": "03-haromszogek-negyszogek-szerkesztese",
+          "title": "Háromszögek és négyszögek szerkesztése",
+          "status": "todo",
+          "scope": "Constructions based on the congruence cases: triangles from sides/angles plus a height or median; parallelograms and trapezoids from sides/angles plus height; deltoid; plan → construct → check; drawing vs constructing; number of solutions (0/1/2, not emphasized); simple congruence proofs of triangle/parallelogram properties. Exercises: tap-through construction figures, ordering steps, MC 'which data determine the figure', T/F."
+        },
+        {
+          "id": "g7-sokszogek-04",
+          "file": "04-szabalyos-sokszogek",
+          "title": "Szabályos sokszögek",
+          "status": "todo",
+          "scope": "Regular polygon = equal sides AND equal angles (counterexamples: rhombus, rectangle); interior angle (n − 2)·180°/n, central angle 360°/n, exterior angle; n axes of symmetry; inscribed and circumscribed circle (r_b, r_k), characteristic triangle (jellegzetes háromszög). Exercises: compute angles, find n from an angle, T/F on counterexamples, MC."
+        },
+        {
+          "id": "g7-sokszogek-05",
+          "file": "05-szabalyos-sokszogek-szerkesztese",
+          "title": "Szabályos sokszögek szerkesztése",
+          "status": "todo",
+          "scope": "Constructing regular 3-, 4-, 6-, 8- and 12-gons from the side or from the circumradius/inradius (dividing the circle, 60° construction, angle bisection). Exercises: step-by-step construction figures, ordering steps, MC 'which central angle / which auxiliary construction is needed', T/F."
+        },
+        {
+          "id": "g7-sokszogek-06",
+          "file": "06-kerulet-terulet",
+          "title": "Szabályos sokszögek kerülete és területe",
+          "status": "todo",
+          "scope": "Perimeter K = n·a; area via the characteristic triangle Tₙ = n·T(Jₙ); equilateral triangle T = a²√3/4, square T = a², regular hexagon T = 3a²√3/2 (six equilateral triangles); relations of a, r_b, r_k (triangle r_k = 2r_b; square r_k = a√2/2, r_b = a/2; hexagon r_k = a, r_b = a√3/2), hexagon diagonals; reverse problems from r_b or r_k; general polygon area by decomposition (curriculum outcome). Exercises: root input, numeric, multi-part 'same question from different data'."
+        }
+      ]
+    },
+    {
+      "id": "g7-kor",
+      "folder": "kor",
+      "title": "A kör",
+      "color": "#7950f2",
+      "icon": "circle",
+      "subtopics": [
+        {
+          "id": "g7-kor-01",
+          "file": "01-kozepponti-keruleti-szog",
+          "title": "A középponti és kerületi szög",
+          "status": "todo",
+          "scope": "Short recap of circle elements (chord, tangent, positions of line–circle and circle–circle; chord–radius–distance via Pythagoras); central and inscribed angle over the same arc; inscribed angle = half the central angle; equal inscribed angles over one arc; Thales: angle in a semicircle is 90°. Exercises: compute angles from figures (numeric), T/F, MC."
+        },
+        {
+          "id": "g7-kor-02",
+          "file": "02-kerulet-ivhossz",
+          "title": "A kör kerülete. A körív hossza",
+          "status": "todo",
+          "scope": "Circumference K = 2rπ = dπ; π as the constant ratio K : d, irrational, approximations 3,14 (default), 22/7, 3,142; arc length i = 2rπ·α/360°; reverse problems (r from K, α from i). Exercises: numeric input with stated precision/π value, MC, figures of arcs with central angle."
+        },
+        {
+          "id": "g7-kor-03",
+          "file": "03-terulet-korcikk-korgyuru",
+          "title": "A kör területe. A körcikk és a körgyűrű területe",
+          "status": "todo",
+          "scope": "Circle area T = r²π; sector area T = r²π·α/360° (also i·r/2); annulus T = (R² − r²)π; composite shaded regions; reverse problems. Exercises: numeric with stated π approximation and precision, MC (confusing K and T, r and d), shaded-region figures; L3 composite figures."
+        },
+        {
+          "id": "g7-kor-04",
+          "file": "04-elforgatas",
+          "title": "Elforgatás",
+          "status": "todo",
+          "scope": "Rotation about a given point by a given angle; positive (counter-clockwise) and negative direction; lengths and angles are preserved; rotating points/segments/simple figures; rotations about the origin by ±90° and 180° in the coordinate system. Exercises: image coordinates (integer input), MC choose the image figure, T/F invariants."
+        }
+      ]
+    },
+    {
+      "id": "g7-adatfeldolgozas",
+      "folder": "adatfeldolgozas",
+      "title": "Adatfeldolgozás",
+      "color": "#1098ad",
+      "icon": "chart",
+      "subtopics": [
+        {
+          "id": "g7-adatfeldolgozas-01",
+          "file": "01-adatok-abrazolasa",
+          "title": "Adatok fajtái és ábrázolásuk",
+          "status": "todo",
+          "scope": "Survey, sample (minta); qualitative vs quantitative (discrete/continuous) data; frequency and relative frequency (%), frequency tables; bar, pie and line charts, pictograms; reading and interpreting charts, choosing a suitable chart. Exercises: read values from chart figures (numeric), compute percentages, MC data type / chart type, T/F."
+        },
+        {
+          "id": "g7-adatfeldolgozas-02",
+          "file": "02-adatfeldolgozas",
+          "title": "Adatfeldolgozás",
+          "status": "todo",
+          "scope": "Mean (átlag), median and mode from raw lists and frequency tables (even/odd count for median), effect of an outlier, which measure fits a situation; survey-style contexts close to students' lives. Exercises: numeric input with decimal comma, find a missing value from a given mean, MC, T/F. Curriculum intends a project; app uses given data sets."
+        }
+      ]
+    }
+  ]
+}

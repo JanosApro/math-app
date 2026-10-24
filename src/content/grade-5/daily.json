@@ -1,0 +1,4 @@
+{
+  "_help": "Írd ide azoknak a leckéknek az azonosítóit (id), amelyeket az órán már vettetek. A napi kihívás csak ezekből válogat. Ha a lista üres, minden kész leckéből válogat. Az azonosítókat a topics.json fájlban vagy a CONTENT_STATUS.md táblázatban találod.",
+  "subtopics": []
+}
