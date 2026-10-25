@@ -12,14 +12,14 @@
           "id": "g5-termeszetes-szamok-1-01",
           "file": "01-termeszetes-szamok-halmaza",
           "title": "A természetes számok halmaza",
-          "status": "todo",
+          "status": "draft",
           "scope": "Sets N = {1, 2, 3, ...} and N₀ = {0, 1, 2, ...}; set notation with braces, ∈ / ∉, giving a set by listing vs. by a defining property, finite / infinite / empty set; subset ⊂ / ⊄, equality of sets; number line, comparing and ordering natural numbers, predecessor/successor. Exercises: T/F on ∈ and ⊂, MC correct set notation, integer input for number of elements / number of subsets of a small set (2^n, counted not by formula), compare/order numbers. Large lesson (6 textbook sections); keep sets to ≤ 10 elements at levels 1–2."
         },
         {
           "id": "g5-termeszetes-szamok-1-02",
           "file": "02-halmazmuveletek",
           "title": "Halmazműveletek",
-          "status": "todo",
+          "status": "draft",
           "scope": "Union (∪), intersection (∩) and difference (A∖B) of two sets, with and without Venn diagrams; logic words és / vagy / nem / minden in the mathematical sense (curriculum outcome). Exercises: number of elements of A ∪ B, A ∩ B, A∖B for small sets of natural numbers (integer input), MC pick the correct result set, read a region from a Venn diagram figure, word problems on overlapping groups. Sets of divisors/multiples of a number are a good context (preview of LNKO/LKKT)."
         },
         {
@@ -33,28 +33,28 @@
           "id": "g5-termeszetes-szamok-1-04",
           "file": "04-matematikai-kifejezesek",
           "title": "Matematikai kifejezések",
-          "status": "todo",
+          "status": "draft",
           "scope": "Numerical expressions and order of operations with brackets; expressions with a variable, substituting values; formulas (e.g. perimeter of a rectangle); statements (állítás) as true/false; translating phrases into expressions ('5-tel nagyobb', 'háromszorosa', 'a különbség fele'); the dot may be omitted (2n). Exercises: evaluate expressions (integer input), MC match a verbal phrase to its expression (distractors: wrong order of operations / missing brackets), T/F statements. ≤ 4 operations and one bracket level at levels 1–2."
         },
         {
           "id": "g5-termeszetes-szamok-1-05",
           "file": "05-hozzarendeles",
           "title": "Hozzárendelés és függő mennyiségek",
-          "status": "todo",
+          "status": "draft",
           "scope": "Assigning numbers to numbers by a rule (number → number, number → segment length / area), dependent quantities, tables of values, simple flowcharts ('number machines'), rules written as formulas (y = 3 · x + 2) and in words; geometric dependencies (side of a square → perimeter). Exercises: complete a value table (integer input), find the rule from pairs (MC), input → output machine, choose the matching formula. No coordinate graphs (later grades)."
         },
         {
           "id": "g5-termeszetes-szamok-1-06",
           "file": "06-egyenletek",
           "title": "Egyenletek az N₀ halmazon",
-          "status": "todo",
+          "status": "draft",
           "scope": "Equation, unknown, solution; one-step equations solved by the role of the unknown (textbook method, not transposing): unknown addend x + a = b, unknown minuend/subtrahend x − a = b, a − x = b, unknown factor a · x = b, unknown dividend/divisor x : a = b, a : x = b; check by substitution; two-step forms (3 · x + 5 = 20) only at level 3; everyday word problems. Exercises: integer input for x, MC choose the equation for a story, T/F 'is k a solution?'. Division sign is ':'."
         },
         {
           "id": "g5-termeszetes-szamok-1-07",
           "file": "07-egyenlotlensegek",
           "title": "Egyenlőtlenségek az N₀ halmazon",
-          "status": "todo",
+          "status": "draft",
           "scope": "Inequalities with <, >, ≤, ≥ in N₀; how a sum, difference, product, quotient changes when an operand changes (bar-model rules, as in the textbook); solving x + a < b, x − a ≥ b, a · x ≤ b, x : a > b etc. and describing the solution set (listing it if finite, or 'x > 8'); 'legalább / legfeljebb' word problems (money in dinárs). Exercises: integer input for number of solutions / smallest or largest solution, MC choose the inequality for a story (distractors differ only in the sign), T/F whether a number satisfies it."
         }
       ]
