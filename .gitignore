@@ -4,3 +4,8 @@ dist
 .DS_Store
 test-results
 screenshots-tmp
+.env
+.env.local
+.env.*.local
+supabase/.temp
+supabase/.branches
