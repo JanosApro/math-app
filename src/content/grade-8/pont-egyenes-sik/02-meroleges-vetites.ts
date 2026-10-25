@@ -342,27 +342,35 @@ const segmentLength: GeneratorDef = {
     }
 
     if (level === 3) {
-      const k = rng.int(2, 3);
-      const projection = 3 * k * Math.sqrt(3);
-      const height = 3 * k;
-      const ab = 6 * k;
+      // the projection is m√r, the segment still comes out whole: m²·r + h² = AB²
+      const cases: [number, number, number, number][] = [];
+      for (const r of [2, 3, 5, 6, 7])
+        for (let m = 1; m <= 8; m++)
+          for (let h = 1; h <= 12; h++) {
+            const ab = Math.sqrt(m * m * r + h * h);
+            if (Number.isInteger(ab) && ab <= 20) cases.push([m, r, h, ab]);
+          }
+      const [m, r, height, ab] = rng.pick(cases);
+      const p2 = m * m * r;
+      const projTex = `${m === 1 ? '' : num(m)}\\sqrt{${num(r)}}`;
+      const projText = `${m === 1 ? '' : num(m)}√${num(r)}`;
       return {
-        prompt: tex`Az $A$ pont a síkon van, az $AB$ szakasz vetülete $${num(3 * k)}\sqrt{3}$ ${unit}, a $B$ pont $${num(height)}$ ${unit}-re van a síktól. Milyen hosszú $AB$?`,
+        prompt: tex`Az $A$ pont a síkon van, az $AB$ szakasz vetülete $${projTex}$ ${unit}, a $B$ pont $${num(height)}$ ${unit}-re van a síktól. Milyen hosszú $AB$?`,
         figure: projectionFigure({
-          projection,
+          projection: Math.sqrt(p2),
           heightA: 0,
           heightB: height,
-          projLabel: `${num(3 * k)}√3 ${unit}`,
+          projLabel: `${projText} ${unit}`,
           bHeightLabel: `${num(height)} ${unit}`,
           abLabel: '?',
-          alt: 'Az AB szakasz a 6√3 cm-es vetületével.',
+          alt: `Az AB szakasz a ${projText} ${unit}-es vetületével.`,
         }),
         answer: { type: 'number', value: ab, unit },
         inputLabel: '$AB =$',
         hint: 'Emeld négyzetre a vetületet, majd használd Pitagorasz tételét!',
         solution: [
-          tex`A vetület négyzete: $(${num(3 * k)}\sqrt{3})^2 = ${num((3 * k) ** 2)} \cdot 3 = ${num((3 * k) ** 2 * 3)}$.`,
-          tex`$AB^2 = ${num((3 * k) ** 2 * 3)} + ${num(height * height)} = ${num(ab * ab)}$.`,
+          tex`A vetület négyzete: $(${projTex})^2 = ${m === 1 ? '' : `${num(m * m)} \\cdot `}${num(r)}${m === 1 ? '' : ` = ${num(p2)}`}$.`,
+          tex`$AB^2 = ${num(p2)} + ${num(height)}^2 = ${num(p2)} + ${num(height * height)} = ${num(ab * ab)}$.`,
           tex`$AB = \sqrt{${num(ab * ab)}} = ${num(ab)}$ ${unit}.`,
           tex`Az $AB$ szakasz **${num(ab)} ${unit}** hosszú.`,
         ],
@@ -424,9 +432,9 @@ const angle: GeneratorDef = {
   title: 'Az egyenes és a sík szöge',
   levels: [2, 3],
   generate(rng, level): Question {
-    const unit = 'cm';
+    const unit = rng.pick(['cm', 'dm', 'm']);
     if (level === 2) {
-      const leg = rng.int(2, 8);
+      const leg = rng.int(2, 15);
       return {
         prompt: tex`Az $A$ pont a síkon van, az $AB$ szakasz vetülete $${num(leg)}$ ${unit}, a $B$ pont $${num(leg)}$ ${unit}-re van a síktól. Mekkora szöget zár be a szakasz a síkkal?`,
         figure: projectionFigure({
@@ -516,8 +524,37 @@ const casesTf: GeneratorDef = {
       { text: 'Egy szakasz vetülete mindig párhuzamos a szakasszal.', value: false, why: 'Csak akkor párhuzamos, ha a szakasz párhuzamos a síkkal.' },
       { text: 'A síkkal párhuzamos egyenes és a sík szöge 0°.', value: true, why: 'A párhuzamos egyenes nem emelkedik ki a síkból, a szög 0°.' },
       { text: 'Két pont vetülete csak akkor lehet ugyanaz, ha a két pont egy síkra merőleges egyenesen van.', value: true, why: 'Ugyanaz a vetület azt jelenti, hogy a két pontot összekötő egyenes merőleges a síkra.' },
+      // more level-1 statements (index 15 on)
+      { text: 'A síkon lévő pont vetülete önmaga.', value: true, why: 'A síkon lévő pontból nem kell merőlegest bocsátani: a pont a saját vetülete.' },
+      { text: 'A síkon fekvő szakasz vetülete önmaga.', value: true, why: 'A szakasz minden pontja a síkon van, ezért mindegyik a saját vetülete.' },
+      { text: 'A síkra merőleges szakasz vetülete ugyanolyan hosszú szakasz.', value: false, why: 'A merőleges szakasz vetülete egyetlen pont.' },
+      { text: 'Egy pont vetülete mindig egyetlen pont.', value: true, why: 'Egy pontból a síkra pontosan egy merőleges bocsátható, ennek egy talppontja van.' },
     ];
-    const pool = level === 1 ? statements.slice(0, 8) : statements;
+    // level 1: the three cases of a segment; level 2: angles and points, or a statement with numbers
+    if (level === 2 && rng.chance(0.5)) {
+      const [p, h, c] = rng.pick(TRIPLES);
+      const asks = rng.pick(['height', 'projection'] as const);
+      const right = asks === 'height' ? h : p;
+      const wrong = rng.pick([c - (asks === 'height' ? p : h), right + rng.pick([1, 2]), c]);
+      const value = rng.chance(0.5);
+      const shown = value ? right : wrong;
+      const text =
+        asks === 'height'
+          ? tex`Az $A$ pont a síkon van, $AB = ${num(c)}$ cm, a vetülete $${num(p)}$ cm. Ekkor a $B$ pont $${num(shown)}$ cm-re van a síktól.`
+          : tex`Az $A$ pont a síkon van, $AB = ${num(c)}$ cm, a $B$ pont $${num(h)}$ cm-re van a síktól. Ekkor a vetület $${num(shown)}$ cm.`;
+      return {
+        prompt: `Igaz vagy hamis?\n\n**${text}**`,
+        answer: { type: 'truefalse', value },
+        hint: 'A szakasz, a vetülete és a $B$ pont távolsága derékszögű háromszöget alkot; a szakasz az átfogó.',
+        solution: [
+          asks === 'height'
+            ? tex`$BB_1^2 = ${num(c)}^2 - ${num(p)}^2 = ${num(c * c - p * p)}$, így $BB_1 = ${num(h)}$ cm.`
+            : tex`$A_1B_1^2 = ${num(c)}^2 - ${num(h)}^2 = ${num(c * c - h * h)}$, így $A_1B_1 = ${num(p)}$ cm.`,
+          `Az állítás **${value ? 'igaz' : 'hamis'}**.`,
+        ],
+      };
+    }
+    const pool = level === 1 ? statements.slice(0, 8).concat(statements.slice(15)) : statements.slice(8, 15);
     const s = rng.pick(pool);
     return {
       prompt: `Igaz vagy hamis?\n\n**${s.text}**`,
@@ -537,21 +574,27 @@ const projectionMc: GeneratorDef = {
   levels: [1, 2],
   generate(rng, level): Question {
     if (level === 1) {
+      // the parts of the projection drawing: a projected point, the projection, a distance
+      const heightA = rng.int(1, 5);
+      const heightB = rng.intExcept(1, 6, [heightA]);
+      const projection = rng.int(4, 9);
+      const figure = projectionFigure({ projection, heightA, heightB, alt: 'Az AB szakasz és a vetülete az α síkon.' });
+      const ask = rng.pick(['segment', 'distA', 'distB', 'pointA', 'pointB'] as const);
+      const segs = ['$A_1B_1$', '$AB$', '$AA_1$', '$BB_1$'];
+      const pts = ['$A_1$', '$B_1$', '$A$', '$B$'];
+      const data = {
+        segment: { q: 'Melyik szakasz az $AB$ szakasz merőleges vetülete az $\\alpha$ síkon?', correct: segs[0], options: segs, why: 'Az $A$ pont vetülete $A_1$, a $B$ ponté $B_1$, ezért az $AB$ vetülete az $A_1B_1$ szakasz.' },
+        distA: { q: 'Melyik szakasz hossza az $A$ pont távolsága az $\\alpha$ síktól?', correct: segs[2], options: segs, why: 'A pont és a sík távolsága a merőleges szakasz hossza: az $A$ pontnál ez az $AA_1$.' },
+        distB: { q: 'Melyik szakasz hossza a $B$ pont távolsága az $\\alpha$ síktól?', correct: segs[3], options: segs, why: 'A pont és a sík távolsága a merőleges szakasz hossza: a $B$ pontnál ez a $BB_1$.' },
+        pointA: { q: 'Melyik pont az $A$ pont merőleges vetülete az $\\alpha$ síkon?', correct: pts[0], options: pts, why: 'Az $A$ pontból a síkra bocsátott merőleges talppontja $A_1$.' },
+        pointB: { q: 'Melyik pont a $B$ pont merőleges vetülete az $\\alpha$ síkon?', correct: pts[1], options: pts, why: 'A $B$ pontból a síkra bocsátott merőleges talppontja $B_1$.' },
+      }[ask];
       return {
-        prompt: 'Melyik szakasz az $AB$ szakasz merőleges vetülete az $\\alpha$ síkon?',
-        figure: projectionFigure({
-          projection: 6,
-          heightA: 3,
-          heightB: 5,
-          projLabel: '?',
-          alt: 'Az AB szakasz és a vetülete az α síkon.',
-        }),
-        answer: textChoice('$A_1B_1$', ['$AB$', '$AA_1$', '$BB_1$']),
-        hint: 'A vetületet a két végpontból a síkra bocsátott merőlegesek talppontjai adják.',
-        solution: [
-          'Az $A$ pont vetülete $A_1$, a $B$ pont vetülete $B_1$.',
-          'Ezért az $AB$ szakasz vetülete az $A_1B_1$ szakasz.',
-        ],
+        prompt: data.q,
+        figure,
+        answer: textChoice(data.correct, data.options.filter((o) => o !== data.correct)),
+        hint: 'A vetületet a pontokból a síkra bocsátott merőlegesek talppontjai adják.',
+        solution: [data.why],
       };
     }
 
@@ -598,8 +641,10 @@ const projectionMc: GeneratorDef = {
     }
 
     const [seg, proj] = rng.pick(segmentCases);
-    const wrongPool = ['AC', 'BD', 'AB', 'AD', 'BC', 'CD', 'DA'];
-    const wrongs = rng.sample(wrongPool.filter((s) => s !== proj), 3).map((s) => `$${s}$`);
+    // segments of the base, each once (AD and DA are the same segment)
+    const same = (x: string, y: string) => [...x].sort().join('') === [...y].sort().join('');
+    const wrongPool = ['AC', 'BD', 'AB', 'BC', 'CD', 'DA'];
+    const wrongs = rng.sample(wrongPool.filter((s) => !same(s, proj)), 3).map((s) => `$${s}$`);
     return {
       prompt: tex`A kockában a kiemelt $${seg}$ szakasz merőleges vetülete az $ABCD$ alaplapon melyik szakasz?`,
       figure: cubeFigure(seg),
