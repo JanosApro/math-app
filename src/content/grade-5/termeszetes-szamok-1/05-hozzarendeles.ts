@@ -15,6 +15,7 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  article,
   Article,
 } from '../../../kit';
 
@@ -98,9 +99,10 @@ const valueTableGen: GeneratorDef = {
   title: 'Értéktáblázat kiegészítése',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const k = level === 1 ? rng.int(2, 3) : level === 2 ? rng.int(2, 5) : rng.int(3, 9);
-    const b = level === 1 ? rng.int(0, 3) : level === 2 ? rng.int(0, 6) : rng.int(0, 15);
-    const start = rng.int(1, level === 1 ? 3 : level === 2 ? 4 : 5);
+    // L1: y = kx; L2: y = kx + b; L3: bigger k and b, further along the table
+    const k = level === 1 ? rng.int(2, 5) : level === 2 ? rng.int(2, 5) : rng.int(6, 9);
+    const b = level === 1 ? 0 : level === 2 ? rng.int(1, 6) : rng.int(7, 20);
+    const start = level === 3 ? rng.int(4, 9) : rng.int(1, 4);
     const xs = [start, start + 1, start + 2, start + 3];
     const ys = xs.map((x) => k * x + b);
     const j = rng.int(1, 3); // the first pair is always visible
@@ -191,9 +193,10 @@ const ruleFromPairs: GeneratorDef = {
   levels: [1, 2, 3],
   generate(rng, level): Question {
     const story = level === 3;
-    const k = story ? rng.int(2, 6) * 10 : level === 1 ? rng.int(2, 3) : rng.int(2, 4);
-    const b = story ? rng.int(1, 6) * 100 : level === 1 ? rng.int(0, 3) : rng.int(1, 7);
-    const start = level === 1 ? 1 : rng.int(1, 3);
+    // L1: y = kx from x = 1; L2: y = kx + b, the table does not start at 1; L3: a taxi fare
+    const k = story ? rng.int(2, 6) * 10 : rng.int(2, 5);
+    const b = story ? rng.int(1, 6) * 100 : level === 1 ? 0 : rng.int(1, 9);
+    const start = level === 1 ? 1 : rng.int(2, 4);
     const xs = [start, start + 1, start + 2];
     const ys = xs.map((x) => k * x + b);
     const correct = formula(k, b);
@@ -226,35 +229,39 @@ const ruleFromPairs: GeneratorDef = {
   },
 };
 
-/** Turn a rule given in words into a formula (multiple choice). */
+/** Turn a rule given in words into a formula (multiple choice). L1: no brackets; L2: with brackets. */
 const wordsToFormula: GeneratorDef = {
   id: 'words-to-formula',
   title: 'Szabály szavakban és képletben',
   levels: [1, 2],
   generate(rng, level): Question {
     const k = rng.int(2, 5);
-    let b = rng.int(1, 9);
-    if (b === k) b = k === 9 ? 8 : k + 1; // avoid y = bx ± k colliding with the correct formula
-    const minus = level === 2 && rng.chance(0.5);
-    const correct = minus ? tex`$y = ${num(k)}x - ${num(b)}$` : tex`$y = ${num(k)}x + ${num(b)}$`;
-    const wrongs = minus
-      ? [tex`$y = ${num(k)}x + ${num(b)}$`, tex`$y = ${num(k)}(x - ${num(b)})$`, tex`$y = ${num(b)}x - ${num(k)}$`]
-      : [tex`$y = ${num(k)}x - ${num(b)}$`, tex`$y = ${num(k)}(x + ${num(b)})$`, tex`$y = ${num(b)}x + ${num(k)}$`];
-    const prompt = minus
-      ? tex`A kimenet a bemenet ${multiple(k)}, mínusz ${num(b)}. Melyik képlet felel meg?`
-      : tex`A kimenet a bemenet ${multiple(k)}, plusz ${num(b)}. Melyik képlet felel meg?`;
+    const b = rng.intExcept(1, 9, [k]); // b ≠ k, so that no wrong option equals the right one
+    const minus = rng.chance(0.5);
+    const op = minus ? '-' : '+';
+    const other = minus ? '+' : '-';
+    if (level === 1) {
+      const correct = tex`$y = ${num(k)}x ${op} ${num(b)}$`;
+      return {
+        prompt: tex`A kimenet a bemenet ${multiple(k)}, ${minus ? 'mínusz' : 'plusz'} ${num(b)}. Melyik képlet felel meg?`,
+        answer: textChoice(correct, [tex`$y = ${num(k)}x ${other} ${num(b)}$`, tex`$y = ${num(k)}(x ${op} ${num(b)})$`, tex`$y = ${num(b)}x ${op} ${num(k)}$`]),
+        hint: `A „${minus ? 'mínusz' : 'plusz'}” a szorzás után következik. A zárójel mást jelentene!`,
+        solution: [
+          tex`A bemenet ${num(k)}-${multiplicative(k, 'szorosát', 'szeresét', 'szörösét')} vesszük, majd ${minus ? 'kivonunk' : 'hozzáadunk'} ${num(b)}-${accusative(b)}.`,
+          tex`Ez képlettel: **${correct}**.`,
+          tex`${Article(num(k))} $${num(k)}(x ${op} ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb ${minus ? 'vonunk ki' : 'adunk hozzá'}.`,
+        ],
+      };
+    }
+    const correct = tex`$y = ${num(k)}(x ${op} ${num(b)})$`;
     return {
-      prompt,
-      answer: textChoice(correct, wrongs),
-      hint: minus
-        ? 'A „mínusz” a szorzás után következik. A zárójel mást jelentene!'
-        : 'A „plusz” a szorzás után következik. A zárójel mást jelentene!',
+      prompt: tex`A kimenet: a bemenetnél ${num(b)}-${instrumental(b)} ${minus ? 'kisebb' : 'nagyobb'} szám ${multiple(k)}. Melyik képlet felel meg?`,
+      answer: textChoice(correct, [tex`$y = ${num(k)}x ${op} ${num(b)}$`, tex`$y = ${num(k)}(x ${other} ${num(b)})$`, tex`$y = ${num(b)}(x ${op} ${num(k)})$`]),
+      hint: `Előbb a ${minus ? 'kisebb' : 'nagyobb'} számot kell kiszámolni, csak utána szorzunk: ehhez zárójel kell.`,
       solution: [
-        tex`A bemenet ${num(k)}-${multiplicative(k, 'szorosát', 'szeresét', 'szörösét')} vesszük, majd ${minus ? 'kivonunk' : 'hozzáadunk'} ${num(b)}-${accusative(b)}.`,
-        tex`Ez képlettel: **${correct}**.`,
-        minus
-          ? tex`${Article(num(k))} $${num(k)}(x - ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb vonunk ki.`
-          : tex`${Article(num(k))} $${num(k)}(x + ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb adunk hozzá.`,
+        tex`Előbb ${article(b)} ${num(b)}-${instrumental(b)} ${minus ? 'kisebb' : 'nagyobb'} szám: $x ${op} ${num(b)}$.`,
+        tex`Ennek ${article(num(k))} ${num(k)}-${multiplicative(k, 'szorosa', 'szerese', 'szöröse')}: **${correct}**.`,
+        tex`${Article(num(k))} $${num(k)}x ${op} ${num(b)}$ zárójel nélkül mást jelent: ott csak az $x$-et szorozzuk.`,
       ],
     };
   },

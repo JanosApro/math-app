@@ -208,16 +208,54 @@ const convert: GeneratorDef = {
   title: 'Átváltás tört, tizedes tört és százalék között',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const kinds: ('to-fraction' | 'to-percent-frac' | 'to-percent-dec' | 'to-decimal')[] =
-      level === 1
-        ? ['to-fraction', 'to-percent-frac', 'to-percent-dec']
-        : level === 2
-          ? ['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal']
-          : ['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal'];
-    const kind = rng.pick(kinds);
+    // The levels use different numbers: L1 tens, 25 % and 75 %; L2 the other multiples of 5;
+    // L3 percents like 8 %, 12 %, 12,5 % (and eighths).
+    const PCT: number[][] = [
+      [10, 20, 30, 40, 50, 60, 70, 80, 90, 25, 75],
+      [5, 15, 35, 45, 55, 65, 85, 95],
+      [2, 4, 6, 8, 12, 16, 24, 36, 48, 64, 72, 88, 12.5, 37.5, 62.5, 87.5],
+    ];
+    const FRAC: [number, number][][] = [
+      [
+        [1, 2],
+        [1, 4],
+        [3, 4],
+        [1, 5],
+        [2, 5],
+        [3, 5],
+        [4, 5],
+        [1, 10],
+        [3, 10],
+        [7, 10],
+        [9, 10],
+      ],
+      [
+        [1, 20],
+        [3, 20],
+        [7, 20],
+        [9, 20],
+        [11, 20],
+        [13, 20],
+        [17, 20],
+        [19, 20],
+      ],
+      [
+        [1, 25],
+        [3, 25],
+        [6, 25],
+        [1, 50],
+        [3, 50],
+        [7, 50],
+        [1, 8],
+        [3, 8],
+        [5, 8],
+        [7, 8],
+      ],
+    ];
+    const kind = rng.pick(['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal'] as const);
     if (kind === 'to-fraction') {
-      const special = level === 3 && rng.chance(0.35);
-      const p = special ? rng.pick([12.5, 37.5, 62.5, 87.5]) : rng.int(1, 19) * 5;
+      const p = rng.pick(PCT[level - 1]);
+      const special = !Number.isInteger(p);
       const [n, d] = special ? EIGHTHS[p] : [p / gcd(p, 100), 100 / gcd(p, 100)];
       return {
         prompt: tex`Írd fel tört alakban, legegyszerűbben!\n\n$${percentTex(p)}$`,
@@ -232,39 +270,7 @@ const convert: GeneratorDef = {
       };
     }
     if (kind === 'to-percent-frac') {
-      const easy: [number, number][] = [
-        [1, 2],
-        [1, 4],
-        [3, 4],
-        [1, 5],
-        [2, 5],
-        [3, 5],
-        [4, 5],
-        [1, 10],
-        [3, 10],
-        [7, 10],
-        [9, 10],
-      ];
-      const hard: [number, number][] = [
-        [1, 20],
-        [3, 20],
-        [7, 20],
-        [9, 20],
-        [1, 25],
-        [3, 25],
-        [6, 25],
-        [1, 50],
-        [3, 50],
-        [7, 50],
-      ];
-      const eighth: [number, number][] = [
-        [1, 8],
-        [3, 8],
-        [5, 8],
-        [7, 8],
-      ];
-      const pool = level === 1 ? easy : level === 2 ? [...easy, ...hard] : [...easy, ...hard, ...eighth];
-      const [n, d] = rng.pick(pool);
+      const [n, d] = rng.pick(FRAC[level - 1]);
       const p = clean((n * 100) / d);
       return {
         prompt: tex`Hány százalék?\n\n$${f(n, d)}$`,
@@ -278,9 +284,7 @@ const convert: GeneratorDef = {
       };
     }
     if (kind === 'to-percent-dec') {
-      const easy = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95];
-      const hard = [0.08, 0.12, 0.24, 0.36, 0.48, 0.64, 0.72, 0.88, 0.125, 0.375, 0.625, 0.875];
-      const x = rng.pick(level === 3 ? [...easy, ...hard] : easy);
+      const x = clean(rng.pick(PCT[level - 1]) / 100);
       const p = clean(x * 100);
       return {
         prompt: tex`Írd fel százalékban!\n\n$${num(x)}$`,
@@ -289,9 +293,7 @@ const convert: GeneratorDef = {
         solution: [tex`$${num(x)} \cdot 100 = ${num(p)}$.`, `Az érték **${num(p)}%**.`],
       };
     }
-    const easyP = rng.int(1, 19) * 5;
-    const hardP = rng.pick([8, 12, 24, 36, 48, 64, 72, 88, 12.5, 37.5, 62.5, 87.5]);
-    const p = level === 3 ? rng.pick([easyP, hardP]) : easyP;
+    const p = rng.pick(PCT[level - 1]);
     const value = clean(p / 100);
     return {
       prompt: tex`Írd fel tizedes tört alakban!\n\n$${percentTex(p)}$`,
