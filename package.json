@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "check": "tsc --noEmit && tsx scripts/check.ts",
+    "samples": "tsx scripts/samples.ts",
     "status": "tsx scripts/status.ts"
   },
   "dependencies": {
