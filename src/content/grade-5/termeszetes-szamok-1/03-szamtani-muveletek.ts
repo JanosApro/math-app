@@ -18,6 +18,7 @@ import {
   type GeneratorDef,
   type Question,
   type Rng,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -141,14 +142,14 @@ const terms: GeneratorDef = {
     else correct = target === a ? 'osztandó' : 'osztó';
     const wrongs = rng.shuffle(TERM_POOL.filter((t) => t !== correct)).slice(0, 3);
     return {
-      prompt: tex`A $${num(a)} ${OP_TEX[kind]} ${num(b)} = ${num(c)}$ egyenlőségben mi a neve a $${num(target)}$-${suffix(target, 'nak', 'nek')}?`,
+      prompt: tex`${Article(num(a))} $${num(a)} ${OP_TEX[kind]} ${num(b)} = ${num(c)}$ egyenlőségben mi a neve ${article(num(target))} $${num(target)}$-${suffix(target, 'nak', 'nek')}?`,
       answer: choice(rng, correct, wrongs, { count: 4 }),
       hint: 'Nézd meg, milyen műveletről van szó, és hogy a kérdéses szám tag vagy eredmény.',
       solution: [
         tex`Ez ${OP_NAME[kind]}. ${askResult ? `Az eredmény neve **${RESULT_NAME[kind]}**.` : `A tag neve **${correct}**.`}`,
         askResult
-          ? tex`A $${num(target)}$ a művelet eredménye, tehát **${RESULT_NAME[kind]}**.`
-          : tex`A $${num(target)}$ a művelet egyik tagja, tehát **${correct}**.`,
+          ? tex`${Article(num(target))} $${num(target)}$ a művelet eredménye, tehát **${RESULT_NAME[kind]}**.`
+          : tex`${Article(num(target))} $${num(target)}$ a művelet egyik tagja, tehát **${correct}**.`,
       ],
     };
   },
@@ -221,7 +222,7 @@ const mental: GeneratorDef = {
         answer: { type: 'number', value: sum },
         hint: 'Keress két olyan tagot, amelyek összege kerek száz!',
         solution: [
-          tex`A $${num(a)} + ${num(c)} = ${num(a + c)}$.`,
+          tex`${Article(num(a))} $${num(a)} + ${num(c)} = ${num(a + c)}$.`,
           tex`$${num(a + c)} + ${num(b)} = ${num(sum)}$.`,
           tex`Az eredmény **${num(sum)}**.`,
         ],
@@ -244,7 +245,7 @@ const mental: GeneratorDef = {
           answer: { type: 'number', value: product },
           hint: 'Keress két olyan tényezőt, amelyek szorzata kerek száz!',
           solution: [
-            tex`A $${num(a)} \cdot ${num(c)} = ${num(a * c)}$.`,
+            tex`${Article(num(a))} $${num(a)} \cdot ${num(c)} = ${num(a * c)}$.`,
             tex`$${num(a * c)} \cdot ${num(b)} = ${num(product)}$.`,
             tex`Az eredmény **${num(product)}**.`,
           ],
@@ -494,16 +495,16 @@ const zeroOne: GeneratorDef = {
               { text: tex`$${num(a)} : 0 = 0$`, value: false, why: '0-val nem osztunk.' },
             ]
           : [
-              { text: tex`A $${num(a)} - ${num(a + 1)}$ kivonás elvégezhető N₀-ban.`, value: false, why: 'A kisebbítendő kisebb a kivonandónál.' },
-              { text: tex`A $${num(a + 1)} - ${num(a)}$ kivonás elvégezhető N₀-ban.`, value: true, why: 'A kisebbítendő nagyobb a kivonandónál.' },
+              { text: tex`${Article(num(a))} $${num(a)} - ${num(a + 1)}$ kivonás elvégezhető N₀-ban.`, value: false, why: 'A kisebbítendő kisebb a kivonandónál.' },
+              { text: tex`${Article(num(a + 1))} $${num(a + 1)} - ${num(a)}$ kivonás elvégezhető N₀-ban.`, value: true, why: 'A kisebbítendő nagyobb a kivonandónál.' },
               { text: tex`A $0 - ${num(a)}$ kivonás elvégezhető N₀-ban.`, value: false, why: '0-ból nem vonhatunk ki pozitív számot N₀-ban.' },
-              { text: tex`A $${num(a)} - 0$ kivonás elvégezhető N₀-ban.`, value: true, why: 'Nullát kivonva a szám nem változik.' },
-              { text: tex`A $${num(a)} : 0$ osztás elvégezhető.`, value: false, why: '0-val nem osztunk.' },
+              { text: tex`${Article(num(a))} $${num(a)} - 0$ kivonás elvégezhető N₀-ban.`, value: true, why: 'Nullát kivonva a szám nem változik.' },
+              { text: tex`${Article(num(a))} $${num(a)} : 0$ osztás elvégezhető.`, value: false, why: '0-val nem osztunk.' },
               { text: tex`A $0 : ${num(a)}$ osztás elvégezhető.`, value: true, why: 'A 0 osztható bármely nem 0 számmal.' },
-              { text: tex`A $${num(a)} : 1$ osztás elvégezhető.`, value: true, why: '1-gyel minden szám osztható.' },
-              { text: tex`A $${num(a + 1)} : ${num(a)}$ osztás maradék nélkül elvégezhető.`, value: false, why: `${num(a + 1)} nem többszöröse ${num(a)}-${suffix(a, 'nak', 'nek')}.` },
-              { text: tex`A $${num(a)} : ${num(a + 1)}$ osztás maradék nélkül elvégezhető.`, value: false, why: 'Az osztandó kisebb az osztónál.' },
-              { text: tex`A $${num(a)} : ${num(a)}$ osztás maradék nélkül elvégezhető.`, value: true, why: 'Ugyanazzal a számmal osztva az eredmény 1.' },
+              { text: tex`${Article(num(a))} $${num(a)} : 1$ osztás elvégezhető.`, value: true, why: '1-gyel minden szám osztható.' },
+              { text: tex`${Article(num(a + 1))} $${num(a + 1)} : ${num(a)}$ osztás maradék nélkül elvégezhető.`, value: false, why: `${num(a + 1)} nem többszöröse ${num(a)}-${suffix(a, 'nak', 'nek')}.` },
+              { text: tex`${Article(num(a))} $${num(a)} : ${num(a + 1)}$ osztás maradék nélkül elvégezhető.`, value: false, why: 'Az osztandó kisebb az osztónál.' },
+              { text: tex`${Article(num(a))} $${num(a)} : ${num(a)}$ osztás maradék nélkül elvégezhető.`, value: true, why: 'Ugyanazzal a számmal osztva az eredmény 1.' },
               { text: tex`A $0 : 0$ osztás elvégezhető.`, value: false, why: 'A 0 : 0 nem értelmezett.' },
             ];
     const s = rng.pick(pool);
@@ -535,7 +536,7 @@ const word: GeneratorDef = {
         hint: 'A maradék gyerekeknek is kell még egy busz.',
         solution: [
           tex`$${num(n)} : ${num(k)} = ${num(q)}$, marad ${num(r)}.`,
-          tex`A $${num(q)}$ tele busz mellé a $${num(r)}$ gyereknek is kell egy busz.`,
+          tex`${Article(num(q))} $${num(q)}$ tele busz mellé ${article(num(r))} $${num(r)}$ gyereknek is kell egy busz.`,
           `Összesen **${num(q + 1)} busz** kell.`,
         ],
       };

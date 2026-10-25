@@ -15,6 +15,7 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -259,7 +260,7 @@ const chooseGraph: GeneratorDef = {
         solution: [
           tex`A keresett egyenes átmegy az origón, és meredeksége $k = ${num(config.correct)}$.`,
           tex`Az $x = 1$ helyen $y = ${num(config.correct)}$, tehát a $(${num(1)}; ${num(config.correct)})$ pont rajta van.`,
-          tex`Ez a **$${correctLabel}$** jelű egyenes.`,
+          tex`Ez ${article(correctLabel)} **$${correctLabel}$** jelű egyenes.`,
         ],
       };
     }

@@ -102,7 +102,7 @@ async function studentFlow() {
 
   const rec = page.locator('.st-recommended .node');
   const recId = await rec.getAttribute('data-node-id');
-  check(recId === 'g7-pitagorasz-01', `recommended lesson: ${recId}`);
+  check(recId === 'g7-valos-szamok-01', `recommended lesson: ${recId}`);
   await rec.click();
   await page.waitForSelector('.lesson-start');
   check((await page.locator('.lesson-partrow').count()) === 5, 'overview lists 4 parts + the mini test');
@@ -111,7 +111,7 @@ async function studentFlow() {
   const first = await playSteps(page, undefined, undefined, 1);
   await shot(page, SHOTS, 'part-done');
   const s1 = (await saved()).grades['7'];
-  check(first.parts === 1 && JSON.stringify(s1.subtopics['g7-pitagorasz-01'].parts) === '[0]', `part 1 done (${first.questions} questions) and saved`);
+  check(first.parts === 1 && JSON.stringify(s1.subtopics[recId].parts) === '[0]', `part 1 done (${first.questions} questions) and saved`);
   check(Object.keys(s1.activity).length === 1 && s1.xp > 0, 'a finished part counts for the streak and gives XP');
   await page.locator('.lesson-footer .lesson-side-btn').click(); // back to the lesson overview
   await page.waitForSelector('.lesson-partrow.is-done');
@@ -136,7 +136,7 @@ async function studentFlow() {
   await playTest(page, 0);
   check((await page.locator('.lesson-celebrate').count()) === 1, 'mini test passed → celebration');
   await shot(page, SHOTS, 'celebration');
-  check(!!(await saved()).grades['7'].subtopics['g7-pitagorasz-01'].completedAt, 'completion saved');
+  check(!!(await saved()).grades['7'].subtopics[recId].completedAt, 'completion saved');
   await clickMain(page);
   await page.waitForSelector('.map-topic');
 

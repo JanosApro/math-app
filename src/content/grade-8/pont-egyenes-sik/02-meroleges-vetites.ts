@@ -17,6 +17,8 @@ import {
   type GeneratorDef,
   type Question,
   type XY,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -588,9 +590,9 @@ const projectionMc: GeneratorDef = {
         answer: textChoice(phrase(point), wrongs),
         hint: 'A végpontok vetületét keresd! A kocka függőleges élei merőlegesek az alaplapra.',
         solution: [
-          tex`Az $${seg[0]}$ pont az alaplapon van, a vetülete önmaga.`,
-          tex`Az $${seg[1]}$ pont vetülete az alaplapon $${BASE_PROJECTION[seg[1]]}$.`,
-          tex`Ezért a $${seg}$ szakasz vetülete az $${point}$ pont.`,
+          tex`${Article(seg[0])} $${seg[0]}$ pont az alaplapon van, a vetülete önmaga.`,
+          tex`${Article(seg[1])} $${seg[1]}$ pont vetülete az alaplapon $${BASE_PROJECTION[seg[1]]}$.`,
+          tex`Ezért ${article(seg)} $${seg}$ szakasz vetülete ${article(point)} $${point}$ pont.`,
         ],
       };
     }
@@ -604,8 +606,8 @@ const projectionMc: GeneratorDef = {
       answer: textChoice(`$${proj}$`, wrongs),
       hint: 'A végpontok vetületét keresd! A kocka függőleges élei merőlegesek az alaplapra.',
       solution: [
-        tex`Az $${seg[0]}$ pont vetülete az alaplapon $${BASE_PROJECTION[seg[0]]}$, a $${seg[1]}$ ponté $${BASE_PROJECTION[seg[1]]}$.`,
-        tex`Ezért a $${seg}$ szakasz vetülete a $${proj}$ szakasz.`,
+        tex`${Article(seg[0])} $${seg[0]}$ pont vetülete az alaplapon $${BASE_PROJECTION[seg[0]]}$, ${article(seg[1])} $${seg[1]}$ ponté $${BASE_PROJECTION[seg[1]]}$.`,
+        tex`Ezért ${article(seg)} $${seg}$ szakasz vetülete ${article(proj)} $${proj}$ szakasz.`,
       ],
     };
   },

@@ -17,6 +17,8 @@ import {
   type GeneratorDef,
   type Question,
   type XY,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -277,7 +279,7 @@ const distanceMc: GeneratorDef = {
         tex`A különbségek: $${num(dx)}$ és $${num(dy)}$.`,
         tex`$d^2 = ${num(dx)}^2 + ${num(dy)}^2 = ${num(n)}$`,
         tex`$d = \sqrt{${num(n)}}${root.coef === 1 ? '' : tex` = ${texRoot(root.coef, root.radicand)}`}$ ${unit}.`,
-        tex`A $${num(dx + dy)}$ a befogók összege, a $${num(n)}$ a $d^2$ — egyik sem a távolság.`,
+        tex`${Article(num(dx + dy))} $${num(dx + dy)}$ a befogók összege, ${article(num(n))} $${num(n)}$ a $d^2$ — egyik sem a távolság.`,
       ],
     };
   },
@@ -414,7 +416,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**Az $A(1; 1)$ és $B(4; 5)$ pontok távolsága $5$ egység.**',
+            prompt: 'Igaz vagy hamis?\n\n**Az $A(1; 1)$ és $B(4; 5)$ pontok távolsága $5$ egység.**',
             answer: { type: 'truefalse', value: true },
             hint: 'A különbségek $3$ és $4$; ismerős Pitagorasz-hármast kapsz.',
             solution: [
@@ -445,7 +447,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'A mínuszjel nem zavar',
-          body: 'A távolsághez a koordináták különbségének abszolút értéke kell. A negatív koordinátáknál is ugyanaz a képlet.',
+          body: 'A távolsághoz a koordináták különbségének abszolút értéke kell. A negatív koordinátáknál is ugyanaz a képlet.',
           figure: distanceFigure([-3, 1], [1, 4], '5'),
           remember: '$d^2 = (x_2 - x_1)^2 + (y_2 - y_1)^2$',
         },

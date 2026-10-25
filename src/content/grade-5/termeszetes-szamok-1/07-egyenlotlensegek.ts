@@ -14,6 +14,7 @@ import {
   textChoice,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -105,8 +106,8 @@ const satisfies: GeneratorDef = {
         solution: [
           tex`Helyettesítsük be: $${num(k)} ${shownSign} ${num(c)}$.`,
           value
-            ? tex`Az állítás igaz, tehát a $${num(k)}$ **megoldás**.`
-            : tex`Az állítás nem igaz, tehát a $${num(k)}$ **nem megoldás**.`,
+            ? tex`Az állítás igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+            : tex`Az állítás nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**.`,
         ],
       };
     }
@@ -123,8 +124,8 @@ const satisfies: GeneratorDef = {
         solution: [
           tex`Bal oldal: $${num(k)} + ${num(a)} = ${num(k + a)}$.`,
           k + a < b
-            ? tex`$${num(k + a)} < ${num(b)}$ igaz, tehát a $${num(k)}$ **megoldás**.`
-            : tex`$${num(k + a)} < ${num(b)}$ nem igaz, tehát a $${num(k)}$ **nem megoldás**.`,
+            ? tex`$${num(k + a)} < ${num(b)}$ igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+            : tex`$${num(k + a)} < ${num(b)}$ nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**.`,
         ],
       };
     }
@@ -140,8 +141,8 @@ const satisfies: GeneratorDef = {
         solution: [
           tex`Bal oldal: $${num(k)} - ${num(a)} = ${num(k - a)}$.`,
           k - a >= b
-            ? tex`$${num(k - a)} \ge ${num(b)}$ igaz, tehát a $${num(k)}$ **megoldás**.`
-            : tex`$${num(k - a)} \ge ${num(b)}$ nem igaz, tehát a $${num(k)}$ **nem megoldás**.`,
+            ? tex`$${num(k - a)} \ge ${num(b)}$ igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+            : tex`$${num(k - a)} \ge ${num(b)}$ nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**.`,
         ],
       };
     }
@@ -157,8 +158,8 @@ const satisfies: GeneratorDef = {
         solution: [
           tex`Bal oldal: $${num(a)} \cdot ${num(k)} = ${num(a * k)}$.`,
           a * k <= b
-            ? tex`$${num(a * k)} \le ${num(b)}$ igaz, tehát a $${num(k)}$ **megoldás**.`
-            : tex`$${num(a * k)} \le ${num(b)}$ nem igaz, tehát a $${num(k)}$ **nem megoldás**.`,
+            ? tex`$${num(a * k)} \le ${num(b)}$ igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+            : tex`$${num(a * k)} \le ${num(b)}$ nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**.`,
         ],
       };
     }
@@ -173,8 +174,8 @@ const satisfies: GeneratorDef = {
       solution: [
         tex`Bal oldal: $${num(k)} : ${num(a)} = ${num(s)}$.`,
         s > b
-          ? tex`$${num(s)} > ${num(b)}$ igaz, tehát a $${num(k)}$ **megoldás**.`
-          : tex`$${num(s)} > ${num(b)}$ nem igaz, tehát a $${num(k)}$ **nem megoldás**.`,
+          ? tex`$${num(s)} > ${num(b)}$ igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+          : tex`$${num(s)} > ${num(b)}$ nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**.`,
       ],
     };
   },
@@ -195,7 +196,7 @@ const change: GeneratorDef = {
       const inc = `${num(n)}-${instrumental(n)}`;
       if (kind === 'sum-up') {
         return {
-          prompt: tex`A $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} növeljük. Hogyan változik az összeg?`,
+          prompt: tex`${Article(num(a))} $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} növeljük. Hogyan változik az összeg?`,
           answer: textChoice(`${inc} nő`, [`${inc} csökken`, 'nem változik', 'a kétszeresére nő']),
           hint: 'Írd fel a régi és az új összeget, és hasonlítsd össze!',
           solution: [
@@ -207,7 +208,7 @@ const change: GeneratorDef = {
       }
       if (kind === 'sum-down') {
         return {
-          prompt: tex`A $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik az összeg?`,
+          prompt: tex`${Article(num(a))} $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik az összeg?`,
           answer: textChoice(`${inc} csökken`, [`${inc} nő`, 'nem változik', 'a felére csökken']),
           hint: 'Írd fel a régi és az új összeget, és hasonlítsd össze!',
           solution: [
@@ -218,7 +219,7 @@ const change: GeneratorDef = {
         };
       }
       return {
-        prompt: tex`A $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} növeljük, a másikat ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik az összeg?`,
+        prompt: tex`${Article(num(a))} $${num(a)} + ${num(b)}$ összegben az egyik tagot ${num(n)}-${instrumental(n)} növeljük, a másikat ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik az összeg?`,
         answer: textChoice('nem változik', [`${inc} nő`, `${inc} csökken`, 'a kétszeresére nő']),
         hint: 'Az egyik tag nő, a másik ugyanannyival csökken. Mi lesz az új összeg?',
         solution: [
@@ -237,7 +238,7 @@ const change: GeneratorDef = {
       const inc = `${num(n)}-${instrumental(n)}`;
       if (kind === 'minuend-up') {
         return {
-          prompt: tex`A $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
+          prompt: tex`${Article(num(a))} $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
           answer: textChoice(`${inc} nő`, [`${inc} csökken`, 'nem változik', 'a kétszeresére nő']),
           hint: 'A kisebbítendő nő, a kivonandó nem változik.',
           solution: [
@@ -249,7 +250,7 @@ const change: GeneratorDef = {
       }
       if (kind === 'subtrahend-up') {
         return {
-          prompt: tex`A $${num(a)} - ${num(b)}$ különbségben a kivonandót ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
+          prompt: tex`${Article(num(a))} $${num(a)} - ${num(b)}$ különbségben a kivonandót ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
           answer: textChoice(`${inc} csökken`, [`${inc} nő`, 'nem változik', 'a felére csökken']),
           hint: 'Ha többet vonunk ki, a különbség kisebb lesz.',
           solution: [
@@ -261,7 +262,7 @@ const change: GeneratorDef = {
       }
       if (kind === 'both-up') {
         return {
-          prompt: tex`A $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt és a kivonandót is ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
+          prompt: tex`${Article(num(a))} $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt és a kivonandót is ${num(n)}-${instrumental(n)} növeljük. Hogyan változik a különbség?`,
           answer: textChoice('nem változik', [`${inc} nő`, `${inc} csökken`, 'a kétszeresére nő']),
           hint: 'Mindkét szám ugyanannyival nő. Írd fel az új különbséget!',
           solution: [
@@ -272,7 +273,7 @@ const change: GeneratorDef = {
         };
       }
       return {
-        prompt: tex`A $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik a különbség?`,
+        prompt: tex`${Article(num(a))} $${num(a)} - ${num(b)}$ különbségben a kisebbítendőt ${num(n)}-${instrumental(n)} csökkentjük. Hogyan változik a különbség?`,
         answer: textChoice(`${inc} csökken`, [`${inc} nő`, 'nem változik', 'a felére csökken']),
         hint: 'A kisebbítendő csökken, a kivonandó nem változik.',
         solution: [
@@ -289,7 +290,7 @@ const change: GeneratorDef = {
       const m = kind === 'product-double' ? 2 : 3;
       const old = a * b;
       return {
-        prompt: tex`A $${num(a)} \cdot ${num(b)}$ szorzatban az egyik tényezőt a ${m === 2 ? 'kétszeresére' : 'háromszorosára'} növeljük. Hogyan változik a szorzat?`,
+        prompt: tex`${Article(num(a))} $${num(a)} \cdot ${num(b)}$ szorzatban az egyik tényezőt a ${m === 2 ? 'kétszeresére' : 'háromszorosára'} növeljük. Hogyan változik a szorzat?`,
         answer:
           m === 2
             ? textChoice('a szorzat a kétszeresére nő', ['a szorzat a felére csökken', 'nem változik', 'a szorzat 2-vel nő'])
@@ -307,7 +308,7 @@ const change: GeneratorDef = {
     const a = b * q;
     if (kind === 'quotient-dividend') {
       return {
-        prompt: tex`A $${num(a)} : ${num(b)}$ hányadosban az osztandót a kétszeresére növeljük. Hogyan változik a hányados?`,
+        prompt: tex`${Article(num(a))} $${num(a)} : ${num(b)}$ hányadosban az osztandót a kétszeresére növeljük. Hogyan változik a hányados?`,
         answer: textChoice('a hányados a kétszeresére nő', ['a hányados a felére csökken', 'nem változik', 'a hányados 2-vel nő']),
         hint: 'Írd fel a régi és az új hányadost!',
         solution: [
@@ -318,7 +319,7 @@ const change: GeneratorDef = {
       };
     }
     return {
-      prompt: tex`A $${num(a)} : ${num(b)}$ hányadosban az osztót a kétszeresére növeljük. Hogyan változik a hányados?`,
+      prompt: tex`${Article(num(a))} $${num(a)} : ${num(b)}$ hányadosban az osztót a kétszeresére növeljük. Hogyan változik a hányados?`,
       answer: textChoice('a hányados a felére csökken', ['a hányados a kétszeresére nő', 'nem változik', 'a hányados 2-vel csökken']),
       hint: 'Ha kétszer akkora osztóval osztunk, a hányados kisebb lesz.',
       solution: [
@@ -392,48 +393,33 @@ const solveAddSub: GeneratorDef = {
   },
 };
 
-/** One-step inequalities with multiplication / division. */
+/** One-step inequalities a · x < b, ≤, >, ≥ in N₀. */
 const solveMulDiv: GeneratorDef = {
   id: 'solve-mul-div',
-  title: 'Szorzásos és osztásos egyenlőtlenség',
+  title: 'Szorzásos egyenlőtlenség',
   levels: [2, 3],
   generate(rng, level): Question {
+    // Only a · x: with x : a the solution set in N₀ depends on whether x must be divisible by a
+    // (x : 6 ≤ 12 has 13, 73 or 78 solutions by reading), so no counting questions on division.
     const kinds =
       level === 2
-        ? (['mul-le', 'mul-gt', 'div-lt', 'div-ge'] as const)
-        : (['mul-lt', 'mul-le', 'mul-gt', 'mul-ge', 'div-lt', 'div-le', 'div-gt', 'div-ge'] as const);
+        ? (['mul-le', 'mul-gt', 'mul-lt'] as const)
+        : (['mul-lt', 'mul-le', 'mul-gt', 'mul-ge'] as const);
     const kind = rng.pick(kinds);
     const askUpper: BoundAsk = rng.pick(['count', 'largest'] as const);
-    if (kind.startsWith('mul')) {
-      const a = rng.int(2, level === 2 ? 6 : 9);
-      const c = rng.int(2, level === 2 ? 8 : 12);
-      const b = a * c;
-      const sign = kind === 'mul-lt' ? '<' : kind === 'mul-le' ? '\\le' : kind === 'mul-gt' ? '>' : '\\ge';
-      const relation = tex`$${num(a)} \cdot x ${sign} ${num(b)}$`;
-      const rearrange = tex`$x ${sign} ${num(b)} : ${num(a)} = ${num(c)}$`;
-      return boundQuestion({
-        relation,
-        boundary: c,
-        strict: kind === 'mul-lt' || kind === 'mul-gt',
-        direction: kind === 'mul-gt' || kind === 'mul-ge' ? 'lower' : 'upper',
-        ask: kind === 'mul-gt' || kind === 'mul-ge' ? 'smallest' : askUpper,
-        hint: 'A szorzatot oszd el az ismert tényezővel!',
-        rearrange,
-      });
-    }
     const a = rng.int(2, level === 2 ? 6 : 9);
-    const b = rng.int(2, level === 2 ? 8 : 12);
-    const c = a * b;
-    const sign = kind === 'div-lt' ? '<' : kind === 'div-le' ? '\\le' : kind === 'div-gt' ? '>' : '\\ge';
-    const relation = tex`$x : ${num(a)} ${sign} ${num(b)}$`;
-    const rearrange = tex`$x ${sign} ${num(b)} \cdot ${num(a)} = ${num(c)}$`;
+    const c = rng.int(2, level === 2 ? 8 : 12);
+    const b = a * c;
+    const sign = kind === 'mul-lt' ? '<' : kind === 'mul-le' ? '\\le' : kind === 'mul-gt' ? '>' : '\\ge';
+    const relation = tex`$${num(a)} \cdot x ${sign} ${num(b)}$`;
+    const rearrange = tex`$x ${sign} ${num(b)} : ${num(a)} = ${num(c)}$`;
     return boundQuestion({
       relation,
       boundary: c,
-      strict: kind === 'div-lt' || kind === 'div-gt',
-      direction: kind === 'div-gt' || kind === 'div-ge' ? 'lower' : 'upper',
-      ask: kind === 'div-gt' || kind === 'div-ge' ? 'smallest' : askUpper,
-      hint: 'Az osztást szorzással alakítsd át!',
+      strict: kind === 'mul-lt' || kind === 'mul-gt',
+      direction: kind === 'mul-gt' || kind === 'mul-ge' ? 'lower' : 'upper',
+      ask: kind === 'mul-gt' || kind === 'mul-ge' ? 'smallest' : askUpper,
+      hint: 'A szorzatot oszd el az ismert tényezővel!',
       rearrange,
     });
   },

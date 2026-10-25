@@ -17,6 +17,7 @@ import {
   type GeoItem,
   type Question,
   type XY,
+  article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -165,7 +166,7 @@ const translatePoint: GeneratorDef = {
         solution: [
           tex`A $v$ vektor: ${vectorText(dx, dy)}.`,
           tex`A $P$ pontból ugyanennyit lépünk: ${vectorText(dx, dy)}.`,
-          tex`A $P$ képe a **$${correct}$** jelű pont.`,
+          tex`A $P$ képe ${article(correct)} **$${correct}$** jelű pont.`,
         ],
       };
     }
@@ -191,7 +192,7 @@ const translatePoint: GeneratorDef = {
         hint: 'A vektor koordinátáit add hozzá a $P$ koordinátáihoz.',
         solution: [
           tex`$P(${num(p[0])}; ${num(p[1])})$, a vektor: ${vectorText(dx, dy)}.`,
-          tex`$x = ${num(p[0])} + ${num(dx)} = ${num(target[0])}$, $y = ${num(p[1])} + (${num(dy)}) = ${num(target[1])}$.`,
+          tex`$x = ${num(p[0])} ${dx < 0 ? '-' : '+'} ${num(Math.abs(dx))} = ${num(target[0])}$, $y = ${num(p[1])} ${dy < 0 ? '-' : '+'} ${num(Math.abs(dy))} = ${num(target[1])}$.`,
           tex`A kép koordinátái: **$x = ${num(target[0])}$, $y = ${num(target[1])}$**.`,
         ],
       };
@@ -313,7 +314,7 @@ const translateFigure: GeneratorDef = {
     const noun = level === 1 ? 'háromszög' : 'négyzet';
     const name = level === 1 ? 'ABC' : 'ABCD';
     return {
-      prompt: tex`Melyik színű ${noun} az $${name}$ ${noun} eltolt képe a $v$ vektorral?`,
+      prompt: tex`Melyik színű ${noun} ${article(name)} $${name}$ ${noun} eltolt képe a $v$ vektorral?`,
       figure,
       answer: textChoice(`a ${correctColor}`, [`a ${wrong1Color}`, `a ${wrong2Color}`]),
       hint: 'A vektor minden csúcsot ugyanannyival mozdít el.',

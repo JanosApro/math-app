@@ -15,6 +15,7 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -170,7 +171,7 @@ const sqrtLine: GeneratorDef = {
       solution: [
         tex`$${num(k)}^2 = ${num(k * k)}$ és $${num(k + 1)}^2 = ${num((k + 1) * (k + 1))}$`,
         tex`Mivel $${num(k * k)} < ${num(n)} < ${num((k + 1) * (k + 1))}$, ezért $${num(k)} < \sqrt{${num(n)}} < ${num(k + 1)}$.`,
-        tex`A $${num(n)}$ a **${num(k)} és ${num(k + 1)}** közé esik.`,
+        tex`A $\sqrt{${num(n)}}$ tehát ${article(k)} **${num(k)} és ${num(k + 1)}** közé esik.`,
       ],
     };
   },

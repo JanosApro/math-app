@@ -19,6 +19,8 @@ import {
   type GeneratorDef,
   type Question,
   type Rng,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -170,7 +172,7 @@ const commonDen: GeneratorDef = {
         tex`A közös nevezőnek a(z) $${num(b)}$-${suffix(b, 'nak', 'nek')} és a(z) $${num(d)}$-${suffix(d, 'nak', 'nek')} is többszörösének kell lennie.`,
         tex`$${num(b)}$ többszörösei: ${[1, 2, 3, 4, 5, 6].map((k) => `$${num(b * k)}$`).join(', ')}, …`,
         tex`$${num(d)}$ többszörösei: ${[1, 2, 3, 4].map((k) => `$${num(d * k)}$`).join(', ')}, …`,
-        tex`A legkisebb közös többszörös: **$${num(L)}$**.${b * d !== L ? tex` (A $${num(b * d)}$ is közös nevező, de nem a legkisebb.)` : ''}`,
+        tex`A legkisebb közös többszörös: **$${num(L)}$**.${b * d !== L ? tex` (${Article(num(b * d))} $${num(b * d)}$ is közös nevező, de nem a legkisebb.)` : ''}`,
       ],
     };
   },
@@ -491,7 +493,7 @@ const wordProblems: GeneratorDef = {
         const left = d - eaten;
         const [rn, rd] = reduce(left, d);
         return {
-          prompt: tex`Egy pizzát ${num(d)} egyenlő szeletre vágtak. Anna megette a pizza $${f(a1, b1)}$ részét, Bence a $${f(a2, b2)}$ részét. A pizza hányad része maradt meg?`,
+          prompt: tex`Egy pizzát ${num(d)} egyenlő szeletre vágtak. Anna megette a pizza $${f(a1, b1)}$ részét, Bence ${article(f(a2, b2))} $${f(a2, b2)}$ részét. A pizza hányad része maradt meg?`,
           answer: fracAnswer(left, d),
           hint: tex`Az egész pizza $1 = ${f(d, d)}$. Add össze, mennyit ettek meg, és vond ki az egészből!`,
           solution: [

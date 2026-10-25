@@ -378,7 +378,7 @@ const triangleParallelGen: GeneratorDef = {
       inputLabel: '$DE =$',
       hint: 'Az egész oldalhoz hasonlítsd: $CD : CA = DE : AB$.',
       solution: [
-        tex`Az $CA$ oldal hossza: $${num(p)} + ${num(q)} = ${num(ca)}$ cm.`,
+        tex`A $CA$ oldal hossza: $${num(p)} + ${num(q)} = ${num(ca)}$ cm.`,
         tex`A párhuzamosság miatt $${num(p)} : ${num(ca)} = DE : ${num(ab)}$.`,
         tex`$DE = ${num(ab)} \cdot ${num(p)} : ${num(ca)} = ${num(de)}$`,
         tex`A $DE$ szakasz **${num(de)} cm** hosszú.`,

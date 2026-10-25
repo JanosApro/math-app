@@ -138,6 +138,11 @@ export function article(next: number | string): 'a' | 'az' {
   if (typeof next === 'string') {
     const t = next.trim();
     if (/^[−-]/.test(t)) return 'a'; // "mínusz …"
+    // A point/segment/plane label read letter by letter: az A, az F (ef), az EF, a B, a CD.
+    if (/^[A-Z][A-Z\d_′'{}]*$/.test(t)) return /^[AEFILMNORSXY]/.test(t) ? 'az' : 'a';
+    // A TeX fraction is read from its numerator: az \frac{1}{5} (egyötöd), a \frac{3}{4}.
+    const frac = /^\\d?frac\{([^}]*)\}/.exec(t);
+    if (frac) return article(frac[1]);
     const digits = /^[\d  ]+/.exec(t);
     if (!digits) return /^[aáeéiíoóöőuúüű]/i.test(t) ? 'az' : 'a';
     next = Number(digits[0].replace(/[  ]/g, ''));
@@ -150,6 +155,11 @@ export function article(next: number | string): 'a' | 'az' {
   if (s.length === 4 && s[0] === '1') return 'az'; // ezer...
   if (s.length === 7 && s[0] === '1') return 'az'; // egymillió
   return 'a';
+}
+
+/** `article` capitalised, for the start of a sentence: "A", "Az". */
+export function Article(next: number | string): 'A' | 'Az' {
+  return article(next) === 'az' ? 'Az' : 'A';
 }
 
 /**

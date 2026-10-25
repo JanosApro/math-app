@@ -18,6 +18,8 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -112,7 +114,7 @@ const squareDiagonal: GeneratorDef = {
         figure: squareFigure(a, 'm'),
         answer: { type: 'number', value: saved, precision: 2, unit: 'm' },
         inputLabel: 'rövidebb:',
-        hint: tex`Az átló az $${num(a)}$ méteres oldalból $a\sqrt{2}$. Hasonlítsd össze a két útvonal hosszát!`,
+        hint: tex`Az átló ${article(num(a))} $${num(a)}$ méteres oldalból $a\sqrt{2}$. Hasonlítsd össze a két útvonal hosszát!`,
         solution: [
           tex`Az átló: $d = ${num(a)}\sqrt{2} \approx ${num(d, 2)}$ m.`,
           tex`Két oldal mentén: $${num(a)} + ${num(a)} = ${num(2 * a)}$ m.`,
@@ -227,7 +229,7 @@ const rectangleDiagonal: GeneratorDef = {
         inputLabel: '$d =$',
         hint: 'Az átló a téglalapot derékszögű háromszögre vágja: az oldalak a befogók.',
         solution: [
-          tex`Az átló a $${num(a)}$ és $${num(b)}$ befogójú derékszögű háromszög átfogója.`,
+          tex`Az átló ${article(num(a))} $${num(a)}$ és $${num(b)}$ befogójú derékszögű háromszög átfogója.`,
           tex`$d^2 = ${num(a)}^2 + ${num(b)}^2 = ${num(a * a)} + ${num(b * b)} = ${num(c * c)}$`,
           tex`$d = \sqrt{${num(c * c)}} = ${num(c)}$`,
           tex`A téglalap átlója **${num(c)} ${unit}**.`,
@@ -347,7 +349,7 @@ const diagonalMc: GeneratorDef = {
         solution: [
           tex`$d^2 = a^2 + a^2 = 2a^2$, ezért $d = a\sqrt{2}$.`,
           tex`$d = ${num(a)}\sqrt{2}$ cm.`,
-          tex`A $${num(2 * a)}$ a kétszeres oldal, a $${num(a * a)}$ a terület, a $${num(2 * a * a)}$ pedig $d^2$ — egyik sem az átló.`,
+          tex`${Article(num(2 * a))} $${num(2 * a)}$ a kétszeres oldal, ${article(num(a * a))} $${num(a * a)}$ a terület, ${article(num(2 * a * a))} $${num(2 * a * a)}$ pedig $d^2$ — egyik sem az átló.`,
         ],
       };
     }
@@ -363,7 +365,7 @@ const diagonalMc: GeneratorDef = {
       solution: [
         tex`$d^2 = ${num(a)}^2 + ${num(b)}^2 = ${num(n)}$`,
         tex`$d = ${rootSteps(n)}$ cm.`,
-        tex`A $${num(a + b)}$ az oldalak összege, a $${num(n)}$ a $d^2$, a $${num(2 * (a + b))}$ a kerület.`,
+        tex`${Article(num(a + b))} $${num(a + b)}$ az oldalak összege, ${article(num(n))} $${num(n)}$ a $d^2$, ${article(num(2 * (a + b)))} $${num(2 * (a + b))}$ a kerület.`,
       ],
     };
   },
@@ -429,7 +431,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**A téglalap átlója hosszabb mindkét oldalánál.**',
+            prompt: 'Igaz vagy hamis?\n\n**A téglalap átlója hosszabb mindkét oldalánál.**',
             answer: { type: 'truefalse', value: true },
             hint: 'Az átló az átfogó, az oldalak a befogók. Melyik a leghosszabb oldal?',
             solution: [
@@ -479,7 +481,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**Ha egy négyzet átlója $10$ cm, akkor az oldala $5$ cm.**',
+            prompt: 'Igaz vagy hamis?\n\n**Ha egy négyzet átlója $10$ cm, akkor az oldala $5$ cm.**',
             answer: { type: 'truefalse', value: false },
             hint: 'Az átló nem kétszerese az oldalnak, hanem $\\sqrt{2}$-szöröse.',
             solution: [

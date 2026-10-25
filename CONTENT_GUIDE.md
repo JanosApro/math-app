@@ -154,6 +154,7 @@ finished part gives XP and counts for the daily streak, so a student can do one 
 | `withUnit(x, 'cm')` | `3,5 cm` |
 | `joinHu(['a','b','c'])` | `a, b és c` |
 | `article(x)` | Hungarian article: `article(5)` → `az`, `article(3)` → `a` |
+| `Article(x)` | The same, capitalised for a sentence start. Works for labels too: `Article('EF')` → `Az`, `article('CD')` → `a`. Never hardcode `a`/`az` before a computed number or label. |
 | `suffix(n, back, front, rounded?)` | suffix after a number with vowel harmony: `` `${num(n)}-${suffix(n, 'nak', 'nek')}` `` → `6-nak`, `4-nek`; `suffix(5, 'hoz', 'hez', 'höz')` → `höz` |
 | `gcd`, `lcm`, `round(x, d)`, `clean(x)` (removes float noise like 0.30000000004) | |
 | `frac(n, d)`, `simplify`, `fracAdd/Sub/Mul/Div`, `fracEquals`, `fracCompare`, `fracValue`, `toMixed`, `decimalToFrac`, `isTerminating` | exact fractions |

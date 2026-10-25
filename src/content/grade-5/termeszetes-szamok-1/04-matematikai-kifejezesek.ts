@@ -14,6 +14,8 @@ import {
   type GeneratorDef,
   type Question,
   type Rng,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -579,7 +581,7 @@ const statement: GeneratorDef = {
       const wrong = (a + b) * c;
       const useCorrect = rng.chance(0.5);
       pool.push({
-        text: tex`A $${num(a)} + ${num(b)} \cdot ${num(c)}$ kifejezés értéke $${num(useCorrect ? correct : wrong)}$.`,
+        text: tex`${Article(num(a))} $${num(a)} + ${num(b)} \cdot ${num(c)}$ kifejezés értéke $${num(useCorrect ? correct : wrong)}$.`,
         value: useCorrect,
         why: tex`A szorzás megelőzi az összeadást: $${num(b)} \cdot ${num(c)} = ${num(b * c)}$, majd $${num(a)} + ${num(b * c)} = ${num(correct)}$.`,
       });
@@ -600,7 +602,7 @@ const statement: GeneratorDef = {
       const withBracket = (a + b) * c;
       const without = a + b * c;
       pool.push({
-        text: tex`A $(${num(a)} + ${num(b)}) \cdot ${num(c)}$ és a $${num(a)} + ${num(b)} \cdot ${num(c)}$ értéke egyenlő.`,
+        text: tex`A $(${num(a)} + ${num(b)}) \cdot ${num(c)}$ és ${article(num(a))} $${num(a)} + ${num(b)} \cdot ${num(c)}$ értéke egyenlő.`,
         value: withBracket === without,
         why: tex`Zárójellel: $(${num(a)} + ${num(b)}) \cdot ${num(c)} = ${num(withBracket)}$; zárójel nélkül: $${num(a)} + ${num(b)} \cdot ${num(c)} = ${num(without)}$.`,
       });
@@ -622,7 +624,7 @@ const statement: GeneratorDef = {
       const useCorrect = rng.chance(0.5);
       const claimDiv = useCorrect ? q2 : q2 + rng.int(1, 3);
       pool.push({
-        text: tex`A $${num(correctDiv)} : (${num(d)} \cdot ${num(extra)})$ kifejezés értéke $${num(claimDiv)}$.`,
+        text: tex`${Article(num(correctDiv))} $${num(correctDiv)} : (${num(d)} \cdot ${num(extra)})$ kifejezés értéke $${num(claimDiv)}$.`,
         value: useCorrect,
         why: tex`A zárójelben $${num(d)} \cdot ${num(extra)} = ${num(d * extra)}$, és $${num(correctDiv)} : ${num(d * extra)} = ${num(q2)}$.`,
       });

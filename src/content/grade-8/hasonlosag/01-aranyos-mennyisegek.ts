@@ -19,6 +19,7 @@ import {
   type Frac,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -181,7 +182,7 @@ const missingTerm: GeneratorDef = {
             tex`$${num(x1)}$ kg $${num(y1)}$ Ft, $${num(x2)}$ kg $x$ Ft.`,
             tex`Az aránypár: $${num(x1)} : ${num(y1)} = ${num(x2)} : x$.`,
             tex`$x = ${num(y1)} \cdot ${num(x2)} : ${num(x1)} = ${num(answer)}$`,
-            tex`A $${num(x2)}$ kg alma **${num(answer)} Ft**.`,
+            tex`${Article(num(x2))} $${num(x2)}$ kg alma **${num(answer)} Ft**.`,
           ],
         };
       }
@@ -198,7 +199,7 @@ const missingTerm: GeneratorDef = {
             tex`$${num(x1)}$ liter $\rightarrow$ $${num(km1)}$ km, $${num(x2)}$ liter $\rightarrow$ $x$ km.`,
             tex`Az aránypár: $${num(x1)} : ${num(km1)} = ${num(x2)} : x$.`,
             tex`$x = ${num(km1)} \cdot ${num(x2)} : ${num(x1)} = ${num(answer)}$`,
-            tex`A $${num(x2)}$ literrel **${num(answer)} km**-t tesz meg.`,
+            tex`${Article(num(x2))} $${num(x2)}$ literrel **${num(answer)} km**-t tesz meg.`,
           ],
         };
       }
@@ -215,7 +216,7 @@ const missingTerm: GeneratorDef = {
             tex`$${num(x1)}$ adag $\rightarrow$ $${num(y1)}$ tojás, $${num(x2)}$ adag $\rightarrow$ $x$ tojás.`,
             tex`$${num(x1)} : ${num(y1)} = ${num(x2)} : x$`,
             tex`$x = ${num(y1)} \cdot ${num(x2)} : ${num(x1)} = ${num(answer)}$`,
-            tex`A $${num(x2)}$ adaghoz **${num(answer)} tojás** kell.`,
+            tex`${Article(num(x2))} $${num(x2)}$ adaghoz **${num(answer)} tojás** kell.`,
           ],
         };
       }
@@ -231,7 +232,7 @@ const missingTerm: GeneratorDef = {
           tex`$${num(x1)}$ liter $\rightarrow$ $${num(y1)}$ m², $${num(x2)}$ liter $\rightarrow$ $x$ m².`,
           tex`$${num(x1)} : ${num(y1)} = ${num(x2)} : x$`,
           tex`$x = ${num(y1)} \cdot ${num(x2)} : ${num(x1)} = ${num(answer)}$`,
-          tex`A $${num(x2)}$ liter festék **${num(answer)} m²**-re elég.`,
+          tex`${Article(num(x2))} $${num(x2)}$ liter festék **${num(answer)} m²**-re elég.`,
         ],
       };
     }

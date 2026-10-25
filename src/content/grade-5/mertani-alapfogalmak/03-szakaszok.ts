@@ -18,6 +18,7 @@ import {
   type GeoItem,
   type Question,
   type XY,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -149,7 +150,7 @@ const unitConvert: GeneratorDef = {
       const n = rng.int(2, 9);
       const value = n * c.factor;
       return {
-        prompt: tex`Hány ${c.to} a $${num(n)}$ ${c.from}?`,
+        prompt: tex`Hány ${c.to} ${article(num(n))} $${num(n)}$ ${c.from}?`,
         answer: { type: 'number', value, unit: c.to },
         inputLabel: 'hossz =',
         hint: 'A nagyobb egységből kisebb egységbe váltunk: szorozni kell.',
@@ -166,7 +167,7 @@ const unitConvert: GeneratorDef = {
       if (rng.chance(0.4)) {
         const given = n * c.factor;
         return {
-          prompt: tex`Hány ${c.from} a $${num(given)}$ ${c.to}?`,
+          prompt: tex`Hány ${c.from} ${article(num(given))} $${num(given)}$ ${c.to}?`,
           answer: { type: 'number', value: n, unit: c.from },
           inputLabel: 'hossz =',
           hint: 'A kisebb egységből nagyobb egységbe váltunk: osztani kell.',
@@ -179,7 +180,7 @@ const unitConvert: GeneratorDef = {
       }
       const value = n * c.factor;
       return {
-        prompt: tex`Hány ${c.to} a $${num(n)}$ ${c.from}?`,
+        prompt: tex`Hány ${c.to} ${article(num(n))} $${num(n)}$ ${c.from}?`,
         answer: { type: 'number', value, unit: c.to },
         inputLabel: 'hossz =',
         hint: 'A nagyobb egységből kisebb egységbe váltunk: szorozni kell.',
@@ -194,11 +195,11 @@ const unitConvert: GeneratorDef = {
     // level 3: multi-unit lengths
     const kind = rng.pick(['cm', 'mm', 'm'] as const);
     const metres = rng.int(1, 9);
-    const cm = kind === 'm' ? rng.int(1, 9) * 10 : rng.int(1, 19) * 5;
+    const cm = rng.int(1, 19) * 5;
     if (kind === 'cm') {
       const value = metres * 100 + cm;
       return {
-        prompt: tex`Hány cm a $${num(metres)}$ m $${num(cm)}$ cm?`,
+        prompt: tex`Hány cm ${article(num(metres))} $${num(metres)}$ m $${num(cm)}$ cm?`,
         answer: { type: 'number', value, unit: 'cm' },
         inputLabel: 'hossz =',
         hint: 'Váltsd át a métereket centiméterekbe, aztán add hozzá a centimétereket!',
@@ -206,7 +207,7 @@ const unitConvert: GeneratorDef = {
           metres === 1
             ? tex`$1$ m $= 100$ cm.`
             : tex`$1$ m $= 100$ cm, ezért $${num(metres)}$ m $= ${num(metres * 100)}$ cm.`,
-          tex`A $${num(metres * 100)}$-${suffix(metres * 100, 'hoz', 'hez')} add hozzá a $${num(cm)}$ cm-t: $${num(value)}$ cm.`,
+          tex`${Article(num(metres * 100))} $${num(metres * 100)}$-${suffix(metres * 100, 'hoz', 'hez')} add hozzá ${article(num(cm))} $${num(cm)}$ cm-t: $${num(value)}$ cm.`,
           tex`A hossz **${num(value)} cm**.`,
         ],
       };
@@ -214,7 +215,7 @@ const unitConvert: GeneratorDef = {
     if (kind === 'mm') {
       const value = metres * 1000 + cm * 10;
       return {
-        prompt: tex`Hány mm a $${num(metres)}$ m $${num(cm)}$ cm?`,
+        prompt: tex`Hány mm ${article(num(metres))} $${num(metres)}$ m $${num(cm)}$ cm?`,
         answer: { type: 'number', value, unit: 'mm' },
         inputLabel: 'hossz =',
         hint: 'A métert és a centimétert is váltsd milliméterbe!',
@@ -228,15 +229,18 @@ const unitConvert: GeneratorDef = {
         ],
       };
     }
-    const value = metres + cm / 100;
+    // km + m → m (the decimal form "3,3 m" is not taught yet in grade 5)
+    const km = rng.int(1, 9);
+    const m = rng.int(1, 19) * 50;
+    const value = km * 1000 + m;
     return {
-      prompt: tex`Hány m a $${num(metres)}$ m $${num(cm)}$ cm? (Tizedes törtben add meg!)`,
+      prompt: tex`Hány m ${article(num(km))} $${num(km)}$ km $${num(m)}$ m?`,
       answer: { type: 'number', value, unit: 'm' },
       inputLabel: 'hossz =',
-      hint: 'A centimétereket váltsd méterbe, majd add hozzá a méterekhez!',
+      hint: 'Váltsd át a kilométereket méterbe, aztán add hozzá a métereket!',
       solution: [
-        tex`$100$ cm $= 1$ m, ezért $${num(cm)}$ cm $= ${num(cm)} : 100 = ${num(cm / 100)}$ m.`,
-        tex`$${num(metres)} + ${num(cm / 100)} = ${num(value)}$ m.`,
+        km === 1 ? tex`$1$ km $= 1000$ m.` : tex`$1$ km $= 1000$ m, ezért $${num(km)}$ km $= ${num(km * 1000)}$ m.`,
+        tex`$${num(km * 1000)} + ${num(m)} = ${num(value)}$ m.`,
         tex`A hossz **${num(value)} m**.`,
       ],
     };
@@ -354,9 +358,8 @@ const segmentCompare: GeneratorDef = {
   levels: [1, 2, 3],
   generate(rng, level): Question {
     if (level === 1) {
-      const a = rng.int(4, 9);
-      const b = rng.int(2, 8);
-      if (a === b) return segmentCompareL1Fixed(rng);
+      const a = rng.int(2, 9);
+      const b = rng.pick([2, 3, 4, 5, 6, 7, 8, 9].filter((x) => x !== a));
       const longer = a > b ? 'AB' : 'CD';
       return {
         prompt: 'Melyik szakasz a hosszabb?',
@@ -368,7 +371,7 @@ const segmentCompare: GeneratorDef = {
         hint: 'Hasonlítsd össze a két leolvasott hosszt!',
         solution: [
           tex`$|AB| = ${num(a)}$ cm, $|CD| = ${num(b)}$ cm.`,
-          tex`$${num(Math.max(a, b))} > ${num(Math.min(a, b))}$, ezért ${SegArt(longer)} **$${longer}$** szakasz a hosszabb.`,
+          tex`$${num(Math.max(a, b))} > ${num(Math.min(a, b))}$, ezért ${article(longer)} **$${longer}$** szakasz a hosszabb.`,
         ],
       };
     }

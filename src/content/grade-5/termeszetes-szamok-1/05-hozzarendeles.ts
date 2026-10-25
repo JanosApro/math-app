@@ -15,6 +15,7 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -252,8 +253,8 @@ const wordsToFormula: GeneratorDef = {
         tex`A bemenet ${num(k)}-${multiplicative(k, 'szorosát', 'szeresét', 'szörösét')} vesszük, majd ${minus ? 'kivonunk' : 'hozzáadunk'} ${num(b)}-${accusative(b)}.`,
         tex`Ez képlettel: **${correct}**.`,
         minus
-          ? tex`A $${num(k)}(x - ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb vonunk ki.`
-          : tex`A $${num(k)}(x + ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb adunk hozzá.`,
+          ? tex`${Article(num(k))} $${num(k)}(x - ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb vonunk ki.`
+          : tex`${Article(num(k))} $${num(k)}(x + ${num(b)})$ zárójeles alak nem ugyanaz: ott előbb adunk hozzá.`,
       ],
     };
   },

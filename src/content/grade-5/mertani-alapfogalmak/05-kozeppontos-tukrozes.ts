@@ -16,6 +16,7 @@ import {
   type GeneratorDef,
   type Question,
   type XY,
+  article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -201,7 +202,7 @@ const pointImage: GeneratorDef = {
         solution: [
           tex`A $P$ pontból az $O$ pontba ${stepText(dx, dy)} kell lépni.`,
           tex`Ugyanennyit lépünk tovább ugyanabba az irányba: az $O$-ból ${stepText(dx, dy)}.`,
-          tex`Így a $P′$ pont a **$${correct}$** jelű pont.`,
+          tex`Így a $P′$ pont ${article(correct)} **$${correct}$** jelű pont.`,
         ],
       };
     }
@@ -282,7 +283,7 @@ const centre: GeneratorDef = {
         solution: [
           tex`A $P$ és a $P′$ között a felezőpontot keressük.`,
           tex`A $P$-ből a $P′$-be ${stepText(pp[0] - p[0], pp[1] - p[1])} kell lépni; ennek a fele ${stepText(dx, dy)}.`,
-          tex`A középpont a **$${correct}$** jelű pont.`,
+          tex`A középpont ${article(correct)} **$${correct}$** jelű pont.`,
         ],
       };
     }
@@ -384,7 +385,7 @@ const imageMc: GeneratorDef = {
     const vertexLabels = shape === 'triangle' ? ['A', 'B', 'C'] : ['A', 'B', 'C', 'D'];
     const [correctColor, wrong1Color, wrong2Color] = rng.shuffle(['narancssárga', 'zöld', 'lila']);
     return {
-      prompt: tex`Melyik színű ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} az $${shape === 'triangle' ? 'ABC' : 'ABCD'}$ ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} képe?`,
+      prompt: tex`Melyik színű ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} ${article(shape === 'triangle' ? 'ABC' : 'ABCD')} $${shape === 'triangle' ? 'ABC' : 'ABCD'}$ ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} képe?`,
       figure: {
         type: 'coordinate',
         x: [0, 10],
@@ -401,7 +402,7 @@ const imageMc: GeneratorDef = {
       answer: textChoice(`a ${correctColor}`, [`a ${wrong1Color}`, `a ${wrong2Color}`]),
       hint: 'A képet úgy kapod, hogy minden csúcsot tükrözöl az $O$ pontra.',
       solution: [
-        tex`A középpontos tükrözésnél minden csúcs a $O$-val ellentétes oldalra kerül, ugyanolyan messzire.`,
+        tex`A középpontos tükrözésnél minden csúcs az $O$-val ellentétes oldalra kerül, ugyanolyan messzire.`,
         `A ${wrong1Color} alakzat el van tolva, a ${wrong2Color} tengelyesen tükrözött; egyik sem a középpontos kép.`,
         `A helyes kép a **${correctColor}** alakzat.`,
       ],
@@ -434,11 +435,11 @@ const parallelogramCentre: GeneratorDef = {
       const to = askB ? 'D' : 'B';
       const wrongs = ['A', 'B', 'C', 'D', 'O'].filter((v) => v !== from && v !== to).map((v) => `$${v}$`);
       return {
-        prompt: tex`A paralelogramma átlói az $O$ pontban metszik egymást. Melyik pont a $${from}$ csúcs képe az $O$-ra tükrözésnél?`,
+        prompt: tex`A paralelogramma átlói az $O$ pontban metszik egymást. Melyik pont ${article(from)} $${from}$ csúcs képe az $O$-ra tükrözésnél?`,
         figure: parallelogramAskFigure,
         answer: textChoice(`$${to}$`, wrongs),
         hint: 'A $BD$ átló felezőpontja $O$.',
-        solution: ['A $BD$ átló felezőpontja $O$.', `Ezért a $${from}$ csúcs képe a **$${to}$** csúcs.`],
+        solution: ['A $BD$ átló felezőpontja $O$.', `Ezért ${article(from)} $${from}$ csúcs képe ${article(to)} **$${to}$** csúcs.`],
       };
     }
     return {
@@ -478,7 +479,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'A középpontos tükrözés',
-          body: 'A $P$ pont képe $P′$ úgy, hogy a tükrözés középpontja, $O$ a $PP′$ szakasz felezőpontja. A $P$ és $P′$ a $O$ két oldalán van.',
+          body: 'A $P$ pont képe $P′$ úgy, hogy a tükrözés középpontja, $O$ a $PP′$ szakasz felezőpontja. A $P$ és $P′$ az $O$ két oldalán van.',
           figure: pointReflectionFigure,
           remember: '$O$ a $PP′$ felezőpontja',
         },
@@ -489,7 +490,7 @@ export default defineSubtopic({
             figure: pointReflectionFigure,
             answer: { type: 'truefalse', value: true },
             hint: 'Nézd meg az ábrán a két egyenlő szakaszt!',
-            solution: ['A $P$ és $P′$ a $O$-tól ugyanolyan távolságra van, ezért $O$ a felezőpont.', 'Az állítás **igaz**.'],
+            solution: ['A $P$ és $P′$ az $O$-tól ugyanolyan távolságra van, ezért $O$ a felezőpont.', 'Az állítás **igaz**.'],
           },
         },
         {

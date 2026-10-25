@@ -17,6 +17,7 @@ import {
   type GeneratorDef,
   type Question,
   type Rng,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -168,8 +169,8 @@ const elementOf: GeneratorDef = {
       solution: [
         tex`A halmaz elemei: $${listOf(A)}$.`,
         inside
-          ? tex`A $${num(target)}$ szerepel a felsorolásban, tehát **eleme** a halmaznak.`
-          : tex`A $${num(target)}$ nem szerepel a felsorolásban, tehát **nem eleme** a halmaznak.`,
+          ? tex`${Article(num(target))} $${num(target)}$ szerepel a felsorolásban, tehát **eleme** a halmaznak.`
+          : tex`${Article(num(target))} $${num(target)}$ nem szerepel a felsorolásban, tehát **nem eleme** a halmaznak.`,
         tex`Az állítás **${inside ? 'igaz' : 'hamis'}**.`,
       ],
     };
@@ -186,7 +187,7 @@ const notation: GeneratorDef = {
       const A = randomSet(rng, 3, 1, 9);
       const inner = listOf(A);
       return {
-        prompt: tex`Melyik a helyes jelölése a $${inner}$ számok halmazának?`,
+        prompt: tex`Melyik a helyes jelölése ${article(inner)} $${inner}$ számok halmazának?`,
         answer: textChoice(setM(A), [`$(${inner})$`, `$[${inner}]$`, `$${inner}$`]),
         hint: 'A halmaz elemeit kapcsos zárójel közé írjuk.',
         solution: [
@@ -336,7 +337,7 @@ const subsets: GeneratorDef = {
       steps.push(tex`Tehát **${num(count)}** részhalmaz van.`);
     }
     return {
-      prompt: tex`Hány részhalmaza van a $${setTex(A)}$ halmaznak?`,
+      prompt: tex`Hány részhalmaza van ${article(setTex(A))} $${setTex(A)}$ halmaznak?`,
       answer: { type: 'number', value: count },
       inputLabel: 'részhalmazok száma =',
       hint: 'Rendszerezd a részhalmazokat az elemek száma szerint: üres, egyelemű, kételemű, …',
@@ -509,8 +510,8 @@ const neighbour: GeneratorDef = {
           ? tex`$${num(n)} + 1 = ${num(value)}$`
           : tex`$${num(n)} - 1 = ${num(value)}$`,
         askSuccessor
-          ? tex`A $${num(n)}$ rákövetkezője **${num(value)}**.`
-          : tex`A $${num(n)}$ elődje **${num(value)}**.`,
+          ? tex`${Article(num(n))} $${num(n)}$ rákövetkezője **${num(value)}**.`
+          : tex`${Article(num(n))} $${num(n)}$ elődje **${num(value)}**.`,
       ],
     };
   },
@@ -538,7 +539,7 @@ const numberLinePoint: GeneratorDef = {
         inputLabel: 'A =',
         hint: 'A pont alatt látható a szám a számegyenesen.',
         solution: [
-          tex`Az $A$ pont a $${num(value)}$-${suffix(value, 'nál', 'nél')} található.`,
+          tex`Az $A$ pont ${article(num(value))} $${num(value)}$-${suffix(value, 'nál', 'nél')} található.`,
           tex`Tehát $A = ${num(value)}$.`,
         ],
       };
@@ -550,7 +551,7 @@ const numberLinePoint: GeneratorDef = {
     const target = rng.pick(values);
     const targetLetter = letters[values.indexOf(target)];
     return {
-      prompt: tex`Melyik pont felel meg a $${num(target)}$-${suffix(target, 'nak', 'nek')}?`,
+      prompt: tex`Melyik pont felel meg ${article(num(target))} $${num(target)}$-${suffix(target, 'nak', 'nek')}?`,
       figure: {
         type: 'numberLine',
         min: 0,
@@ -562,7 +563,7 @@ const numberLinePoint: GeneratorDef = {
       answer: textChoice(`$${targetLetter}$`, letters.filter((l) => l !== targetLetter).map((l) => `$${l}$`)),
       hint: 'A 0-tól indulva számold meg az osztásokat!',
       solution: [
-        tex`A $${num(target)}$ a 0-tól $${num(target / step)}$ osztásra van.`,
+        tex`${Article(num(target))} $${num(target)}$ a 0-tól $${num(target / step)}$ osztásra van.`,
         tex`A keresett pont: **$${targetLetter}$**.`,
       ],
     };

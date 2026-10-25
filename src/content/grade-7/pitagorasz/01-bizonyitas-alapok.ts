@@ -22,6 +22,7 @@ import {
   type Question,
   type Rng,
   type XY,
+  article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -253,7 +254,7 @@ function wordProblem(rng: Rng, ask: 'hypotenuse' | 'leg'): Question {
       answer: { type: 'number', value: saved, unit: 'm' },
       hint: 'Az átló egy derékszögű háromszög átfogója, amelynek befogói a park oldalai. Számítsd ki, aztán hasonlítsd össze a két út hosszát!',
       solution: [
-        tex`Az átló a $${num(x)}$ m és $${num(y)}$ m befogójú derékszögű háromszög átfogója.`,
+        tex`Az átló ${article(num(x))} $${num(x)}$ m és $${num(y)}$ m befogójú derékszögű háromszög átfogója.`,
         tex`$d^2 = ${num(x)}^2 + ${num(y)}^2 = ${num(x * x)} + ${num(y * y)} = ${num(z * z)}$, így $d = ${num(z)}$ m.`,
         tex`A két szélen: $${num(x)} + ${num(y)} = ${num(x + y)}$ m.`,
         tex`A különbség: $${num(x + y)} - ${num(z)} = ${num(saved)}$ m.`,
