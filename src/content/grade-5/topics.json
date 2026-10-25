@@ -77,35 +77,35 @@
           "id": "g5-mertani-alapfogalmak-02",
           "file": "02-egyenesek-helyzete",
           "title": "Az egyenesek kölcsönös helyzete a síkban. A sík részei",
-          "status": "todo",
+          "status": "draft",
           "scope": "Intersecting vs. parallel lines (p ∥ q), intersection point; unique parallel through a point not on the line (drawn with two set squares); parallelism is transitive (informal); half-planes and the regions into which lines cut the plane; triangles and parallelograms as plane regions and how they are labelled. Exercises: MC/T-F on relative position from a figure, integer input for number of intersection points / regions for 2–4 lines (with or without parallels), construction-step viewer for drawing a parallel."
         },
         {
           "id": "g5-mertani-alapfogalmak-03",
           "file": "03-szakaszok",
           "title": "A szakaszok mérése. A szakaszok egyenlősége",
-          "status": "todo",
+          "status": "draft",
           "scope": "Units of length mm, cm, dm, m, km and conversions; multi-unit lengths (2 m 35 cm) to one (smallest) unit; length |AB|, equal segments; comparing, adding and subtracting segments by calculation and by compass (transfer); broken lines and perimeter of a closed broken line. Exercises: unit conversion (integer input; decimal answers only at level 3, before fractions are taught), sum/difference of labelled segments on a figure, perimeter of a polygonal chain, T/F."
         },
         {
           "id": "g5-mertani-alapfogalmak-04",
           "file": "04-korvonal-kor",
           "title": "Körvonal és kör",
-          "status": "todo",
+          "status": "draft",
           "scope": "Circle line (körvonal) vs. disc (kör); centre O, radius r, diameter d = 2r, chord (húr), arc (ív), tangent (érintő), secant (szelő); position of a point relative to a circle (distance vs. r), of a line (0, 1, 2 common points), of two circles (informal). Exercises: d ↔ r (integer input), MC classify the position from given distance and radius, MC name the labelled element on a figure, T/F (e.g. the diameter is the longest chord)."
         },
         {
           "id": "g5-mertani-alapfogalmak-05",
           "file": "05-kozeppontos-tukrozes",
           "title": "A középpontos tükrözés",
-          "status": "todo",
+          "status": "draft",
           "scope": "Point reflection (central symmetry) about O: image of points, segments, circles, triangles, squares, rectangles; properties (O is the midpoint of PP′, image segment equal and parallel to the original, orientation kept); link to the parallelogram (diagonals bisect each other). Exercises: image of a point on a square grid (coordinates as two integer inputs or MC), find the centre from a point and its image, T/F on properties. Figures: grid, O, original and primed image in two colours."
         },
         {
           "id": "g5-mertani-alapfogalmak-06",
           "file": "06-vektorok-eltolas",
           "title": "Vektorok. A párhuzamos eltolás",
-          "status": "todo",
+          "status": "draft",
           "scope": "Directed segment, vector AB→ / v→: direction (irány), orientation (irányítás), magnitude |v→|; equal and opposite vectors; translation (párhuzamos eltolás) of points, segments and simple figures by a vector; properties (shape and size kept, segment ∥ image). Exercises: on a grid translate a point by a vector (coordinates or 'jobbra 3, fel 2'), MC equal/opposite vectors in a figure, magnitude by counting grid units (integer input), T/F. Vectors drawn with a dot at the start, arrowhead at the end."
         }
       ]

@@ -12,28 +12,28 @@
           "id": "g8-hasonlosag-01",
           "file": "01-aranyos-mennyisegek",
           "title": "Arányos mennyiségek",
-          "status": "todo",
+          "status": "draft",
           "scope": "Ratio of two segments (simplified a : b), proportion a : b = c : d and its basic property (ad = bc), 4th proportional computed numerically, map scale (méretarány) with unit conversion, commensurable vs incommensurable segments (side vs diagonal of a square) as a concept check. Exercises: simplify a ratio, solve for the missing term (integer/fraction input), scale distance tasks, T/F and MC on proportions. L1 integer ratios, L2 fractions/decimals and map scale, L3 multi-step word problems."
         },
         {
           "id": "g8-hasonlosag-02",
           "file": "02-thalesz-tetel",
           "title": "Thalész párhuzamos szelők tétele",
-          "status": "todo",
+          "status": "draft",
           "scope": "Intercept theorem (Serbian Talesova teorema; NOT the Hungarian semicircle 'Thalész-tétel'): parallels cutting the arms of an angle cut proportional segments; converse to decide parallelism; dividing a segment into n equal parts or in a given ratio by construction (tap-through construction steps); constructing the 4th proportional. Theorem stated, not proved. Exercises: missing segment from a labeled angle-with-two-parallels figure that follows the numbers, T/F 'are the lines parallel' via ratio check, ordering construction steps, shadow/height tasks. L1 adjacent segments, L2 whole arm vs part, L3 ratio of the parallel segments and word problems."
         },
         {
           "id": "g8-hasonlosag-03",
           "file": "03-haromszogek-hasonlosaga",
           "title": "Háromszögek hasonlósága",
-          "status": "todo",
+          "status": "draft",
           "scope": "Similar figures in everyday life (photos, maps, models); definition of similar triangles (equal corresponding angles, proportional sides), similarity ratio k, notation △ABC ~ △A₁B₁C₁, matching corresponding sides and angles; perimeter ratio = k (area ratio k² only as L3 extension). Exercises: find k, missing sides and angles of the similar triangle, perimeter, MC on correspondence, T/F 'are these similar'; figure of two similar triangles with labeled sides."
         },
         {
           "id": "g8-hasonlosag-04",
           "file": "04-hasonlosagi-tetelek",
           "title": "A háromszögek hasonlóságának tételei",
-          "status": "todo",
+          "status": "draft",
           "scope": "Similarity criteria (three proportional sides; two proportional sides + equal included angle; two equal angles; two proportional sides + equal angle opposite the larger one), choosing the right criterion; applications: height of a pyramid/tree/building from shadows (Thales legend), width of a river, similarity in a right triangle (altitude to the hypotenuse vs the hypotenuse segments, legs vs segments; similarity proof of Pythagoras). Exercises: MC which criterion applies, compute unknown lengths in real-context figures, right-triangle altitude relations (a√b answers at L3)."
         }
       ]
@@ -49,21 +49,21 @@
           "id": "g8-pont-egyenes-sik-01",
           "file": "01-kolcsonos-helyzet",
           "title": "A pont, az egyenes és a sík kölcsönös helyzete",
-          "status": "todo",
+          "status": "draft",
           "scope": "Relations in space: point–line and point–plane (∈, ∉); what determines a plane (3 non-collinear points, line + point, two intersecting or two parallel lines); two lines (intersecting, parallel, skew = kitérő); line–plane (lies in, parallel, meets at a döféspont, perpendicular); two planes (parallel, intersecting, perpendicular); distance of a point from a plane; symbols ∈, ⊂, ∥, ⊥. Exercises on a labeled cube/cuboid figure (MC/T-F about edges, diagonals and faces), count planes determined by given points. L1 recognize, L2 name relations in notation, L3 counting and distances via Pythagoras."
         },
         {
           "id": "g8-pont-egyenes-sik-02",
           "file": "02-meroleges-vetites",
           "title": "Merőleges vetítés a síkra",
-          "status": "todo",
+          "status": "draft",
           "scope": "Orthogonal projection onto a plane of a point, a segment (3 cases: slanted → shorter, parallel → equal, perpendicular → a single point A₁ ≡ B₁) and a line; angle between a line and a plane (angle with its projection); Pythagoras with projections: segment length from its projection and the difference of the endpoints' distances to the plane, and the reverse. Exercises: compute projection or segment length (integer and a√b answers), T/F on the cases, MC on plane figures (rounded parallelogram plane α, projections labeled with subscript 1). L3: 45° and 30°–60° special triangles."
         },
         {
           "id": "g8-pont-egyenes-sik-03",
           "file": "03-poliederek",
           "title": "Poliéderek",
-          "status": "todo",
+          "status": "draft",
           "scope": "Heavy lesson (book sections: surface and solid in space; polyhedra; concept of surface area; concept of volume and volume units; cube and cuboid volume, liter). Polyhedron = part of space bounded by polygons; faces, edges, vertices, polyhedra vs curved solids; surface area as the area of the net; volume units mm³–cm³–dm³–m³ (factor 1000), 1 l = 1 dm³, 1 ml = 1 cm³, hl; cube (6a², a³) and cuboid (2(ab + bc + ca), abc). Exercises: count faces/edges/vertices from a figure, unit conversions with decimal comma, capacity word problems (aquarium, tank), L3 cuboid space diagonal."
         }
       ]

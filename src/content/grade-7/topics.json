@@ -12,49 +12,49 @@
           "id": "g7-valos-szamok-01",
           "file": "01-racionalis-szam-negyzete",
           "title": "A racionális szám négyzete",
-          "status": "todo",
+          "status": "draft",
           "scope": "Square of integers, fractions p/q and decimals (equal weight to both forms); square as area of a square with side p/q; squares are never negative; (-a)² vs -a² trap. Exercises: numeric/fraction input, MC with sign/doubling distractors (a² vs 2a), T/F. L1 integers & simple decimals, L2 negative fractions/decimals, L3 short expressions and area word problems."
         },
         {
           "id": "g7-valos-szamok-02",
           "file": "02-negyzetgyok",
           "title": "Négyzetgyök",
-          "status": "todo",
+          "status": "draft",
           "scope": "√a (a ≥ 0) as the non-negative number whose square is a; roots of perfect squares incl. fractions and decimals (√0,49, √(9/25)); equation x² = a has 2/1/0 solutions; difference between √4 and the solutions of x² = 4; √(a²) = |a|. Exercises: numeric/fraction input, enter solutions of x² = a, MC 'how many solutions', T/F traps (√(a²) = a). L3: roots of products/quotients of perfect squares."
         },
         {
           "id": "g7-valos-szamok-03",
           "file": "03-valos-szamok-halmaza",
           "title": "R, a valós számok halmaza",
-          "status": "todo",
+          "status": "draft",
           "scope": "x² = 2 has no rational solution -> irrational numbers (no proof required); R = Q ∪ I; finite/periodic decimals (rational) vs infinite non-periodic (irrational), π as irrational; real number line, locating √n between consecutive integers; N ⊂ Z ⊂ Q ⊂ R. Exercises: classify numbers (MC/matching/T-F), compare and order reals incl. roots, number-line figures."
         },
         {
           "id": "g7-valos-szamok-04",
           "file": "04-kozelito-ertek",
           "title": "A valós szám közelítő értéke",
-          "status": "todo",
+          "status": "draft",
           "scope": "Approximate value (lower/upper) to a given precision, absolute error |x - x'|, rounding rule motivated by choosing the smaller absolute error; estimating roots (√7 ≈ 2,65); calculator allowed for irrational roots. Exercises: round to n decimals (decimal-comma input), compute absolute error, MC 'which approximation is better', interval on number line. Precision defined per exercise."
         },
         {
           "id": "g7-valos-szamok-05",
           "file": "05-muveletek-valos-szamokkal",
           "title": "Számtani műveletek valós számokkal",
-          "status": "todo",
+          "status": "draft",
           "scope": "Properties of + and · in R (compare with Q); root rules for a, b ≥ 0: √(ab) = √a·√b, √(a/b) = √a/√b; √(a+b) ≠ √a + √b; simplifying to k√n form (√12 = 2√3), adding/subtracting like roots, evaluating expressions with roots and |a|; setting up a numeric expression from a real situation. Exercises: root input (a√b), MC with typical-mistake distractors, T/F. Keep denominator rationalization out (not in curriculum)."
         },
         {
           "id": "g7-valos-szamok-06",
           "file": "06-egyenes-aranyossag",
           "title": "Az egyenes arányosság függvénye",
-          "status": "todo",
+          "status": "draft",
           "scope": "Function y = kx, k ∈ R\\{0}, from real contexts (distance–time at constant speed, price–quantity); value table, dotted graph for discrete values -> line through the origin; finding k from a point/table; k > 0 increasing, k < 0 decreasing; is a point on the graph. Exercises: fill table (numeric), find k (fraction/decimal), T/F point-on-graph, MC choose the graph (coordinate-plane figures)."
         },
         {
           "id": "g7-valos-szamok-07",
           "file": "07-kibovitett-arany",
           "title": "A kibővített arány",
-          "status": "todo",
+          "status": "draft",
           "scope": "Proportion a : b = c : d, outer/inner terms (kültagok/beltagok) and a·d = b·c; extended ratio a : b : c — definition and properties (multiply/divide all terms), simplifying; extended ratio of directly/inversely proportional quantities; combining simple ratios (a:b and b:c) into an extended ratio; dividing a quantity in a given ratio, triangle angles in ratio, alloys. Exercises: find missing term, divide a sum (numeric input), MC simplified ratio."
         }
       ]
@@ -77,35 +77,35 @@
           "id": "g7-pitagorasz-02",
           "file": "02-szerkesztesek",
           "title": "A Pitagorasz-tétel alkalmazása szerkesztéseknél",
-          "status": "todo",
+          "status": "draft",
           "scope": "Constructing segments of irrational length √2, √3, √5, … with right triangles (legs 1 and 1, 1 and √2, 1 and 2…, square-root spiral); marking √n on the number line with compass; choosing legs whose squares sum to n. Exercises: MC 'which right triangle gives √n', ordering construction steps, compute the length produced, tap-through construction figures."
         },
         {
           "id": "g7-pitagorasz-03",
           "file": "03-negyzet-teglalap",
           "title": "A Pitagorasz-tétel alkalmazása négyzetre és téglalapra",
-          "status": "todo",
+          "status": "draft",
           "scope": "Square diagonal d = a√2 and rectangle diagonal d² = a² + b²; isosceles right triangle as half a square (45°); reverse problems (side from diagonal, missing side from diagonal + side, then perimeter/area). Exercises: root input (k√2), numeric, MC with typical mistakes (d = 2a, a² + b² without root), figures with dashed diagonal and highlighted right triangle."
         },
         {
           "id": "g7-pitagorasz-04",
           "file": "04-egyenlo-szaru-oldalu-haromszog",
           "title": "A Pitagorasz-tétel alkalmazása egyenlő szárú és egyenlő oldalú háromszögre",
-          "status": "todo",
+          "status": "draft",
           "scope": "Height to the base of an isosceles triangle m² = b² − (a/2)²; equilateral triangle m = a√3/2, T = a²√3/4; 30°–60°–90° triangle as half of an equilateral one (sides a, a/2, a√3/2); reverse problems (side from height); perimeter/area. Exercises: root input, numeric, MC distractors forgetting to halve the base; figures with dashed height and right-angle marker."
         },
         {
           "id": "g7-pitagorasz-05",
           "file": "05-rombusz-trapez",
           "title": "A Pitagorasz-tétel alkalmazása rombuszra és trapézra",
-          "status": "todo",
+          "status": "draft",
           "scope": "Rhombus: diagonals e, f bisect each other at right angles, a² = (e/2)² + (f/2)², T = e·f/2, height from area; isosceles and right trapezoid: height/leg/diagonal from bases (overhang (a − c)/2), perimeter and area. Exercises: numeric & root input, multi-step at L2–L3, MC; figures with dashed diagonals/heights and the used right triangle highlighted."
         },
         {
           "id": "g7-pitagorasz-06",
           "file": "06-pontok-tavolsaga",
           "title": "Pontok egymástól való távolsága a koordináta-rendszerben",
-          "status": "todo",
+          "status": "draft",
           "scope": "Distance of A(x₁, y₁) and B(x₂, y₂) via the right triangle with legs |x₂ − x₁| and |y₂ − y₁|; segment lengths, perimeter of a triangle on the grid, checking whether a triangle is right/isosceles. Exercises: root/numeric input, MC, coordinate-plane figures with marked legs; L1 points in the first quadrant, L2–L3 negative coordinates and perimeters."
         }
       ]
