@@ -10,6 +10,7 @@ import {
   defineSubtopic,
   num,
   tex,
+  texRoot,
   textChoice,
   type FigColor,
   type Figure,
@@ -402,86 +403,98 @@ const cubeRelation: GeneratorDef = {
   },
 };
 
+/** "a" or "az" before a lower-case line name or a Greek plane name: az e, az f, a p, az α, a β. */
+const artName = (x: string) => (/^([aefilmnorsxy]|\\alpha)/.test(x) ? 'az' : 'a');
+
 /** The correct mathematical notation of an incidence / parallelism / perpendicularity. */
 const symbols: GeneratorDef = {
   id: 'symbols',
   title: 'Illeszkedés, párhuzamosság és merőlegesség jelölése',
   levels: [1, 2],
   generate(rng, level): Question {
+    // level 1: a point and a line or plane (∈, ∉); level 2: two lines, a line and a plane, two planes
+    const P = rng.pick(['A', 'B', 'C', 'P', 'Q', 'R']);
+    const [l, m] = rng.sample(['p', 'q', 'e', 'f', 'g'], 2);
+    const [al, be] = rng.sample(['\\alpha', '\\beta', '\\gamma', '\\sigma'], 2);
     const basic = ['in-line', 'notin-line', 'in-plane', 'notin-plane'] as const;
     const more = ['line-in-plane', 'parallel-lines', 'perp-lines', 'parallel-line-plane', 'perp-line-plane', 'parallel-planes', 'perp-planes'] as const;
-    const kind = level === 1 ? rng.pick(basic) : rng.pick([...basic, ...more]);
-    const data: Record<(typeof basic)[number] | (typeof more)[number], { prompt: string; correct: string; wrongs: string[]; why: string[] }> = {
+    const kind = level === 1 ? rng.pick(basic) : rng.pick(more);
+    const A = `${article(P)} $${P}$ pont`;
+    const L = `${artName(l)} $${l}$ egyenes`;
+    const M = `${artName(m)} $${m}$ egyenes`;
+    const S1 = (suffixed: string) => `${artName(al)} $${al}$ ${suffixed}`;
+    const S2 = (suffixed: string) => `${artName(be)} $${be}$ ${suffixed}`;
+    const data: Record<(typeof basic)[number] | (typeof more)[number], { what: string; correct: string; wrongs: string[]; why: string[] }> = {
       'in-line': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $A$ pont illeszkedik a $p$ egyenesre?',
-        correct: '$A \\in p$',
-        wrongs: ['$A \\notin p$', '$p \\in A$', '$A \\subset p$'],
-        why: ['Az illeszkedés jele a $\\in$: $A \\in p$ azt jelenti, hogy az $A$ pont a $p$ egyenesen van.', 'A $\\subset$ a részhalmaz jele, például $p \\subset \\alpha$.'],
+        what: `${A} illeszkedik ${artName(l)} $${l}$ egyenesre`,
+        correct: `$${P} \\in ${l}$`,
+        wrongs: [`$${P} \\notin ${l}$`, `$${l} \\in ${P}$`, `$${P} \\subset ${l}$`],
+        why: [`Az illeszkedés jele a $\\in$: $${P} \\in ${l}$.`, 'A $\\subset$ a részhalmaz jele, például egyenes és sík között.'],
       },
       'notin-line': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $A$ pont nem illeszkedik a $p$ egyenesre?',
-        correct: '$A \\notin p$',
-        wrongs: ['$A \\in p$', '$p \\notin A$', '$A \\not\\subset p$'],
-        why: ['A nem illeszkedés jele a $\\notin$: $A \\notin p$.', 'Az $A \\in p$ éppen az ellenkezőjét jelenti.'],
+        what: `${A} nem illeszkedik ${artName(l)} $${l}$ egyenesre`,
+        correct: `$${P} \\notin ${l}$`,
+        wrongs: [`$${P} \\in ${l}$`, `$${l} \\notin ${P}$`, `$${P} \\not\\subset ${l}$`],
+        why: [`A nem illeszkedés jele a $\\notin$: $${P} \\notin ${l}$.`, `A $${P} \\in ${l}$ éppen az ellenkezőjét jelenti.`],
       },
       'in-plane': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $A$ pont illeszkedik az $\\alpha$ síkra?',
-        correct: '$A \\in \\alpha$',
-        wrongs: ['$A \\notin \\alpha$', '$\\alpha \\in A$', '$A \\subset \\alpha$'],
-        why: ['A pont és a sík illeszkedését is a $\\in$ jelöli: $A \\in \\alpha$.', 'A $\\subset$ jelet egyenes és sík viszonyára használjuk: $p \\subset \\alpha$.'],
+        what: `${A} illeszkedik ${S1('síkra')}`,
+        correct: `$${P} \\in ${al}$`,
+        wrongs: [`$${P} \\notin ${al}$`, `$${al} \\in ${P}$`, `$${P} \\subset ${al}$`],
+        why: [`A pont és a sík illeszkedését is a $\\in$ jelöli: $${P} \\in ${al}$.`, 'A $\\subset$ jelet egyenes és sík viszonyára használjuk.'],
       },
       'notin-plane': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $A$ pont nincs rajta az $\\alpha$ síkon?',
-        correct: '$A \\notin \\alpha$',
-        wrongs: ['$A \\in \\alpha$', '$\\alpha \\notin A$', '$A \\not\\subset \\alpha$'],
-        why: ['A nem illeszkedés jele a $\\notin$: $A \\notin \\alpha$.', 'Az $A \\in \\alpha$ azt jelentené, hogy a pont a síkon van.'],
+        what: `${A} nincs rajta ${S1('síkon')}`,
+        correct: `$${P} \\notin ${al}$`,
+        wrongs: [`$${P} \\in ${al}$`, `$${al} \\notin ${P}$`, `$${P} \\not\\subset ${al}$`],
+        why: [`A nem illeszkedés jele a $\\notin$: $${P} \\notin ${al}$.`, `A $${P} \\in ${al}$ azt jelentené, hogy a pont a síkon van.`],
       },
       'line-in-plane': {
-        prompt: 'Melyik jelölés fejezi ki, hogy a $p$ egyenes illeszkedik az $\\alpha$ síkra?',
-        correct: '$p \\subset \\alpha$',
-        wrongs: ['$p \\in \\alpha$', '$p \\parallel \\alpha$', '$\\alpha \\subset p$'],
-        why: ['Ha az egyenes minden pontja a síkon van, akkor $p \\subset \\alpha$.', 'A $p \\parallel \\alpha$ azt jelentené, hogy nincs közös pontjuk.'],
+        what: `${L} illeszkedik ${S1('síkra')}`,
+        correct: `$${l} \\subset ${al}$`,
+        wrongs: [`$${l} \\in ${al}$`, `$${l} \\parallel ${al}$`, `$${al} \\subset ${l}$`],
+        why: [`Ha az egyenes minden pontja a síkon van, akkor $${l} \\subset ${al}$.`, `A $${l} \\parallel ${al}$ azt jelentené, hogy nincs közös pontjuk.`],
       },
       'parallel-lines': {
-        prompt: 'Melyik jelölés fejezi ki, hogy a $p$ egyenes párhuzamos a $q$ egyenessel?',
-        correct: '$p \\parallel q$',
-        wrongs: ['$p \\perp q$', '$p \\subset q$', '$p \\in q$'],
-        why: ['A párhuzamosság jele a $\\parallel$: $p \\parallel q$.', 'A $\\perp$ a merőlegességet jelöli.'],
+        what: `${L} párhuzamos ${artName(m)} $${m}$ egyenessel`,
+        correct: `$${l} \\parallel ${m}$`,
+        wrongs: [`$${l} \\perp ${m}$`, `$${l} \\subset ${m}$`, `$${l} \\in ${m}$`],
+        why: [`A párhuzamosság jele a $\\parallel$: $${l} \\parallel ${m}$.`, 'A $\\perp$ a merőlegességet jelöli.'],
       },
       'perp-lines': {
-        prompt: 'Melyik jelölés fejezi ki, hogy a $p$ egyenes merőleges a $q$ egyenesre?',
-        correct: '$p \\perp q$',
-        wrongs: ['$p \\parallel q$', '$p \\subset q$', '$p \\in q$'],
-        why: ['A merőlegesség jele a $\\perp$: $p \\perp q$.', 'A $\\parallel$ a párhuzamosságot jelöli.'],
+        what: `${L} merőleges ${artName(m)} $${m}$ egyenesre`,
+        correct: `$${l} \\perp ${m}$`,
+        wrongs: [`$${l} \\parallel ${m}$`, `$${l} \\subset ${m}$`, `$${l} \\in ${m}$`],
+        why: [`A merőlegesség jele a $\\perp$: $${l} \\perp ${m}$.`, 'A $\\parallel$ a párhuzamosságot jelöli.'],
       },
       'parallel-line-plane': {
-        prompt: 'Melyik jelölés fejezi ki, hogy a $p$ egyenes párhuzamos az $\\alpha$ síkkal?',
-        correct: '$p \\parallel \\alpha$',
-        wrongs: ['$p \\perp \\alpha$', '$p \\subset \\alpha$', '$p \\in \\alpha$'],
-        why: ['Egyenes és sík párhuzamossága: $p \\parallel \\alpha$.', 'A $p \\subset \\alpha$ azt jelenti, hogy az egyenes a síkon fekszik.'],
+        what: `${L} párhuzamos ${S1('síkkal')}`,
+        correct: `$${l} \\parallel ${al}$`,
+        wrongs: [`$${l} \\perp ${al}$`, `$${l} \\subset ${al}$`, `$${l} \\in ${al}$`],
+        why: [`Egyenes és sík párhuzamossága: $${l} \\parallel ${al}$.`, `A $${l} \\subset ${al}$ azt jelenti, hogy az egyenes a síkon fekszik.`],
       },
       'perp-line-plane': {
-        prompt: 'Melyik jelölés fejezi ki, hogy a $p$ egyenes merőleges az $\\alpha$ síkra?',
-        correct: '$p \\perp \\alpha$',
-        wrongs: ['$p \\parallel \\alpha$', '$p \\subset \\alpha$', '$p \\notin \\alpha$'],
-        why: ['Egyenes és sík merőlegessége: $p \\perp \\alpha$.', 'A $p \\parallel \\alpha$ párhuzamosságot jelent.'],
+        what: `${L} merőleges ${S1('síkra')}`,
+        correct: `$${l} \\perp ${al}$`,
+        wrongs: [`$${l} \\parallel ${al}$`, `$${l} \\subset ${al}$`, `$${l} \\notin ${al}$`],
+        why: [`Egyenes és sík merőlegessége: $${l} \\perp ${al}$.`, `A $${l} \\parallel ${al}$ párhuzamosságot jelent.`],
       },
       'parallel-planes': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $\\alpha$ és a $\\beta$ sík párhuzamos?',
-        correct: '$\\alpha \\parallel \\beta$',
-        wrongs: ['$\\alpha \\perp \\beta$', '$\\alpha \\subset \\beta$', '$\\alpha \\in \\beta$'],
-        why: ['Két sík párhuzamossága: $\\alpha \\parallel \\beta$.', 'A $\\perp$ itt merőlegességet jelentene.'],
+        what: `${S1('sík')} párhuzamos ${S2('síkkal')}`,
+        correct: `$${al} \\parallel ${be}$`,
+        wrongs: [`$${al} \\perp ${be}$`, `$${al} \\subset ${be}$`, `$${al} \\in ${be}$`],
+        why: [`Két sík párhuzamossága: $${al} \\parallel ${be}$.`, 'A $\\perp$ itt merőlegességet jelentene.'],
       },
       'perp-planes': {
-        prompt: 'Melyik jelölés fejezi ki, hogy az $\\alpha$ és a $\\beta$ sík merőleges?',
-        correct: '$\\alpha \\perp \\beta$',
-        wrongs: ['$\\alpha \\parallel \\beta$', '$\\alpha \\subset \\beta$', '$\\alpha \\in \\beta$'],
-        why: ['Két sík merőlegessége: $\\alpha \\perp \\beta$.', 'A $\\parallel$ párhuzamosságot jelent.'],
+        what: `${S1('sík')} merőleges ${S2('síkra')}`,
+        correct: `$${al} \\perp ${be}$`,
+        wrongs: [`$${al} \\parallel ${be}$`, `$${al} \\subset ${be}$`, `$${al} \\in ${be}$`],
+        why: [`Két sík merőlegessége: $${al} \\perp ${be}$.`, 'A $\\parallel$ párhuzamosságot jelent.'],
       },
     };
     const d = data[kind];
     return {
-      prompt: d.prompt,
+      prompt: `Melyik jelölés fejezi ki, hogy ${d.what}?`,
       answer: textChoice(d.correct, d.wrongs),
       hint: 'Keresd meg a megfelelő jelet: illeszkedés, párhuzamosság vagy merőlegesség.',
       solution: d.why,
@@ -508,8 +521,8 @@ const linePlane: GeneratorDef = {
       ['BD', 'EFGH'],
       ['BD', 'ABFE'],
     ];
+    // level 2 adds the space diagonal and the hidden faces; it does not repeat level 1
     const lineCasesL2: [string, string][] = [
-      ...lineCasesL1,
       ['AG', 'ABCD'],
       ['AG', 'EFGH'],
       ['AG', 'ABFE'],
@@ -621,44 +634,98 @@ const linePlane: GeneratorDef = {
   },
 };
 
-/** Planes determined by 3, 4 or 5 points in general position. */
+/** Point positions for the plane-count figures. */
+const SCATTER: XY[] = [[0, 0], [4, 0], [0.8, 3.4], [2.8, 2.2], [5.2, 1.2], [1.6, 5.2], [6.4, 3.6], [3.8, 4.8], [7.4, 0.6], [-1.2, 2.2]];
+const IN_PLANE: XY[] = [[1.2, 0.6], [3.2, 1.8], [4.6, 0.6], [6.6, 1.7], [7.8, 0.6], [2.2, 1.4]];
+const OFF_PLANE: XY[] = [[2, 4.4], [5, 5.2], [8, 4.2]];
+const ON_LINE: XY[] = [0.3, 1.6, 2.9, 4.2, 5.5, 6.8, 8.1].map((x) => [x, 1 + 0.2 * (x + 0.5)] as XY);
+const OFF_LINE: XY[] = [[1.4, 4], [4.6, 4.8], [7.6, 4.4], [3, -1.2], [6.6, -0.8]];
+const LETTERS = 'ABCDEFGHIJ';
+const choose3 = (n: number) => (n * (n - 1) * (n - 2)) / 6;
+const choose2 = (n: number) => (n * (n - 1)) / 2;
+
+/** Lines or planes determined by n points: in general position (L1, L2), k of them in a plane (L2), k on a line (L3). */
 const planeCount: GeneratorDef = {
   id: 'plane-count',
-  title: 'Pontok által meghatározott síkok',
+  title: 'Pontok által meghatározott egyenesek és síkok',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const n = level === 1 ? 3 : level === 2 ? 4 : 5;
-    const names = ['A', 'B', 'C', 'D', 'E'].slice(0, n);
-    const coords: Record<string, XY> = {
-      A: [0, 0],
-      B: [4, 0],
-      C: [0.8, 3.4],
-      D: [2.8, 2.2],
-      E: [5.2, 1.2],
-    };
-    const value = (n * (n - 1) * (n - 2)) / 6;
-    const figure: Figure = {
-      type: 'geometry',
-      points: Object.fromEntries(names.map((name) => [name, coords[name]])),
-      items: names.map((name) => ({ kind: 'point', at: name, labelDir: name === 'E' ? 'e' : undefined })),
-      alt: `${n} pont általános helyzetben.`,
-    };
-    const condition =
-      n === 3
-        ? 'A három pont nincs egy egyenesen.'
-        : n === 4
-          ? 'A négy pont közül semelyik három sincs egy egyenesen, és nem esnek egy síkba.'
-          : 'Az öt pont közül semelyik négy sem esik egy síkba, és nincs köztük három egy egyenesen.';
+    const kind = level === 1 ? rng.pick(['lines', 'planes'] as const) : level === 2 ? rng.pick(['planes', 'coplanar'] as const) : 'collinear';
+    const n = kind === 'lines' ? rng.int(3, 8) : kind === 'planes' ? (level === 1 ? rng.int(3, 6) : rng.int(7, 10)) : kind === 'coplanar' ? rng.int(5, 7) : rng.int(5, 8);
+    const k = kind === 'coplanar' ? rng.int(4, n - 1) : kind === 'collinear' ? rng.int(3, n - 1) : 0;
+    const names = LETTERS.slice(0, n).split('');
+    let at: XY[];
+    const items: GeoItem[] = [];
+    if (kind === 'coplanar') {
+      at = [...IN_PLANE.slice(0, k), ...OFF_PLANE.slice(0, n - k)];
+      items.push({ kind: 'region', points: [[0, 0], [8.6, 0], [9.6, 2.4], [1, 2.4]], fill: 'blue' });
+    } else if (kind === 'collinear') {
+      at = [...ON_LINE.slice(0, k), ...OFF_LINE.slice(0, n - k)];
+      items.push({ kind: 'segment', from: [-0.8, 0.94], to: [9, 2.9], color: 'blue' });
+    } else {
+      at = SCATTER.slice(0, n);
+    }
+    items.push(...names.map((name): GeoItem => ({ kind: 'point', at: name })));
+    const figure: Figure = { type: 'geometry', points: Object.fromEntries(names.map((name, i) => [name, at[i]])), items, alt: `${n} pont a térben.` };
+    const N = num(n);
+    if (kind === 'lines') {
+      const value = choose2(n);
+      return {
+        prompt: tex`Térben $${N}$ pont közül semelyik három sincs egy egyenesen. Hány egyenest határoznak meg?`,
+        figure,
+        answer: { type: 'number', value },
+        inputLabel: 'egyenes =',
+        hint: 'Minden két pont egy egyenest határoz meg. Hányféleképpen választhatsz ki két pontot?',
+        solution: [
+          'Bármely két pont pontosan egy egyenest határoz meg.',
+          tex`A pontpárok száma: $\frac{${N} \cdot ${num(n - 1)}}{2} = ${num(value)}$.`,
+          `A pontok **${num(value)} egyenest** határoznak meg.`,
+        ],
+      };
+    }
+    if (kind === 'planes') {
+      const value = choose3(n);
+      return {
+        prompt: tex`Térben $${N}$ pont közül semelyik négy sincs egy síkban. Hány síkot határoznak meg?`,
+        figure,
+        answer: { type: 'number', value },
+        inputLabel: 'sík =',
+        hint: 'Minden három pont egy síkot határoz meg. Számold össze, hányféleképpen választhatsz ki három pontot!',
+        solution: [
+          'Bármely három pont pontosan egy síkot határoz meg, és ezek mind különbözők.',
+          tex`A ponthármasok száma: $\frac{${N} \cdot ${num(n - 1)} \cdot ${num(n - 2)}}{6} = ${num(value)}$.`,
+          `A pontok **${num(value)} síkot** határoznak meg.`,
+        ],
+      };
+    }
+    const K = num(k);
+    if (kind === 'coplanar') {
+      const value = choose3(n) - choose3(k) + 1;
+      return {
+        prompt: tex`Térben $${N}$ pont közül pontosan $${K}$ esik egy síkba, más négy pont nincs egy síkban. Hány síkot határoznak meg?`,
+        figure,
+        answer: { type: 'number', value },
+        inputLabel: 'sík =',
+        hint: 'Számold össze az összes ponthármast, aztán gondold meg: az egy síkban lévő pontok hármasai hány síkot adnak?',
+        solution: [
+          tex`Az összes ponthármas: $\frac{${N} \cdot ${num(n - 1)} \cdot ${num(n - 2)}}{6} = ${num(choose3(n))}$.`,
+          tex`Az egy síkba eső $${K}$ pont $${num(choose3(k))}$ hármasa mind ugyanazt az egy síkot adja.`,
+          tex`$${num(choose3(n))} - ${num(choose3(k))} + 1 = ${num(value)}$`,
+          `A pontok **${num(value)} síkot** határoznak meg.`,
+        ],
+      };
+    }
+    const value = choose3(n) - choose3(k) - (n - k) * (choose2(k) - 1);
     return {
-      prompt: tex`${condition} Hány síkot határoznak meg?`,
+      prompt: tex`Térben $${N}$ pont közül pontosan $${K}$ esik egy egyenesre, más négy pont nincs egy síkban. Hány síkot határoznak meg?`,
       figure,
       answer: { type: 'number', value },
       inputLabel: 'sík =',
-      hint: 'Minden három pont egy síkot határoz meg. Számold össze, hányféleképpen választhatsz ki három pontot!',
+      hint: 'Az egyenesen lévő három pont nem határoz meg síkot. Az egyenes és egy külső pont pedig mindig ugyanazt az egy síkot adja.',
       solution: [
-        `Minden három pont pontosan egy síkot határoz meg.`,
-        tex`A három pont kiválasztásainak száma: $\frac{${num(n)} \cdot ${num(n - 1)} \cdot ${num(n - 2)}}{6}$.`,
-        tex`$\frac{${num(n)} \cdot ${num(n - 1)} \cdot ${num(n - 2)}}{6} = ${num(value)}$.`,
+        tex`Az összes ponthármas: $${num(choose3(n))}$. Az egyenesen lévő $${num(choose3(k))}$ hármas nem határoz meg síkot.`,
+        tex`Az egyenes $2$ pontja és egy külső pont mindig az egyenes és a külső pont síkját adja: a $${num(n - k)}$ külső pont mindegyikéhez $${num(choose2(k))}$ hármas helyett $1$ sík tartozik.`,
+        tex`$${num(choose3(n))} - ${num(choose3(k))} - ${num(n - k)} \cdot ${num(choose2(k) - 1)} = ${num(value)}$`,
         `A pontok **${num(value)} síkot** határoznak meg.`,
       ],
     };
@@ -715,27 +782,49 @@ const distance: GeneratorDef = {
       };
     }
 
-    // L3: distance of A from the diagonal plane BDFH of a cube.
-    const a = 2 * rng.int(1, 5);
+    // L3: a vertex and a diagonal plane of the cube. The plane is perpendicular to the face of
+    // the vertex and contains the other diagonal of that face, so the foot is the face centre.
+    const cases: { plane: string; point: string; face: string; diag: string }[] = [
+      { plane: 'BDFH', point: 'A', face: 'ABCD', diag: 'AC' },
+      { plane: 'BDFH', point: 'C', face: 'ABCD', diag: 'CA' },
+      { plane: 'BDFH', point: 'E', face: 'EFGH', diag: 'EG' },
+      { plane: 'BDFH', point: 'G', face: 'EFGH', diag: 'GE' },
+      { plane: 'ACGE', point: 'B', face: 'ABCD', diag: 'BD' },
+      { plane: 'ACGE', point: 'D', face: 'ABCD', diag: 'DB' },
+      { plane: 'ACGE', point: 'F', face: 'EFGH', diag: 'FH' },
+      { plane: 'ACGE', point: 'H', face: 'EFGH', diag: 'HF' },
+      { plane: 'ABGH', point: 'C', face: 'BCGF', diag: 'CF' },
+      { plane: 'ABGH', point: 'F', face: 'BCGF', diag: 'FC' },
+      { plane: 'ABGH', point: 'D', face: 'ADHE', diag: 'DE' },
+      { plane: 'ABGH', point: 'E', face: 'ADHE', diag: 'ED' },
+      { plane: 'CDEF', point: 'A', face: 'ADHE', diag: 'AH' },
+      { plane: 'CDEF', point: 'H', face: 'ADHE', diag: 'HA' },
+      { plane: 'CDEF', point: 'B', face: 'BCGF', diag: 'BG' },
+      { plane: 'CDEF', point: 'G', face: 'BCGF', diag: 'GB' },
+    ];
+    const c = rng.pick(cases);
+    const a = 2 * rng.int(1, 6);
     const coef = a / 2;
+    const [d0, d1] = ends(c.diag);
+    const foot = UNIT[d0].map((x, i) => ((x + UNIT[d1][i]) / 2) * a) as V3;
+    const other = PLANES[c.face].filter((v) => v !== d0 && v !== d1).join('');
     return {
-      prompt: tex`A kocka éle $${num(a)}$ cm. Milyen messze van az $A$ csúcs a $BDFH$ síktól? (Gyökös alakban add meg!)`,
+      prompt: tex`A kocka éle $${num(a)}$ cm. Milyen messze van ${art(c.point)} $${c.point}$ csúcs ${art(c.plane)} $${c.plane}$ síktól? (Gyökös alakban add meg!)`,
       figure: cubeFigure({
         a,
-        planes: [{ points: PLANES.BDFH, fill: 'accent' }],
-        segments: [{ from: 'A', to: 'O', color: 'highlight' }],
-        extraPoints: { O: [a / 2, a / 2, 0] },
-        alt: 'Kocka a BDFH ferde síkkal és az A-ból rá merőleges AO szakasszal.',
+        planes: [{ points: PLANES[c.plane], fill: 'accent' }],
+        segments: [{ from: c.point, to: 'O', color: 'highlight' }],
+        extraPoints: { O: foot },
+        alt: `Kocka a ${c.plane} síkkal és a ${c.point} csúcsból rá merőleges ${c.point}O szakasszal.`,
       }),
       answer: { type: 'root', coef, radicand: 2, requireSimplified: false, unit },
       inputLabel: '$d =$',
-      hint: 'A BDFH sík merőleges az alaplapra. Az A-ból húzott merőleges talppontja az alaplap középpontja, az AC és BD metszéspontja.',
+      hint: tex`${Article(c.plane)} $${c.plane}$ sík merőleges ${art(c.face)} $${c.face}$ lapra. Hol metszi a lap átlóit?`,
       solution: [
-        tex`A $BDFH$ sík merőleges az $ABCD$ alaplapra.`,
-        tex`Az $A$-ból húzott merőleges talppontja az $AC$ és $BD$ metszéspontja, $O$.`,
-        tex`Az alaplap átlója: $AC = ${num(a)}\sqrt{2}$ cm.`,
-        tex`$AO = AC : 2 = ${num(coef)}\sqrt{2}$ cm.`,
-        tex`Az $A$ csúcs távolsága **$${num(coef)}\sqrt{2}$ ${unit}**.`,
+        tex`${Article(c.plane)} $${c.plane}$ sík merőleges ${art(c.face)} $${c.face}$ lapra, és tartalmazza a lap $${other}$ átlóját.`,
+        tex`Ezért ${art(c.point)} $${c.point}$-${/[AH]/.test(c.point) ? 'ból' : 'ből'} húzott merőleges talppontja a lap közepe, ${art(c.diag)} $${c.diag}$ átló $O$ felezőpontja.`,
+        tex`A lapátló: $${c.diag} = ${num(a)}\sqrt{2}$ cm, így $${c.point}O = ${c.diag} : 2 = ${texRoot(coef, 2)}$ cm.`,
+        tex`${Article(c.point)} $${c.point}$ csúcs távolsága **$${texRoot(coef, 2)}$ ${unit}**.`,
       ],
     };
   },
