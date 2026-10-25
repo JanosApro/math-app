@@ -451,8 +451,8 @@ const checkSolution: GeneratorDef = {
       solution: [
         tex`Helyettesítsük be: $x = ${num(k)}$. Ekkor ${substitution(k)}.`,
         isRight
-          ? tex`Az egyenlőség igaz, tehát a $${num(k)}$ **megoldás**.`
-          : tex`Az egyenlőség nem igaz, tehát a $${num(k)}$ **nem megoldás**. A helyes megoldás $${num(solution)}$.`,
+          ? tex`Az egyenlőség igaz, tehát ${article(num(k))} $${num(k)}$ **megoldás**.`
+          : tex`Az egyenlőség nem igaz, tehát ${article(num(k))} $${num(k)}$ **nem megoldás**. A helyes megoldás $${num(solution)}$.`,
       ],
     };
   },

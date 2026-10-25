@@ -765,7 +765,8 @@ export function stressTestGenerator(subId: string, gen: GeneratorDef, level: Dif
     const issues: ValidationIssue[] = [];
     validateQuestion(q, whereBase, issues);
     for (const i of issues) add(i.level, seed, i.message);
-    distinct.add(`${q.prompt}\u0000${JSON.stringify(q.answer)}`);
+    // the figure counts too: "Melyik szakasz a hosszabb?" over a new figure is a new question
+    distinct.add(`${q.prompt}\u0000${JSON.stringify(q.answer)}\u0000${JSON.stringify(q.figure ?? null)}`);
   }
   if (seeds >= 50 && distinct.size < 10) {
     return [
@@ -777,7 +778,7 @@ export function stressTestGenerator(subId: string, gen: GeneratorDef, level: Dif
       {
         level: 'warning',
         where: whereBase,
-        message: `only ${distinct.size} distinct questions in ${seeds} seeds (prompt + answer compared) — add more variety`,
+        message: `only ${distinct.size} distinct questions in ${seeds} seeds (prompt + answer + figure compared) — add more variety`,
       },
     ];
   }

@@ -525,7 +525,7 @@ export default defineSubtopic({
         {
           type: 'theory',
           title: 'Mérés a partról',
-          body: 'A folyó szélességét a parton felvett hasonló derékszögű háromszögekkel mérjük meg, anélkül hogy átkelénk.',
+          body: 'A folyó szélességét a parton felvett hasonló derékszögű háromszögekkel mérjük meg, anélkül, hogy átkelnénk.',
           figure: riverFigure(20, 15, 3, 9),
           remember: 'Két derékszög és egy csúcsszög: a háromszögek hasonlók.',
         },

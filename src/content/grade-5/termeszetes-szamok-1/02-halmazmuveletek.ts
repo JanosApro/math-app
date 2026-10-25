@@ -18,6 +18,8 @@ import {
   type Question,
   type Rng,
   type XY,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -433,14 +435,14 @@ const logic: GeneratorDef = {
       const dSuffix = d === 2 ? '2-vel' : '3-mal';
       pool.push(
         {
-          text: tex`A $${num(k)}$ minden többszöröse osztható $${num(d)}$${d === 2 ? '-vel' : '-mal'}.`,
+          text: tex`${Article(num(k))} $${num(k)}$ minden többszöröse osztható $${num(d)}$${d === 2 ? '-vel' : '-mal'}.`,
           value: allDivisible,
           why: allDivisible
             ? `Ha egy szám a ${num(k)} többszöröse, és a ${num(k)} osztható ${dSuffix}, akkor a szám is osztható ${dSuffix}.`
             : `Ellenpélda: maga a ${num(k)} osztható ${kSuffix[k]}, de ${dSuffix} nem.`,
         },
         {
-          text: tex`A $${num(k)}$-${suffix(k, 'nak', 'nek')} van páratlan többszöröse.`,
+          text: tex`${Article(num(k))} $${num(k)}$-${suffix(k, 'nak', 'nek')} van páratlan többszöröse.`,
           value: k % 2 === 1,
           why: k % 2 === 1 ? `Például maga a ${num(k)} páratlan.` : `A ${num(k)} páros, és minden többszöröse is páros.`,
         },
@@ -564,7 +566,7 @@ const commonDivisors: GeneratorDef = {
       const both = inter(A, B);
       if (both.length === 0) return commonDivisors.generate(rng, level); // should not happen with these pairs
       return {
-        prompt: tex`Az $A$ a $${num(m)}$ többszöröseinek halmaza $${num(maxA)}$-ig, a $B$ a $${num(n)}$ többszöröseinek halmaza $${num(maxB)}$-ig. Mi az $A \cap B$ halmaz legkisebb eleme?`,
+        prompt: tex`Az $A$ ${article(num(m))} $${num(m)}$ többszöröseinek halmaza $${num(maxA)}$-ig, a $B$ ${article(num(n))} $${num(n)}$ többszöröseinek halmaza $${num(maxB)}$-ig. Mi az $A \cap B$ halmaz legkisebb eleme?`,
         answer: { type: 'number', value: both[0] },
         inputLabel: 'legkisebb =',
         hint: 'Sorold fel mindkét szám többszöröseit, és keresd meg a közös elemeket!',
@@ -595,8 +597,8 @@ const commonDivisors: GeneratorDef = {
     const askGreatest = level === 3;
     return {
       prompt: askGreatest
-        ? tex`Az $A$ a $${num(m)}$ osztóinak halmaza, a $B$ a $${num(n)}$ osztóinak halmaza. Mi az $A \cap B$ halmaz legnagyobb eleme?`
-        : tex`Az $A$ a $${num(m)}$ osztóinak halmaza, a $B$ a $${num(n)}$ osztóinak halmaza. Hány eleme van az $A \cap B$ halmaznak?`,
+        ? tex`Az $A$ ${article(num(m))} $${num(m)}$ osztóinak halmaza, a $B$ ${article(num(n))} $${num(n)}$ osztóinak halmaza. Mi az $A \cap B$ halmaz legnagyobb eleme?`
+        : tex`Az $A$ ${article(num(m))} $${num(m)}$ osztóinak halmaza, a $B$ ${article(num(n))} $${num(n)}$ osztóinak halmaza. Hány eleme van az $A \cap B$ halmaznak?`,
       answer: { type: 'number', value: askGreatest ? both[both.length - 1] : both.length },
       inputLabel: askGreatest ? 'legnagyobb =' : 'elem =',
       hint: 'Sorold fel mindkét szám osztóit, és keresd meg a közös elemeket!',

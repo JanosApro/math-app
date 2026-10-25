@@ -17,6 +17,8 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -147,7 +149,7 @@ const rhombusSide: GeneratorDef = {
         inputLabel: '$a =$',
         hint: 'Az átlók merőlegesen felezik egymást. A keletkező derékszögű háromszög befogói $e : 2$ és $f : 2$.',
         solution: [
-          tex`A $${num(e)}-${suffix(e, 'nak', 'nek')} és a $${num(f)}-${suffix(f, 'nak', 'nek')} a fele $${num(e / 2)}$, illetve $${num(f / 2)}$ ${unit}.`,
+          tex`${Article(num(e))} $${num(e)}$-${suffix(e, 'nak', 'nek')} és ${article(num(f))} $${num(f)}$-${suffix(f, 'nak', 'nek')} a fele $${num(e / 2)}$, illetve $${num(f / 2)}$ ${unit}.`,
           tex`$a^2 = ${num(e / 2)}^2 + ${num(f / 2)}^2 = ${num((e / 2) ** 2)} + ${num((f / 2) ** 2)} = ${num(a * a)}$`,
           tex`$a = \sqrt{${num(a * a)}} = ${num(a)}$`,
           tex`A rombusz oldala **${num(a)} ${unit}**.`,
@@ -329,7 +331,7 @@ const rhombusMc: GeneratorDef = {
         tex`Az átlók fele: $${num(e / 2)}$ és $${num(f / 2)}$ ${unit}.`,
         tex`$a^2 = ${num(e / 2)}^2 + ${num(f / 2)}^2 = ${num((e / 2) ** 2)} + ${num((f / 2) ** 2)} = ${num(a * a)}$`,
         tex`$a = ${num(a)}$ ${unit}.`,
-        tex`Aki nem felezi meg az átlókat, $${num(Math.sqrt(e * e + f * f))}$-t kap — ez hibás.`,
+        tex`Aki nem felezi meg az átlókat, hibásan $${num(Math.sqrt(e * e + f * f))}$ eredményt kap.`,
       ],
     };
   },
@@ -504,7 +506,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**A rombusz átlói merőlegesen felezik egymást.**',
+            prompt: 'Igaz vagy hamis?\n\n**A rombusz átlói merőlegesen felezik egymást.**',
             answer: { type: 'truefalse', value: true },
             hint: 'Gondolj a rombusz szimmetriájára, vagy arra, hogy az átlók négy derékszögű háromszöget adnak.',
             solution: [

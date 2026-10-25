@@ -18,6 +18,8 @@ import {
   type GeoItem,
   type Question,
   type XY,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -188,7 +190,7 @@ const whichTriangle: GeneratorDef = {
       hint: tex`A két befogó négyzetének összege $${num(n)}$ kell legyen.`,
       solution: [
         tex`A Pitagorasz-tétel szerint $c^2 = a^2 + b^2$.`,
-        tex`A $${num(p)}$ és $${num(q)}$ befogóknál: $${num(p)}^2 + ${num(q)}^2 = ${num(p * p)} + ${num(q * q)} = ${num(n)}$.`,
+        tex`${Article(num(p))} $${num(p)}$ és $${num(q)}$ befogóknál: $${num(p)}^2 + ${num(q)}^2 = ${num(p * p)} + ${num(q * q)} = ${num(n)}$.`,
         tex`Ezért az átfogó $\sqrt{${num(n)}}$ egység.`,
       ],
     };
@@ -226,7 +228,7 @@ const spiralLength: GeneratorDef = {
         ? `\\sqrt{${num(n)}} \\approx ${num(Math.sqrt(n), 2)}`
         : `\\sqrt{${num(n)}} = ${texRoot(root.coef, root.radicand)} \\approx ${num(Math.sqrt(n), 2)}`;
     return {
-      prompt: tex`A spirál első szakasza $1$ egység. Milyen hosszú a $${num(k)}$. átfogó?${isInt ? '' : ' (Gyökös alakban add meg!)'}`,
+      prompt: tex`A spirál első szakasza $1$ egység. Milyen hosszú ${article(num(k))} $${num(k)}$. átfogó?${isInt ? '' : ' (Gyökös alakban add meg!)'}`,
       answer: isInt
         ? { type: 'number', value: root.coef, unit: 'egység' }
         : { type: 'root', coef: root.coef, radicand: root.radicand, requireSimplified: false, acceptDecimal: 2, unit: 'egység' },
@@ -234,7 +236,7 @@ const spiralLength: GeneratorDef = {
       hint: tex`A $k$. átfogó hossza $\sqrt{k + 1}$. Helyettesítsd be: $k = ${num(k)}$!`,
       solution: [
         tex`Az első átfogó $\sqrt{2}$, a második $\sqrt{3}$, a $k$. pedig $\sqrt{k + 1}$.`,
-        tex`A $${num(k)}$. átfogó: $\sqrt{${num(k)} + 1} = \sqrt{${num(n)}}$.`,
+        tex`${Article(num(k))} $${num(k)}$. átfogó: $\sqrt{${num(k)} + 1} = \sqrt{${num(n)}}$.`,
         isInt
           ? tex`$\sqrt{${num(n)}} = ${num(root.coef)}$, tehát **${num(root.coef)} egység**.`
           : tex`$${approxLine}$, tehát **$${texRoot(root.coef, root.radicand)}$ egység**.`,
@@ -319,11 +321,11 @@ const constructionSteps: GeneratorDef = {
       },
       hint: 'Először a derékszögű háromszög készül el, csak utána kerül elő a körző.',
       solution: [
-        '1. Az $1$ pontban merőlegest állítunk.',
-        `2. A merőlegesre felmérünk $${num(k)}$ egységet.`,
-        tex`3. Az átfogó $\sqrt{${num(n)}}$.`,
-        '4. Az átfogó sugarával ívet húzunk az origó körül.',
-        tex`5. Az ív kimetszi a $\sqrt{${num(n)}}$ pontot.`,
+        'Az $1$ pontban merőlegest állítunk.',
+        `A merőlegesre felmérünk $${num(k)}$ egységet.`,
+        tex`Az átfogó $\sqrt{${num(n)}}$.`,
+        'Az átfogó sugarával ívet húzunk az origó körül.',
+        tex`Az ív kimetszi a $\sqrt{${num(n)}}$ pontot.`,
       ],
     };
   },
@@ -393,7 +395,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**A spirál ötödik átfogója $\\sqrt{6}$ egység hosszú.**',
+            prompt: 'Igaz vagy hamis?\n\n**A spirál ötödik átfogója $\\sqrt{6}$ egység hosszú.**',
             answer: { type: 'truefalse', value: true },
             hint: 'Az első átfogó $\\sqrt{2}$, a második $\\sqrt{3}$ — folytasd a mintát!',
             solution: [
@@ -455,11 +457,11 @@ export default defineSubtopic({
             },
             hint: 'Először a derékszögű háromszög készül el, csak utána kerül elő a körző.',
             solution: [
-              '1. Az $1$ pontban merőlegest állítunk.',
-              '2. A merőlegesre felmérünk $2$ egységet.',
-              '3. Az átfogó $\\sqrt{5}$.',
-              '4. Az átfogó sugarával ívet húzunk az origó körül.',
-              '5. Az ív kimetszi a $\\sqrt{5}$ pontot.',
+              'Az $1$ pontban merőlegest állítunk.',
+              'A merőlegesre felmérünk $2$ egységet.',
+              'Az átfogó $\\sqrt{5}$.',
+              'Az átfogó sugarával ívet húzunk az origó körül.',
+              'Az ív kimetszi a $\\sqrt{5}$ pontot.',
             ],
           },
         },

@@ -55,7 +55,7 @@ function equilateralFigure(
   a: number,
   m: number,
   unit: string,
-  opts: { unknownHeight?: boolean; unknownSide?: boolean } = {},
+  opts: { unknownHeight?: boolean; unknownSide?: boolean; heightLabel?: string } = {},
 ): Figure {
   return {
     type: 'triangle',
@@ -66,7 +66,7 @@ function equilateralFigure(
     ],
     vertices: ['A', 'B', 'C'],
     sideLabels: { a: opts.unknownSide ? 'a = ?' : `${num(a)} ${unit}` },
-    heights: [{ from: 'A', label: opts.unknownHeight ? 'm = ?' : `m = ${num(m, 2)}` }],
+    heights: [{ from: 'A', label: opts.unknownHeight ? 'm = ?' : (opts.heightLabel ?? `m = ${num(m, 2)}`) }],
     ticks: { a: 1, b: 1, c: 1 },
     fill: true,
   };
@@ -236,7 +236,7 @@ const equilateralHeight: GeneratorDef = {
     const m = k * Math.sqrt(3);
     return {
       prompt: tex`Egy egyenlő oldalú háromszög magassága $${num(k)}\sqrt{3}$ ${unit}. Milyen hosszú az oldala?`,
-      figure: equilateralFigure(a, m, unit, { unknownSide: true }),
+      figure: equilateralFigure(a, m, unit, { unknownSide: true, heightLabel: `m = ${rootText(k, 3)}` }),
       answer: { type: 'number', value: a, unit },
       inputLabel: '$a =$',
       hint: 'A magasság az oldal $\\sqrt{3} : 2$-szerese. Melyik oldalnak a $\\sqrt{3} : 2$-szerese az adott magasság?',
@@ -382,7 +382,7 @@ const isoscelesMc: GeneratorDef = {
         tex`Az alap fele: $${num(base)} : 2 = ${num(base / 2)}$ ${unit}.`,
         tex`$m^2 = ${num(leg)}^2 - ${num(base / 2)}^2 = ${num(leg * leg)} - ${num((base / 2) ** 2)} = ${num(diff)}$`,
         tex`$m = \sqrt{${num(diff)}}${correctRoot.coef === 1 ? '' : tex` = ${texRoot(correctRoot.coef, correctRoot.radicand)}`}$ ${unit}.`,
-        tex`Aki nem felezi meg az alapot, $${texRoot(forgot.coef, forgot.radicand)}$-t kap — ez hibás.`,
+        tex`Aki nem felezi meg az alapot, hibásan $${texRoot(forgot.coef, forgot.radicand)}$ eredményt kap.`,
       ],
     };
   },
@@ -476,7 +476,7 @@ export default defineSubtopic({
         {
           type: 'check',
           question: {
-            prompt: 'Igaz vagy hamis?\\n\\n**Az egyenlő oldalú háromszög magassága az oldal $\\sqrt{3} : 2$-szerese.**',
+            prompt: 'Igaz vagy hamis?\n\n**Az egyenlő oldalú háromszög magassága az oldal $\\sqrt{3} : 2$-szerese.**',
             answer: { type: 'truefalse', value: true },
             hint: 'Írd fel Pitagorasz tételét az oldal felével!',
             solution: [

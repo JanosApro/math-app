@@ -16,6 +16,7 @@ import {
   textChoice,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -165,7 +166,7 @@ const betterApprox: GeneratorDef = {
       solution: [
         tex`$|${num(x)} - ${fixed(lower, p)}| = ${num(errLower, p + 1, true)}$`,
         tex`$|${num(x)} - ${fixed(upper, p)}| = ${num(errUpper, p + 1, true)}$`,
-        tex`A $${fixed(better, p)}$ közelítés hibája kisebb: **${num(betterErr, p + 1, true)}** < ${num(worseErr, p + 1, true)}.`,
+        tex`${Article(fixed(better, p))} $${fixed(better, p)}$ közelítés hibája kisebb: **${num(betterErr, p + 1, true)}** < ${num(worseErr, p + 1, true)}.`,
         tex`A jobb közelítés: **${fixed(better, p)}**.`,
       ],
     };

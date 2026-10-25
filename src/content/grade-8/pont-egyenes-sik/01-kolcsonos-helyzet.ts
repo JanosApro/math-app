@@ -17,6 +17,8 @@ import {
   type GeoItem,
   type Question,
   type XY,
+  article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -367,10 +369,10 @@ const cubeRelation: GeneratorDef = {
         hint: 'Használd a párhuzamosság, a merőlegesség vagy a kitérő jelölését!',
         solution: [
           rel === 'parallel'
-            ? tex`A $${first}$ és a $${second}$ él párhuzamos: $${first} \parallel ${second}$.`
+            ? tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ él párhuzamos: $${first} \parallel ${second}$.`
             : rel === 'intersect'
-              ? tex`A $${first}$ és a $${second}$ él a közös csúcsban derékszögben találkozik: $${first} \perp ${second}$.`
-              : tex`A $${first}$ és a $${second}$ él kitérő: nincs közös pontjuk, és nem is párhuzamosak.`,
+              ? tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ él a közös csúcsban derékszögben találkozik: $${first} \perp ${second}$.`
+              : tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ él kitérő: nincs közös pontjuk, és nem is párhuzamosak.`,
           'A többi jelölés nem írja le helyesen a két él viszonyát.',
         ],
       };
@@ -384,10 +386,10 @@ const cubeRelation: GeneratorDef = {
       hint: 'Nézd meg, van-e közös pontjuk, és hogy egy síkban vannak-e!',
       solution: [
         rel === 'parallel'
-          ? tex`A $${first}$ és a $${second}$ egyenes egy síkban van, és nincs közös pontjuk.`
+          ? tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ egyenes egy síkban van, és nincs közös pontjuk.`
           : rel === 'skew'
-            ? tex`A $${first}$ és a $${second}$ egyenes nincs egy síkban, és nincs közös pontjuk.`
-            : tex`A $${first}$ és a $${second}$ egyenesnek pontosan egy közös pontja van.`,
+            ? tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ egyenes nincs egy síkban, és nincs közös pontjuk.`
+            : tex`${Article(first)} $${first}$ és ${article(second)} $${second}$ egyenesnek pontosan egy közös pontja van.`,
         rel === 'parallel'
           ? 'Ezért a két egyenes **párhuzamos**.'
           : rel === 'skew'
@@ -572,10 +574,10 @@ const linePlane: GeneratorDef = {
         hint: 'Nézd meg, van-e közös egyenesük, és hogy a metszésvonalra merőlegesek-e a síkok!',
         solution: [
           rel === 'parallel'
-            ? tex`A $${p1}$ és a $${p2}$ síknak nincs közös pontja.`
+            ? tex`${Article(p1)} $${p1}$ és ${article(p2)} $${p2}$ síknak nincs közös pontja.`
             : rel === 'perp'
-              ? tex`A $${p1}$ és a $${p2}$ sík egy egyenesben metszi egymást, és a metszésvonalra merőlegesek.`
-              : tex`A $${p1}$ és a $${p2}$ sík egy egyenesben metszi egymást, de nem merőlegesek.`,
+              ? tex`${Article(p1)} $${p1}$ és ${article(p2)} $${p2}$ sík egy egyenesben metszi egymást, és a metszésvonalra merőlegesek.`
+              : tex`${Article(p1)} $${p1}$ és ${article(p2)} $${p2}$ sík egy egyenesben metszi egymást, de nem merőlegesek.`,
           rel === 'parallel'
             ? 'Ezért a két sík **párhuzamos**.'
             : rel === 'perp'
@@ -601,12 +603,12 @@ const linePlane: GeneratorDef = {
       hint: 'Nézd meg, van-e közös pontjuk, és hogy az egyenes merőleges-e a síkra!',
       solution: [
         rel === 'lies'
-          ? tex`A $${line}$ egyenes két pontja is a $${plane}$ síkon van, ezért a teljes egyenes illeszkedik a síkra.`
+          ? tex`${Article(line)} $${line}$ egyenes két pontja is ${article(plane)} $${plane}$ síkon van, ezért a teljes egyenes illeszkedik a síkra.`
           : rel === 'parallel'
-            ? tex`A $${line}$ egyenesnek nincs közös pontja a $${plane}$ síkkal.`
+            ? tex`${Article(line)} $${line}$ egyenesnek nincs közös pontja ${article(plane)} $${plane}$ síkkal.`
             : rel === 'perp'
-              ? tex`A $${line}$ egyenes merőleges a $${plane}$ síkra.`
-              : tex`A $${line}$ egyenes egy pontban döfi a $${plane}$ síkot, de nem merőleges rá.`,
+              ? tex`${Article(line)} $${line}$ egyenes merőleges ${article(plane)} $${plane}$ síkra.`
+              : tex`${Article(line)} $${line}$ egyenes egy pontban döfi ${article(plane)} $${plane}$ síkot, de nem merőleges rá.`,
         rel === 'lies'
           ? tex`Tehát **$${line} \subset ${plane}$**.`
           : rel === 'parallel'
@@ -706,8 +708,8 @@ const distance: GeneratorDef = {
         inputLabel: '$d =$',
         hint: 'A pont és a sík távolsága a pontból a síkra bocsátott merőleges szakasz hossza. Melyik él merőleges erre a lapra?',
         solution: [
-          tex`A $${case_.point}$ pontból a $${case_.plane}$ síkra bocsátott merőleges talppontja $${case_.foot}$.`,
-          tex`A merőleges szakasz a $${case_.edge}$ él, amelynek hossza ${art(case_.dim)} $${case_.dim}$ éllel egyenlő.`,
+          tex`${Article(case_.point)} $${case_.point}$ pontból ${article(case_.plane)} $${case_.plane}$ síkra bocsátott merőleges talppontja $${case_.foot}$.`,
+          tex`A merőleges szakasz ${article(case_.edge)} $${case_.edge}$ él, amelynek hossza ${art(case_.dim)} $${case_.dim}$ éllel egyenlő.`,
           tex`A távolság: **${num(answer)} ${unit}**.`,
         ],
       };

@@ -19,6 +19,7 @@ import {
   type Figure,
   type GeneratorDef,
   type Question,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ const sqrtInt: GeneratorDef = {
       solution: [
         tex`${article(k) === 'az' ? 'Az' : 'A'} $${num(k)}$ négyzete $${num(n)}$.`,
         tex`Ezért $${root(n)} = ${num(k)}$.`,
-        tex`A $${num(n)}$-${suffix(n, 'nak', 'nek')} a négyzetgyöke **${num(k)}**.`,
+        tex`${Article(num(n))} $${num(n)}$-${suffix(n, 'nak', 'nek')} a négyzetgyöke **${num(k)}**.`,
       ],
     };
   },

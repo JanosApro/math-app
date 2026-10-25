@@ -19,6 +19,7 @@ import {
   type GeneratorDef,
   type Question,
   type Rng,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -141,7 +142,7 @@ const percentOfGen: GeneratorDef = {
         solution: [
           tex`$${num(p)}\% = \frac{${num(p)}}{100}$.`,
           tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(value)}$.`,
-          `A $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a **${num(value)}**.`,
+          `${Article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a **${num(value)}**.`,
         ],
       };
     }
@@ -195,7 +196,7 @@ const percentOfGen: GeneratorDef = {
       solution: [
         tex`$${num(p)}\% = \frac{${num(p)}}{100}$.`,
         tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(value)}$.`,
-        `A $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a **${num(value)}**.`,
+        `${Article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a **${num(value)}**.`,
       ],
     };
   },
@@ -503,12 +504,12 @@ const mistake: GeneratorDef = {
       const isRight = rng.chance(0.5);
       return {
         prompt: isRight
-          ? tex`Bence így számolta:\n\n$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$\n\nEz a $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a. Igaz vagy hamis?`
-          : tex`Bence így számolta:\n\n$${num(q)} : ${num(p)} = ${num(wrong)}$\n\nEz a $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a. Igaz vagy hamis?`,
+          ? tex`Bence így számolta:\n\n$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$\n\nEz ${article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a. Igaz vagy hamis?`
+          : tex`Bence így számolta:\n\n$${num(q)} : ${num(p)} = ${num(wrong)}$\n\nEz ${article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a. Igaz vagy hamis?`,
         answer: { type: 'truefalse', value: isRight },
         hint: 'A százalék századrész: a mennyiséget $\\frac{p}{100}$-dal kell megszorozni, nem osztani a százalékkal.',
         solution: isRight
-          ? [tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$, ez valóban a $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a.`, 'Az állítás **igaz**.']
+          ? [tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$, ez valóban ${article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-a.`, 'Az állítás **igaz**.']
           : [
               tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$, nem $${num(wrong)}$.`,
               'Bence a százalékkal osztott a századrész helyett. Az állítás **hamis**.',
@@ -520,13 +521,13 @@ const mistake: GeneratorDef = {
     const wrong2 = tex`$${num(q)} \cdot ${num(p)} = ${num(q * p)}$`;
     const wrong3 = tex`$${num(q)} : 100 = ${num(clean(q / 100))}$`;
     return {
-      prompt: tex`Melyik számítás adja meg helyesen a $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-át?`,
+      prompt: tex`Melyik számítás adja meg helyesen ${article(num(q))} $${num(q)}$-${suffix(q, 'nak', 'nek')} ${article(p)} $${num(p)}\%$-át?`,
       answer: textChoice(correctText, [wrong1, wrong2, wrong3]),
       hint: 'A százalék századrész: a mennyiséget $\\frac{p}{100}$-dal kell megszorozni.',
       solution: [
         tex`$${num(p)}\% = \frac{${num(p)}}{100}$.`,
         tex`$${num(q)} \cdot \frac{${num(p)}}{100} = ${num(correct)}$.`,
-        tex`A $${num(q)} : ${num(p)}$ a százalékkal oszt, a $${num(q)} \cdot ${num(p)}$ pedig nem oszt $100$-zal.`,
+        tex`${Article(num(q))} $${num(q)} : ${num(p)}$ a százalékkal oszt, ${article(num(q))} $${num(q)} \cdot ${num(p)}$ pedig nem oszt $100$-zal.`,
         `A helyes számítás: **${correctText}**.`,
       ],
     };

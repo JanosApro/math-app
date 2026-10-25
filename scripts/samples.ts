@@ -1,96 +1,96 @@
 /**
- * Print generated sample questions of one subtopic — the manual answer check.
+ * Prints sample questions of one lesson as plain text — for checking the math by reading, without
+ * a browser (`npm run samples -- <subtopicId>`). Every generator × level gets a few seeds: prompt,
+ * figure summary, the correct answer (and what to type), hint and worked solution. The lesson's
+ * fixed check questions are printed too.
  *
- *   npm run samples -- <subtopicId> [--n=3] [--gen=<generatorId>] [--level=2]
- *
- * For every generator × level it prints a few seeds with the prompt, figure JSON, answer spec,
- * hint and worked solution. Recompute the answers yourself; the checker cannot see wrong math.
+ *   npm run samples -- g7-pitagorasz-01                 3 seeds per generator × level
+ *   npm run samples -- g7-pitagorasz-01 --n=6 --gen=hypotenuse --level=2 --seed=100
  */
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import type { Difficulty, GradeTopics, SubtopicModule } from '../src/engine/types';
-import { createRng } from '../src/engine/rng';
+import type { Question, SubtopicModule } from '../src/engine/types';
+import { canonicalInput, formatAnswer } from '../src/engine/answers';
+import { generateQuestion } from '../src/engine/session';
 
 const ROOT = resolve(new URL('..', import.meta.url).pathname);
-const CONTENT = join(ROOT, 'src/content');
 const args = process.argv.slice(2);
+const opt = (name: string) => args.find((a) => a.startsWith(`--${name}=`))?.split('=').slice(1).join('=');
 const id = args.find((a) => !a.startsWith('--'));
-const nArg = /^--n=(\d+)$/.exec(args.find((a) => a.startsWith('--n=')) ?? '');
-const genArg = /^--gen=(.+)$/.exec(args.find((a) => a.startsWith('--gen=')) ?? '');
-const levelArg = /^--level=([123])$/.exec(args.find((a) => a.startsWith('--level=')) ?? '');
-const seeds = nArg ? Math.max(1, Math.min(50, Number(nArg[1]))) : 3;
-const onlyGen = genArg?.[1];
-const onlyLevel = levelArg ? (Number(levelArg[1]) as Difficulty) : undefined;
+const N = Number(opt('n') ?? 3);
+const START = Number(opt('seed') ?? 1);
+const GEN = opt('gen');
+const LEVEL = opt('level') ? Number(opt('level')) : undefined;
 
 if (!id) {
-  console.error('usage: npm run samples -- <subtopicId> [--n=3] [--gen=<id>] [--level=2]');
+  console.error('usage: npm run samples -- <subtopicId> [--n=3] [--gen=<generatorId>] [--level=1|2|3] [--seed=1]');
   process.exit(1);
 }
 
-interface Found {
-  grade: number;
-  folder: string;
-  file: string;
-  title: string;
-}
-
-function findSubtopic(subtopicId: string): Found | undefined {
-  for (const gradeFolder of readdirSync(CONTENT).filter((f) => /^grade-\d+$/.test(f))) {
-    const topicsPath = join(CONTENT, gradeFolder, 'topics.json');
-    if (!existsSync(topicsPath)) continue;
-    const topics = JSON.parse(readFileSync(topicsPath, 'utf8')) as GradeTopics;
-    for (const topic of topics.topics) {
-      for (const sub of topic.subtopics) {
-        if (sub.id === subtopicId) {
-          return {
-            grade: topics.grade,
-            folder: topic.folder,
-            file: sub.file,
-            title: sub.title,
-          };
-        }
+async function findModule(subtopicId: string): Promise<SubtopicModule> {
+  if (subtopicId === 'dev-demo') return ((await import(pathToFileURL(join(ROOT, 'src/dev/demoLesson.ts')).href)) as { default: SubtopicModule }).default;
+  const content = join(ROOT, 'src/content');
+  for (const grade of readdirSync(content).filter((f) => /^grade-\d+$/.test(f))) {
+    for (const folder of readdirSync(join(content, grade), { withFileTypes: true }).filter((d) => d.isDirectory())) {
+      for (const file of readdirSync(join(content, grade, folder.name)).filter((f) => f.endsWith('.ts'))) {
+        const path = join(content, grade, folder.name, file);
+        if (!existsSync(path)) continue;
+        const mod = ((await import(pathToFileURL(path).href)) as { default?: SubtopicModule }).default;
+        if (mod?.id === subtopicId) return mod;
       }
     }
   }
-  return undefined;
+  throw new Error(`no module with id "${subtopicId}" under src/content/`);
 }
 
-const found = findSubtopic(id);
-if (!found) {
-  console.error(`Unknown subtopic id: ${id}`);
-  process.exit(1);
-}
-const modulePath = join(CONTENT, `grade-${found.grade}`, found.folder, `${found.file}.ts`);
-if (!existsSync(modulePath)) {
-  console.error(`No module file yet: ${modulePath}`);
-  process.exit(1);
+/** A one-line summary of a figure: its type and the labels/numbers it shows. */
+function figureSummary(fig: unknown): string {
+  if (!fig) return '';
+  const json = JSON.stringify(fig);
+  return json.length > 300 ? `${json.slice(0, 300)}…` : json;
 }
 
-const mod = ((await import(pathToFileURL(modulePath).href)) as { default: SubtopicModule }).default;
-console.log(`# ${mod.id} — ${found.title}`);
-console.log(`# ${modulePath}`);
-for (const gen of mod.generators) {
-  if (onlyGen && gen.id !== onlyGen) continue;
-  for (const level of gen.levels) {
-    if (onlyLevel !== undefined && onlyLevel !== level) continue;
-    console.log(`\n## ${gen.id} L${level} — ${gen.title}`);
-    for (let seed = 1; seed <= seeds; seed++) {
-      let q;
+function printQuestion(q: Question, indent = '    '): void {
+  const lines = [
+    `prompt:   ${q.prompt.replace(/\n/g, ' ⏎ ')}`,
+    q.inputLabel ? `label:    ${q.inputLabel}` : '',
+    q.figure ? `figure:   ${figureSummary(q.figure)}` : '',
+    `answer:   ${formatAnswer(q.answer).replace(/\n/g, ' ')}`,
+    `type in:  ${JSON.stringify(canonicalInput(q.answer))}`,
+    `hint:     ${q.hint}`,
+    ...q.solution.map((s, i) => `${i === 0 ? 'solution: ' : '          '}${i + 1}. ${s.replace(/\n/g, ' ⏎ ')}`),
+  ].filter(Boolean);
+  console.log(lines.map((l) => indent + l).join('\n'));
+}
+
+const mod = await findModule(id);
+console.log(`${mod.id} — ${mod.generators.length} generator(s), ${mod.parts.length} part(s)\n`);
+
+if (!GEN) {
+  mod.parts.forEach((part, p) =>
+    part.steps.forEach((step, s) => {
+      if (step.type !== 'check') return;
+      console.log(`[part ${p + 1}, step ${s + 1}] fixed check question`);
+      printQuestion(step.question);
+      console.log('');
+    }),
+  );
+}
+
+for (const g of mod.generators) {
+  if (GEN && g.id !== GEN) continue;
+  for (const level of g.levels) {
+    if (LEVEL !== undefined && level !== LEVEL) continue;
+    for (let k = 0; k < N; k++) {
+      const seed = START + k;
+      console.log(`[${g.id} · L${level} · seed ${seed}] ${g.title}`);
       try {
-        q = gen.generate(createRng(seed), level);
+        printQuestion(generateQuestion(mod, { generator: g.id, level }, seed));
       } catch (e) {
-        console.log(`\n--- seed ${seed} ---\nGENERATOR THREW: ${(e as Error).message}`);
-        continue;
+        console.log(`    ERROR: ${(e as Error).message}`);
       }
-      console.log(`\n--- seed ${seed} ---`);
-      console.log('PROMPT:', q.prompt);
-      if (q.figure) console.log('FIGURE:', JSON.stringify(q.figure));
-      console.log('ANSWER:', JSON.stringify(q.answer));
-      if (q.inputLabel) console.log('INPUT:', q.inputLabel);
-      console.log('HINT:', q.hint);
-      console.log('SOLUTION:');
-      for (const step of q.solution) console.log('  -', step);
+      console.log('');
     }
   }
 }

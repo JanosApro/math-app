@@ -22,6 +22,8 @@ import {
 // ---------------------------------------------------------------------------------------------
 
 const at = (x: number, y: number): XY => [x, y];
+/** "6 cm" → "$6$ cm": the number in math, the unit as text. */
+const ml = (len: string): string => len.replace(/^(.*) (\S+)$/, '$$$1$$ $2');
 const deg = (d: number): XY => [3 * Math.cos((d * Math.PI) / 180), 3 * Math.sin((d * Math.PI) / 180)];
 
 /** A circle of radius r around O with one point P and the dashed OP distance. */
@@ -341,12 +343,12 @@ const pointPosition: GeneratorDef = {
           ? ['A körvonalon van', 'A körön belül van']
           : ['A körön belül van', 'A körön kívül van'];
     return {
-      prompt: tex`A kör sugara $${rLabel}$. A $P$ pont $${dLabel}$-re van a középponttól. Hol van a $P$ pont?`,
+      prompt: tex`A kör sugara ${ml(rLabel)}. A $P$ pont ${ml(dLabel)}-re van a középponttól. Hol van a $P$ pont?`,
       figure: pointFigure(rCm, distCm, dLabel),
       answer: textChoice(correct, wrongs),
       hint: 'Hasonlítsd össze a pont középponttól mért távolságát a sugárral!',
       solution: [
-        tex`A sugár $r = ${rLabel}$, a $P$ pont távolsága $${dLabel}$.`,
+        tex`A sugár ${ml(`r = ${rLabel}`)}, a $P$ pont távolsága ${ml(dLabel)}.`,
         ...(convert ? [tex`$${num(distCm * 10)}$ mm $= ${num(distCm)}$ cm.`] : []),
         relation === 'in'
           ? tex`$${num(distCm)} < ${num(rCm)}$, ezért a pont közelebb van, mint a körvonal: **a körön belül van**.`
@@ -392,13 +394,13 @@ const linePosition: GeneratorDef = {
     }
     const common = distCm < rCm ? 2 : distCm === rCm ? 1 : 0;
     return {
-      prompt: tex`A kör sugara $${rLabel}$. Egy egyenes $${dLabel}$-re van a középponttól. Hány közös pontja van a körvonallal?`,
+      prompt: tex`A kör sugara ${ml(rLabel)}. Egy egyenes ${ml(dLabel)}-re van a középponttól. Hány közös pontja van a körvonallal?`,
       figure: lineFigure(rCm, distCm, dLabel),
       answer: { type: 'number', value: common },
       inputLabel: 'közös pont =',
       hint: 'Hasonlítsd össze az egyenes távolságát a sugárral!',
       solution: [
-        tex`A sugár $r = ${rLabel}$, az egyenes távolsága $${dLabel}$.`,
+        tex`A sugár ${ml(`r = ${rLabel}`)}, az egyenes távolsága ${ml(dLabel)}.`,
         ...(convert ? [tex`$${num(rCm * 10)}$ mm $= ${num(rCm)}$ cm.`] : []),
         common === 0
           ? tex`$${num(distCm)} > ${num(rCm)}$, ezért az egyenes nem éri el a körvonalat: **0 közös pont**.`

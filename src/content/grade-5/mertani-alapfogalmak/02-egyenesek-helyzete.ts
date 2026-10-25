@@ -338,7 +338,7 @@ const linePosition: GeneratorDef = {
       const asked = mode === 'askP' ? 'p' : 'q';
       const other = mode === 'askP' ? 'q' : 'p';
       return {
-        prompt: tex`Melyik egyenes párhuzamos a $${asked}$ egyenessel?`,
+        prompt: tex`Melyik egyenes párhuzamos ${article(asked)} $${asked}$ egyenessel?`,
         figure,
         answer: textChoice(`$${other}$`, ['$r$', 'egyik sem']),
         hint: 'Két egyenes párhuzamos, ha soha nem találkozik.',
@@ -573,13 +573,13 @@ const shapeName: GeneratorDef = {
       const sideArt = correct.startsWith('A') ? 'az' : 'a';
       const SideArt = sideArt === 'az' ? 'Az' : 'A';
       return {
-        prompt: tex`Melyik oldal nincs rajta ${art} $${missing}$ csúcson?`,
+        prompt: tex`Melyik oldalnak nem végpontja ${art} $${missing}$ csúcs?`,
         figure: triangleRegion,
         answer: textChoice(`$${correct}$`, wrongs.map((s) => `$${s}$`)),
         hint: tex`Keresd meg azt az oldalt, amelynek a nevében nem szerepel a(z) $${missing}$ betű!`,
         solution: [
-          tex`${Art} $${missing}$ csúcson a két szomszédos oldal megy át.`,
-          tex`${SideArt} $${correct}$ oldalnak egyik végpontja sem $${missing}$, ezért nincs rajta.`,
+          tex`${Art} $${missing}$ csúcs a két szomszédos oldalnak végpontja.`,
+          tex`${SideArt} $${correct}$ oldalnak egyik végpontja sem $${missing}$: ez a csúccsal szemközti oldal.`,
         ],
       };
     }
