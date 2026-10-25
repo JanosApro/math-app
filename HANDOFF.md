@@ -48,6 +48,11 @@ Teacher feedback round (same day), done so far:
 - **Uncluttered UI:** small explanatory texts removed, useful ones behind ⓘ / 🔍 popups, every
   screen fits a 375 × 740 phone without scrolling (DECISIONS "Uncluttered screens"); lesson
   texts shortened; `npm run check` warns about long texts (CONTENT_GUIDE "Short texts").
+- **Content review of the 30 OpenCode lessons (2026-10-25):** currency is always dinár; every
+  generator gives varied questions (random data instead of fixed lists) and its levels are
+  disjoint and get harder. `npm run check` now also warns when two levels of a generator share
+  questions; it passes with 0 errors and 0 warnings. Overlap *between* lessons was left as it is
+  (teacher's decision).
 - Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
   (default is reduced motion, which makes the e2e run fast and stable).
 

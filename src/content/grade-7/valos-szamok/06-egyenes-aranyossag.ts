@@ -173,14 +173,14 @@ const findK: GeneratorDef = {
     const q = rng.int(1, 5);
     const price = k * q;
     return {
-      prompt: tex`Egy boltban $${num(q)}$ kg alma $${num(price)}$ Ft-ba kerül. Mennyi az egyenes arányosság állandója?`,
-      answer: { type: 'number', value: k, unit: 'Ft/kg' },
+      prompt: tex`Egy boltban $${num(q)}$ kg alma $${num(price)}$ dinárba kerül. Mennyi az egyenes arányosság állandója?`,
+      answer: { type: 'number', value: k, unit: 'dinár/kg' },
       inputLabel: '$k =$',
       hint: 'Az ár a mennyiség egyenes arányos függvénye. Az állandó az 1 kg árát adja.',
       solution: [
         tex`Az összefüggés $y = kx$, ahol $y$ az ár, $x$ a mennyiség.`,
         tex`$k = ${num(price)} : ${num(q)} = ${num(k)}$`,
-        tex`Az állandó **${num(k)} Ft/kg**, tehát 1 kg alma ${num(k)} Ft.`,
+        tex`Az állandó **${num(k)} dinár/kg**, tehát 1 kg alma ${num(k)} dinár.`,
       ],
     };
   },
@@ -513,13 +513,13 @@ export default defineSubtopic({
         {
           type: 'example',
           title: 'Ár és mennyiség',
-          problem: 'Egy boltban 1 kg alma 350 Ft. Írd fel az ár összefüggését, és számítsd ki 4 kg árát!',
+          problem: 'Egy boltban 1 kg alma 350 dinár. Írd fel az ár összefüggését, és számítsd ki 4 kg árát!',
           steps: [
-            { text: '1 kg ára 350 Ft, ezért $k = 350$.' },
+            { text: '1 kg ára 350 dinár, ezért $k = 350$.' },
             { text: 'Az összefüggés: $y = 350x$, ahol $x$ a kg-ban mért mennyiség.' },
-            { text: '$x = 4$ esetén $y = 350 \\cdot 4 = 1400$ Ft.' },
+            { text: '$x = 4$ esetén $y = 350 \\cdot 4 = 1400$ dinár.' },
           ],
-          answer: 'Az ár $y = 350x$; 4 kg alma 1400 Ft.',
+          answer: 'Az ár $y = 350x$; 4 kg alma 1400 dinár.',
         },
         { type: 'practice', generator: 'find-k', level: 3 },
         { type: 'practice', generator: 'value-table', level: 3 },

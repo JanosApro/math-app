@@ -168,62 +168,88 @@ const cubeFigure = (a: number, unit: string, unknown = false): Figure => ({
 // 2. Generators
 // ---------------------------------------------------------------------------------------------
 
-/** Faces, edges and vertices of a prism, a pyramid, a cube or a cuboid. */
+/** The name of an n-sided polygon as the base of a solid: "ötszög", "nyolcszög". */
+const POLYGON: Record<number, string> = { 3: 'háromszög', 4: 'négyszög', 5: 'ötszög', 6: 'hatszög', 7: 'hétszög', 8: 'nyolcszög', 9: 'kilencszög', 10: 'tízszög', 11: 'tizenegyszög', 12: 'tizenkétszög' };
+
+/** Faces, edges and vertices of an n-sided prism or pyramid. */
+const countsOf = (kind: Kind, n: number) =>
+  kind === 'prism' ? { faces: n + 2, edges: 3 * n, vertices: 2 * n } : { faces: n + 1, edges: 2 * n, vertices: n + 1 };
+
+/** The solution lines that count the faces, edges and vertices of an n-sided prism or pyramid. */
+function countLines(kind: Kind, n: number): string[] {
+  const c = countsOf(kind, n);
+  return kind === 'prism'
+    ? [
+        tex`Lapok: $2$ alaplap $+ ${num(n)}$ oldallap $= ${num(c.faces)}$.`,
+        tex`Élek: $2 \cdot ${num(n)}$ alapél $+ ${num(n)}$ oldalél $= ${num(c.edges)}$.`,
+        tex`Csúcsok: $2 \cdot ${num(n)} = ${num(c.vertices)}$.`,
+      ]
+    : [
+        tex`Lapok: $1$ alaplap $+ ${num(n)}$ oldallap $= ${num(c.faces)}$.`,
+        tex`Élek: $${num(n)}$ alapél $+ ${num(n)}$ oldalél $= ${num(c.edges)}$.`,
+        tex`Csúcsok: $${num(n)}$ alapcsúcs $+ 1$ csúcs $= ${num(c.vertices)}$.`,
+      ];
+}
+
+const WHAT = { faces: 'lapja', edges: 'éle', vertices: 'csúcsa' } as const;
+const UNIT_WORD = { faces: 'lap', edges: 'él', vertices: 'csúcs' } as const;
+
+/**
+ * Faces, edges and vertices. Level 1: a drawn solid; level 2: an n-sided prism or pyramid
+ * (n = 5–10) in words; level 3: backwards, from one count to another.
+ */
 const countElements: GeneratorDef = {
   id: 'count-elements',
   title: 'Lapok, élek és csúcsok száma',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const pool =
-      level === 1
-        ? SHAPES.filter((s) => s.key === 'cube' || s.key === 'cuboid')
-        : level === 2
-          ? SHAPES.filter((s) => ['triangular-prism', 'hexagonal-prism', 'square-pyramid'].includes(s.key))
-          : SHAPES.filter((s) => ['triangular-pyramid', 'hexagonal-prism', 'hexagonal-pyramid'].includes(s.key));
-    const shape = rng.pick(pool);
-    const c = counts(shape);
-    if (level === 3) {
+    const which = rng.pick(['faces', 'edges', 'vertices'] as const);
+    if (level === 1) {
+      const shape = rng.pick(SHAPES.filter((x) => x.key !== 'hexagonal-prism' && x.key !== 'hexagonal-pyramid'));
+      const value = counts(shape)[which];
       return {
-        prompt: tex`Hány lapja, éle és csúcsa van az ábrán látható testnek?`,
+        prompt: tex`Hány ${WHAT[which]} van az ábrán látható testnek?`,
         figure: shape.figure,
-        answer: {
-          type: 'numbers',
-          fields: [
-            { label: 'lap', value: c.faces },
-            { label: 'él', value: c.edges },
-            { label: 'csúcs', value: c.vertices },
-          ],
-        },
-        hint: 'A lapok sokszögek, az élek a lapok határai, a csúcsokban élek találkoznak. Számold meg mindhármat!',
-        solution:
-          shape.kind === 'prism'
-            ? [
-                tex`A hasáb alapja ${num(shape.n)} oldalú sokszög.`,
-                tex`Lapok: 2 alaplap + ${num(shape.n)} oldallap = ${num(c.faces)}.`,
-                tex`Élek: 2 · ${num(shape.n)} alaplapél + ${num(shape.n)} oldalél = ${num(c.edges)}.`,
-                tex`Csúcsok: 2 · ${num(shape.n)} = ${num(c.vertices)}.`,
-              ]
-            : [
-                tex`A gúla alapja ${num(shape.n)} oldalú sokszög.`,
-                tex`Lapok: 1 alaplap + ${num(shape.n)} oldallap = ${num(c.faces)}.`,
-                tex`Élek: ${num(shape.n)} alapél + ${num(shape.n)} oldalél = ${num(c.edges)}.`,
-                tex`Csúcsok: ${num(shape.n)} alaplapcsúcs + 1 csúcs = ${num(c.vertices)}.`,
-              ],
+        answer: { type: 'number', value },
+        inputLabel: `${UNIT_WORD[which]} =`,
+        hint: 'A lapok sokszögek, az élek a lapok határai, a csúcsokban élek találkoznak.',
+        solution: [tex`A test egy ${shape.name}.`, ...countLines(shape.kind, shape.n), tex`Ezért a keresett érték: **${num(value)}**.`],
       };
     }
-    const which = rng.pick(['faces', 'edges', 'vertices'] as const);
-    const value = c[which];
-    const what = which === 'faces' ? 'lapja' : which === 'edges' ? 'éle' : 'csúcsa';
+    const kind = rng.pick(['prism', 'pyramid'] as const);
+    const solidDat = kind === 'prism' ? 'hasábnak' : 'gúlának';
+    if (level === 2) {
+      const n = rng.int(5, 10);
+      const value = countsOf(kind, n)[which];
+      return {
+        prompt: tex`Hány ${WHAT[which]} van egy ${POLYGON[n]} alapú ${solidDat}?`,
+        figure: n <= 8 ? { type: 'solid', shape: kind, base: 'regular', n, a: 2, h: kind === 'prism' ? 3 : 4 } : undefined,
+        answer: { type: 'number', value },
+        inputLabel: `${UNIT_WORD[which]} =`,
+        hint: kind === 'prism' ? 'A hasábnak két egybevágó alaplapja van, és minden alapélhez tartozik egy oldallap.' : 'A gúlának egy alaplapja és egy csúcsa van, minden alapélhez tartozik egy oldallap.',
+        solution: [tex`Az alaplap ${num(n)} oldalú sokszög.`, ...countLines(kind, n), tex`Ezért a keresett érték: **${num(value)}**.`],
+      };
+    }
+    // level 3: one count is given, another is asked
+    const n = rng.int(3, 12);
+    const c = countsOf(kind, n);
+    const given = rng.pick((['faces', 'edges', 'vertices'] as const).filter((w) => w !== which && !(kind === 'pyramid' && w === 'vertices' && which === 'faces') && !(kind === 'pyramid' && w === 'faces' && which === 'vertices')));
+    const findN =
+      given === 'faces'
+        ? tex`$n ${kind === 'prism' ? '+ 2' : '+ 1'} = ${num(c.faces)}$, ezért $n = ${num(n)}$.`
+        : given === 'edges'
+          ? tex`$${kind === 'prism' ? '3' : '2'}n = ${num(c.edges)}$, ezért $n = ${num(n)}$.`
+          : tex`$${kind === 'prism' ? '2n' : 'n + 1'} = ${num(c.vertices)}$, ezért $n = ${num(n)}$.`;
     return {
-      prompt: tex`Hány ${what} van az ábrán látható testnek?`,
-      figure: shape.figure,
-      answer: { type: 'number', value },
-      inputLabel: `${which === 'faces' ? 'lap' : which === 'edges' ? 'él' : 'csúcs'} =`,
-      hint: 'A lapok sokszögek, az élek a lapok határai, a csúcsokban élek találkoznak.',
+      prompt: tex`Egy ${solidDat} $${num(c[given])}$ ${UNIT_WORD[given]}${given === 'faces' ? 'ja' : given === 'edges' ? 'e' : 'a'} van. Hány ${WHAT[which]} van?`,
+      answer: { type: 'number', value: c[which] },
+      inputLabel: `${UNIT_WORD[which]} =`,
+      hint: 'Előbb keresd meg, hány oldalú az alaplap! Jelöld $n$-nel, és írd fel a megadott számot $n$-nel.',
       solution: [
-        tex`A test egy ${shape.name}.`,
-        tex`Lapok: ${num(c.faces)}, élek: ${num(c.edges)}, csúcsok: ${num(c.vertices)}.`,
-        tex`Ezért a keresett érték: **${num(value)}**.`,
+        tex`Legyen az alaplap $n$ oldalú.`,
+        findN,
+        ...countLines(kind, n).filter((_, i) => i === ['faces', 'edges', 'vertices'].indexOf(which)),
+        tex`A ${solidDat} **${num(c[which])}** ${WHAT[which]} van.`,
       ],
     };
   },
@@ -319,7 +345,7 @@ const unitConversion: GeneratorDef = {
       c = rng.pick(cases);
     } else if (level === 2) {
       const cases: ConversionCase[] = [
-        { value: rng.int(15, 95) / 10, from: 'dm³', to: 'cm³', factor: 1000 },
+        { value: rng.intExcept(15, 95, [20, 30, 40, 50, 60, 70, 80, 90]) / 10, from: 'dm³', to: 'cm³', factor: 1000 },
         { value: rng.int(2, 9) / 10, from: 'm³', to: 'dm³', factor: 1000 },
         { value: rng.int(2, 9) * 500, from: 'cm³', to: 'dm³', factor: 1 / 1000 },
         { value: rng.int(2, 9) / 10, from: 'l', to: 'ml', factor: 1000 },
@@ -441,9 +467,9 @@ const capacity: GeneratorDef = {
         ],
       };
     }
-    const a = rng.pick([2, 3]);
-    const b = rng.pick([1, 2]);
-    const c = rng.pick([1, 1.5]);
+    const a = rng.int(2, 5);
+    const b = rng.int(1, 4);
+    const c = rng.int(1, 5) / 2;
     const m3 = clean(a * b * c);
     const hl = clean(m3 * 10);
     return {
@@ -548,7 +574,23 @@ const polyhedronTf: GeneratorDef = {
       { text: '1 hl = 100 l.', value: true, why: 'A hektoliter 100 liter.' },
       { text: 'A felszínt cm²-ben, a térfogatot cm³-ben mérjük.', value: true, why: 'A felszín terület, a térfogat köbtérfogat.' },
     ];
-    const pool = level === 1 ? statements.slice(0, 14) : statements;
+    // level 1: solids and their faces; level 2: formulas and units, or a count of an n-sided solid
+    if (level === 2 && rng.chance(0.5)) {
+      const kind = rng.pick(['prism', 'pyramid'] as const);
+      const n = rng.int(3, 8);
+      const which = rng.pick(['faces', 'edges', 'vertices'] as const);
+      const right = countsOf(kind, n)[which];
+      const value = rng.chance(0.5);
+      const shown = value ? right : rng.pick([countsOf(kind === 'prism' ? 'pyramid' : 'prism', n)[which], right + n, right - 1].filter((x) => x !== right && x > 0));
+      const solid = kind === 'prism' ? 'hasábnak' : 'gúlának';
+      return {
+        prompt: tex`Igaz vagy hamis?\n\n**Egy ${POLYGON[n]} alapú ${solid} $${num(shown)}$ ${UNIT_WORD[which]}${which === 'faces' ? 'ja' : which === 'edges' ? 'e' : 'a'} van.**`,
+        answer: { type: 'truefalse', value },
+        hint: 'Számold ki a lapok, élek és csúcsok számát az alaplap oldalainak számából!',
+        solution: [...countLines(kind, n), `Az állítás **${value ? 'igaz' : 'hamis'}**.`],
+      };
+    }
+    const pool = level === 1 ? statements.slice(0, 14) : statements.slice(14);
     const s = rng.pick(pool);
     return {
       prompt: `Igaz vagy hamis?\n\n**${s.text}**`,

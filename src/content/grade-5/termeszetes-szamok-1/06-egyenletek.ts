@@ -65,7 +65,7 @@ function storyData(rng: Rng, level: number): StoryData {
   const kinds =
     level === 2
       ? (['add', 'sub', 'mul'] as const)
-      : (['add', 'sub', 'sub2', 'mul', 'div', 'div2'] as const);
+      : (['sub2', 'div', 'div2'] as const); // level 3: the unknown subtrahend, dividend and divisor
   const kind = rng.pick(kinds);
 
   if (kind === 'add') {
@@ -191,10 +191,11 @@ const addSub: GeneratorDef = {
   title: 'Ismeretlen tag, kisebbítendő vagy kivonandó',
   levels: [1, 2],
   generate(rng, level): Question {
-    const kind = level === 1 ? rng.pick(['add', 'sub'] as const) : rng.pick(['add', 'sub', 'sub2'] as const);
+    // level 1: small numbers; level 2: two-digit numbers, and the unknown subtrahend a − x = b
+    const kind = level === 1 ? rng.pick(['add', 'sub'] as const) : rng.pick(['add', 'sub', 'sub2', 'sub2'] as const);
     if (kind === 'add') {
-      const a = rng.int(2, level === 1 ? 12 : 30);
-      const x = rng.int(2, level === 1 ? 20 : 45);
+      const a = level === 1 ? rng.int(2, 12) : rng.int(13, 40);
+      const x = level === 1 ? rng.int(2, 20) : rng.int(21, 60);
       const b = a + x;
       return {
         prompt: tex`Oldd meg az egyenletet!\n\n$x + ${num(a)} = ${num(b)}$`,
@@ -210,8 +211,8 @@ const addSub: GeneratorDef = {
       };
     }
     if (kind === 'sub') {
-      const a = rng.int(2, level === 1 ? 10 : 25);
-      const x = a + rng.int(2, level === 1 ? 12 : 30);
+      const a = level === 1 ? rng.int(2, 10) : rng.int(11, 30);
+      const x = a + (level === 1 ? rng.int(2, 12) : rng.int(13, 40));
       const b = x - a;
       return {
         prompt: tex`Oldd meg az egyenletet!\n\n$x - ${num(a)} = ${num(b)}$`,
@@ -250,8 +251,9 @@ const mul: GeneratorDef = {
   title: 'Ismeretlen tényező',
   levels: [1, 2],
   generate(rng, level): Question {
-    const a = rng.int(2, level === 1 ? 9 : 12);
-    const x = rng.int(2, level === 1 ? 9 : 15);
+    // level 1: the multiplication table; level 2: the unknown is 10–20
+    const a = level === 1 ? rng.int(2, 9) : rng.int(3, 12);
+    const x = level === 1 ? rng.int(2, 9) : rng.int(10, 20);
     const b = a * x;
     return {
       prompt: tex`Oldd meg az egyenletet!\n\n$${num(a)} \cdot x = ${num(b)}$`,
@@ -275,8 +277,8 @@ const div: GeneratorDef = {
   levels: [1, 2],
   generate(rng, level): Question {
     if (rng.chance(0.5)) {
-      const a = rng.int(2, level === 1 ? 7 : 12);
-      const b = rng.int(2, level === 1 ? 9 : 15);
+      const a = level === 1 ? rng.int(2, 7) : rng.int(3, 12);
+      const b = level === 1 ? rng.int(2, 9) : rng.int(10, 20);
       const x = a * b;
       return {
         prompt: tex`Oldd meg az egyenletet!\n\n$x : ${num(a)} = ${num(b)}$`,
@@ -291,8 +293,8 @@ const div: GeneratorDef = {
         ],
       };
     }
-    const b = rng.int(2, level === 1 ? 7 : 12);
-    const x = rng.int(2, level === 1 ? 9 : 15);
+    const b = level === 1 ? rng.int(2, 7) : rng.int(3, 12);
+    const x = level === 1 ? rng.int(2, 9) : rng.int(10, 20);
     const a = b * x;
     return {
       prompt: tex`Oldd meg az egyenletet!\n\n$${num(a)} : x = ${num(b)}$`,
@@ -385,7 +387,7 @@ const checkSolution: GeneratorDef = {
   title: 'Megoldás-e ez a szám?',
   levels: [1, 2],
   generate(rng, level): Question {
-    const kind = level === 1 ? rng.pick(['add', 'sub', 'mul'] as const) : rng.pick(['add', 'sub', 'sub2', 'mul', 'div', 'div2'] as const);
+    const kind = level === 1 ? rng.pick(['add', 'sub', 'mul'] as const) : rng.pick(['sub2', 'div', 'div2'] as const);
     let equation: string;
     let solution: number;
     let substitution: (v: number) => string;

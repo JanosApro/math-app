@@ -175,14 +175,14 @@ const missingTerm: GeneratorDef = {
         const x2 = rng.pick([6, 7, 8, 10]);
         const answer = price * x2;
         return {
-          prompt: tex`$${num(x1)}$ kg alma $${num(y1)}$ Ft-ba kerül. Mennyibe kerül $${num(x2)}$ kg?`,
-          answer: { type: 'number', value: answer, unit: 'Ft' },
-          hint: 'Írd fel az aránypárt: ahány kg, annyiszor annyi Ft. Előbb számold ki 1 kg árát!',
+          prompt: tex`$${num(x1)}$ kg alma $${num(y1)}$ dinárba kerül. Mennyibe kerül $${num(x2)}$ kg?`,
+          answer: { type: 'number', value: answer, unit: 'dinár' },
+          hint: 'Írd fel az aránypárt: ahány kg, annyiszor annyi dinár. Előbb számold ki 1 kg árát!',
           solution: [
-            tex`$${num(x1)}$ kg $${num(y1)}$ Ft, $${num(x2)}$ kg $x$ Ft.`,
+            tex`$${num(x1)}$ kg $${num(y1)}$ dinár, $${num(x2)}$ kg $x$ dinár.`,
             tex`Az aránypár: $${num(x1)} : ${num(y1)} = ${num(x2)} : x$.`,
             tex`$x = ${num(y1)} \cdot ${num(x2)} : ${num(x1)} = ${num(answer)}$`,
-            tex`${Article(num(x2))} $${num(x2)}$ kg alma **${num(answer)} Ft**.`,
+            tex`${Article(num(x2))} $${num(x2)}$ kg alma **${num(answer)} dinár**.`,
           ],
         };
       }
@@ -439,10 +439,10 @@ const shareRatio: GeneratorDef = {
     const difference = (large - small) * unitValue;
     const answer = askDifference ? difference : larger;
     const unit =
-      kind === 'prize' ? 'Ft' : kind === 'garden' ? 'm²' : kind === 'marbles' ? 'db' : 'dl';
+      kind === 'prize' ? 'dinár' : kind === 'garden' ? 'm²' : kind === 'marbles' ? 'db' : 'dl';
     const what =
       kind === 'prize'
-        ? `${capArticle(total)} $${num(total)}$ Ft-os jutalmat $${num(p)} : ${num(q)}$ arányban osztanak szét.`
+        ? `${capArticle(total)} $${num(total)}$ dináros jutalmat $${num(p)} : ${num(q)}$ arányban osztanak szét.`
         : kind === 'garden'
           ? `${capArticle(total)} $${num(total)}$ m²-es kertet $${num(p)} : ${num(q)}$ arányban osztanak két részre.`
           : kind === 'marbles'
@@ -634,13 +634,13 @@ export default defineSubtopic({
         {
           type: 'example',
           title: 'Jutalom felosztása',
-          problem: 'Egy $40\\,000$ Ft-os jutalmat $3 : 5$ arányban osztanak szét. Mennyit kap a nagyobbik rész?',
+          problem: 'Egy $40\\,000$ dináros jutalmat $3 : 5$ arányban osztanak szét. Mennyit kap a nagyobbik rész?',
           steps: [
             { text: '$3 + 5 = 8$ rész.' },
-            { text: 'Egy rész: $40\\,000 : 8 = 5\\,000$ Ft.' },
-            { text: 'A nagyobbik rész: $5 \\cdot 5\\,000 = 25\\,000$ Ft.' },
+            { text: 'Egy rész: $40\\,000 : 8 = 5\\,000$ dinár.' },
+            { text: 'A nagyobbik rész: $5 \\cdot 5\\,000 = 25\\,000$ dinár.' },
           ],
-          answer: 'A nagyobbik rész **25 000 Ft**.',
+          answer: 'A nagyobbik rész **25 000 dinár**.',
         },
         { type: 'practice', generator: 'share-ratio', level: 3, count: 2 },
         { type: 'practice', generator: 'map-scale', level: 3 },

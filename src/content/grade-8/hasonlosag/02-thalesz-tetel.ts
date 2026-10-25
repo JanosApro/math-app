@@ -8,6 +8,8 @@
 import {
   article,
   clean,
+  gcd,
+  type Rng,
   defineSubtopic,
   num,
   tex,
@@ -133,6 +135,22 @@ function triangleParallel(opts: {
   if (L.de) items.push(lab(mid(D, E), L.de, 'n'));
   if (L.ab) items.push(lab(mid(A, B), L.ab, 's'));
   return { type: 'geometry', points: { A, B, C, D, E }, items };
+}
+
+/**
+ * Random shadow data [h1, s1, s2, h2] with h1 : s1 = h2 : s2 = p : q (p, q small and coprime).
+ * h1 is in `small` metres, h2 in `big` metres; every value has at most one decimal.
+ */
+function shadowData(rng: Rng, small: [number, number], big: [number, number]): [number, number, number, number] {
+  for (;;) {
+    const p = rng.int(2, 6);
+    const q = rng.intExcept(2, 6, [p]);
+    if (gcd(p, q) !== 1) continue;
+    const u = rng.pick([0.1, 0.2, 0.3, 0.4, 0.5]);
+    const v = rng.int(1, 10) * rng.pick([0.5, 1]);
+    const [h1, s1, h2, s2] = [p * u, q * u, p * v, q * v].map((x) => clean(x));
+    if (h1 >= small[0] && h1 <= small[1] && h2 >= big[0] && h2 <= big[1] && Number.isInteger(h2 * 10)) return [h1, s1, s2, h2];
+  }
 }
 
 /** Two poles with their shadows; `unknown` marks the height that is asked for. */
@@ -443,17 +461,8 @@ const shadowHeight: GeneratorDef = {
   title: 'Magasság árnyékból',
   levels: [2, 3],
   generate(rng, level): Question {
-    const pool: [number, number, number, number][] = [
-      [1.5, 2, 12, 9],
-      [1.8, 2.4, 8, 6],
-      [1.2, 1.6, 10, 7.5],
-      [2, 2.5, 10, 8],
-      [1.5, 1.8, 6, 5],
-      [0.9, 1.2, 8, 6],
-      [2.4, 3, 15, 12],
-      [1.6, 2, 9, 7.2],
-    ];
-    const [h1, s1, s2, h2] = rng.pick(pool);
+    // level 2: a stick and a tree; level 3: a person and a building (and one more step)
+    const [h1, s1, s2, h2] = shadowData(rng, level === 2 ? [0.8, 2] : [1.5, 1.9], level === 2 ? [4, 15] : [12, 40]);
     if (level === 2) {
       return {
         prompt: tex`${capArticle(h1)} $${num(h1)}$ m magas bot árnyéka $${num(s1)}$ m. Ugyanekkor egy fa árnyéka $${num(s2)}$ m. Milyen magas a fa?`,

@@ -161,10 +161,14 @@ const laws: GeneratorDef = {
   title: 'Melyik műveleti tulajdonságot használtuk?',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const a = rng.int(2, 9);
-    const b = rng.int(2, 9);
-    const c = rng.int(2, 9);
-    const kind = level === 1 ? rng.pick(['comm-add', 'comm-mul'] as const) : level === 2 ? rng.pick(['assoc-add', 'assoc-mul'] as const) : rng.pick(['dist-add', 'dist-sub', 'assoc-add', 'comm-mul'] as const);
+    const [a, b, c] = rng.sample([2, 3, 4, 5, 6, 7, 8, 9], 3); // different, so a swap is visible
+    // level 3: distributivity, and the other two laws in less obvious forms (three terms, reversed)
+    const kind =
+      level === 1
+        ? rng.pick(['comm-add', 'comm-mul'] as const)
+        : level === 2
+          ? rng.pick(['assoc-add', 'assoc-mul'] as const)
+          : rng.pick(['dist-add', 'dist-sub', 'dist-rev', 'comm-three', 'assoc-rev'] as const);
     let equation: string;
     let correct: string;
     let why: string;
@@ -184,6 +188,18 @@ const laws: GeneratorDef = {
       equation = tex`$(${num(a)} \cdot ${num(b)}) \cdot ${num(c)} = ${num(a)} \cdot (${num(b)} \cdot ${num(c)})$`;
       correct = 'asszociativitás (csoportosíthatóság)';
       why = 'A zárójelek helye változott meg, a tényezők sorrendje nem.';
+    } else if (kind === 'comm-three') {
+      equation = tex`$${num(a)} + ${num(b)} + ${num(c)} = ${num(a)} + ${num(c)} + ${num(b)}$`;
+      correct = 'kommutativitás (felcserélhetőség)';
+      why = 'Két tag sorrendje felcserélődött, zárójel nincs.';
+    } else if (kind === 'assoc-rev') {
+      equation = tex`$${num(a)} \cdot (${num(b)} \cdot ${num(c)}) = (${num(a)} \cdot ${num(b)}) \cdot ${num(c)}$`;
+      correct = 'asszociativitás (csoportosíthatóság)';
+      why = 'A tényezők sorrendje ugyanaz maradt, csak a zárójel került máshová.';
+    } else if (kind === 'dist-rev') {
+      equation = tex`$${num(a)} \cdot ${num(b)} + ${num(a)} \cdot ${num(c)} = ${num(a)} \cdot (${num(b)} + ${num(c)})$`;
+      correct = 'disztributivitás (széttagolhatóság)';
+      why = 'A közös tényezőt kiemeltük: ez a széttagolás visszafelé.';
     } else if (kind === 'dist-add') {
       equation = tex`$${num(a)} \cdot (${num(b)} + ${num(c)}) = ${num(a)} \cdot ${num(b)} + ${num(a)} \cdot ${num(c)}$`;
       correct = 'disztributivitás (széttagolhatóság)';
@@ -371,7 +387,8 @@ const remainder: GeneratorDef = {
   title: 'Maradékos osztás: hányados és maradék',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const b = level === 1 ? rng.int(2, 6) : level === 2 ? rng.int(4, 9) : rng.int(7, 25);
+    // the divisors of the levels don't overlap: 2–5, 6–9, 11–25
+    const b = level === 1 ? rng.int(2, 5) : level === 2 ? rng.int(6, 9) : rng.int(11, 25);
     const q = level === 1 ? rng.int(2, 6) : level === 2 ? rng.int(3, 12) : rng.int(10, 100);
     const r = rng.int(0, b - 1);
     const a = b * q + r;
@@ -548,7 +565,7 @@ const word: GeneratorDef = {
     if (kind === 'groups') {
       const wordK = { 3: 'hármas', 4: 'négyes', 5: 'ötös', 6: 'hatos' }[k];
       return {
-        prompt: tex`Egy osztályban ${num(n)} tanuló van. ${wordK} csoportokba osztják őket. Hány teljes csoport lesz, és hány tanuló marad ki?`,
+        prompt: tex`Egy osztályban ${num(n)} tanuló van. A tanulókat ${wordK} csoportokba osztják őket. Hány teljes csoport lesz, és hány tanuló marad ki?`,
         answer: {
           type: 'numbers',
           fields: [

@@ -116,6 +116,11 @@ const setTypesTable: Figure = {
 // 2. Generators
 // ---------------------------------------------------------------------------------------------
 
+/** "páros természetes számok" / "hárommal osztható természetes számok". */
+function multiplesText(k: number): string {
+  return k === 2 ? 'páros természetes számok' : `${{ 3: 'hárommal', 4: 'néggyel', 5: 'öttel', 6: 'hattal' }[k]} osztható természetes számok`;
+}
+
 /** Is the number an element of the set? T/F, with ∈ / ∉ and N / N₀. */
 const elementOf: GeneratorDef = {
   id: 'element-of',
@@ -196,52 +201,25 @@ const notation: GeneratorDef = {
         ],
       };
     }
-    const pools = [
-      {
-        text: 'a 10-nél kisebb páros természetes számok',
-        correct: [2, 4, 6, 8],
-        wrongs: [
-          [0, 2, 4, 6, 8],
-          [2, 4, 6, 8, 10],
-          [2, 4, 6, 8, 12],
-        ],
-      },
-      {
-        text: 'a 15-nél kisebb, hárommal osztható természetes számok',
-        correct: [3, 6, 9, 12],
-        wrongs: [
-          [0, 3, 6, 9, 12],
-          [3, 6, 9, 12, 15],
-          [3, 6, 9, 12, 18],
-        ],
-      },
-      {
-        text: 'a 12 osztói',
-        correct: [1, 2, 3, 4, 6, 12],
-        wrongs: [
-          [1, 2, 3, 4, 6],
-          [1, 2, 3, 4, 6, 12, 24],
-          [1, 2, 3, 4, 8, 12],
-        ],
-      },
-      {
-        text: 'az egyjegyű páratlan természetes számok',
-        correct: [1, 3, 5, 7, 9],
-        wrongs: [
-          [1, 3, 5, 7],
-          [0, 1, 3, 5, 7, 9],
-          [1, 2, 3, 5, 7, 9],
-        ],
-      },
-    ] as const;
-    const p = rng.pick(pools);
+    // level 2, the other way round: which property gives the listed set?
+    const k = rng.pick([2, 3, 4, 5]);
+    const m = rng.int(4, 6);
+    const limit = m * k;
+    const list = Array.from({ length: m - 1 }, (_, i) => (i + 1) * k);
+    const correct = `${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} kisebb ${multiplesText(k)}`;
+    const wrongs = [
+      `${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} nem nagyobb ${multiplesText(k)}`,
+      `${article(num(limit - k))} $${num(limit - k)}$-${suffix(limit - k, 'nál', 'nél')} kisebb ${multiplesText(k)}`,
+      `${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} kisebb természetes számok`,
+    ];
     return {
-      prompt: tex`Melyik halmazt kapod?\n\n**${p.text}**`,
-      answer: choice(rng, setM(p.correct), p.wrongs.map((w) => setM(w))),
-      hint: propertyHint(p.text),
+      prompt: tex`Melyik tulajdonság adja meg ezt a halmazt?\n\n$${setTex(list)}$`,
+      answer: textChoice(correct, wrongs),
+      hint: 'Nézd meg, milyen számok vannak a halmazban, és hol áll meg a felsorolás!',
       solution: [
-        tex`A feltételnek megfelelő számok: $${listOf(p.correct)}$.`,
-        tex`A helyes halmaz: **${setM(p.correct)}**.`,
+        tex`A halmaz elemei ${multiplesText(k)}: $${listOf(list)}$.`,
+        tex`A következő ilyen szám ${article(num(limit))} $${num(limit)}$ lenne, de az már nincs benne: tehát ${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} **kisebb** számokról van szó.`,
+        tex`A helyes tulajdonság: **${correct}**.`,
       ],
     };
   },
@@ -355,7 +333,7 @@ const subsetEq: GeneratorDef = {
     const kind =
       level === 1
         ? rng.pick(['sub', 'sub'] as const)
-        : rng.pick(['sub', 'sub', 'eq', 'empty', 'self'] as const);
+        : rng.pick(['eq', 'eq', 'empty', 'self'] as const);
     let A: number[];
     let B: number[];
     let symbol: string;
@@ -492,9 +470,10 @@ const neighbour: GeneratorDef = {
   title: 'Előd és rákövetkező',
   levels: [1, 2],
   generate(rng, level): Question {
-    const max = level === 1 ? 100 : 1000;
-    const n = rng.int(2, max);
     const askSuccessor = rng.chance(0.5);
+    // level 1: up to 100; level 2: the neighbour crosses a hundred or a thousand (399 → 400, 3000 → 2999)
+    const round = rng.int(1, 9) * rng.pick([100, 1000]) + rng.pick([0, 0, 1000]);
+    const n = level === 1 ? rng.int(2, 99) : askSuccessor ? round - 1 : round;
     const value = askSuccessor ? n + 1 : n - 1;
     return {
       prompt: askSuccessor
@@ -576,61 +555,41 @@ const defineByProperty: GeneratorDef = {
   title: 'Halmaz megadása jellemző tulajdonsággal',
   levels: [1, 2],
   generate(rng, level): Question {
-    const pools = [
-      {
-        text: 'a 10-nél kisebb páros természetes számok',
-        correct: [2, 4, 6, 8],
-        wrongs: [
-          [0, 2, 4, 6, 8],
-          [2, 4, 6, 8, 10],
-          [2, 4, 6],
-        ],
-      },
-      {
-        text: 'a 15-nél kisebb, hárommal osztható természetes számok',
-        correct: [3, 6, 9, 12],
-        wrongs: [
-          [3, 6, 9, 12, 15],
-          [0, 3, 6, 9, 12],
-          [3, 6, 9],
-        ],
-      },
-      {
-        text: 'a 20-nál kisebb, néggyel osztható természetes számok',
-        correct: [4, 8, 12, 16],
-        wrongs: [
-          [4, 8, 12, 16, 20],
-          [0, 4, 8, 12, 16],
-          [4, 8, 12],
-        ],
-      },
-      {
-        text: 'az egyjegyű páros természetes számok',
-        correct: [2, 4, 6, 8],
-        wrongs: [
-          [0, 2, 4, 6, 8],
-          [2, 4, 6, 8, 10],
-          [1, 3, 5, 7, 9],
-        ],
-      },
-      {
-        text: 'a 12 osztói',
-        correct: [1, 2, 3, 4, 6, 12],
-        wrongs: [
-          [1, 2, 3, 4, 6],
-          [1, 2, 3, 4, 6, 12, 24],
-          [1, 2, 3, 4, 8, 12],
-        ],
-      },
-    ] as const;
-    const p = rng.pick(level === 1 ? pools.slice(0, 4) : pools);
+    if (level === 1) {
+      // even / odd numbers below a limit (the limit itself may or may not belong)
+      const even = rng.chance(0.5);
+      const limit = rng.int(7, 16);
+      const correct = Array.from({ length: limit - 1 }, (_, i) => i + 1).filter((x) => (x % 2 === 0) === even);
+      const text = `${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} kisebb ${even ? 'páros' : 'páratlan'} természetes számok`;
+      const nextOne = correct[correct.length - 1] + 2;
+      const wrongs = [
+        [...correct, nextOne],
+        correct.slice(0, -1),
+        even ? [0, ...correct] : correct.map((x) => x + 1),
+      ];
+      return {
+        prompt: tex`Melyik halmazt kapod?\n\n**${text}**`,
+        answer: choice(rng, setM(correct), wrongs.map((w) => setM(w))),
+        hint: `Sorold fel a ${even ? 'páros' : 'páratlan'} számokat, és figyelj a határra: ${article(num(limit))} $${num(limit)}$-${suffix(limit, 'nál', 'nél')} kisebbek kellenek!${even ? ' A 0 nem természetes szám.' : ''}`,
+        solution: [tex`A feltételnek megfelelő számok: $${listOf(correct)}$.`, tex`A helyes halmaz: **${setM(correct)}**.`],
+      };
+    }
+    // level 2: two conditions — between two numbers and divisible by k
+    const k = rng.pick([3, 4, 5]);
+    const from = rng.int(k + 1, 12);
+    const to = from + rng.int(3, 5) * k + rng.int(0, k - 1);
+    const correct = Array.from({ length: to - from - 1 }, (_, i) => from + 1 + i).filter((x) => x % k === 0);
+    const text = `${article(num(from))} $${num(from)}$-${suffix(from, 'nál', 'nél')} nagyobb, $${num(to)}$-${suffix(to, 'nál', 'nél')} kisebb, ${multiplesText(k)}`;
+    const below = Array.from({ length: to - 1 }, (_, i) => i + 1).filter((x) => x % k === 0);
+    const withEnds = Array.from({ length: to - from + 1 }, (_, i) => from + i).filter((x) => x % k === 0);
+    const wrongs = [below, withEnds.length !== correct.length ? withEnds : [...correct, correct[correct.length - 1] + k], correct.slice(1)];
     return {
-      prompt: tex`Melyik halmazt kapod?\n\n**${p.text}**`,
-      answer: choice(rng, setM(p.correct), p.wrongs.map((w) => setM(w))),
-      hint: propertyHint(p.text),
+      prompt: tex`Melyik halmazt kapod?\n\n**${text}**`,
+      answer: choice(rng, setM(correct), wrongs.map((w) => setM(w))),
+      hint: 'Mindkét feltételnek teljesülnie kell: a számnak a két határ között kell lennie, és oszthatónak kell lennie.',
       solution: [
-        tex`A feltételnek megfelelő számok: $${listOf(p.correct)}$.`,
-        tex`A helyes halmaz: **${setM(p.correct)}**.`,
+        tex`${Article(num(from))} $${num(from)}$ és ${article(num(to))} $${num(to)}$ közötti számok közül ${multiplesText(k).replace(' természetes számok', '')}k: $${listOf(correct)}$.`,
+        tex`A helyes halmaz: **${setM(correct)}**.`,
       ],
     };
   },

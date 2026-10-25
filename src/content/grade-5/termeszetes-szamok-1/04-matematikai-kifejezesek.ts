@@ -335,12 +335,53 @@ const VAR_MAKERS: VarMaker[] = [
       steps: [tex`$${num(n)} : ${num(b)} = ${num(q)}$`, tex`$${num(q)} + ${num(c)} = ${num(q + c)}$`],
     };
   },
+  (rng) => {
+    const a = rng.int(2, 6);
+    const b = rng.int(1, 9);
+    const n = rng.int(b + 1, b + 10);
+    const d = n - b;
+    return {
+      tex: tex`${num(a)}(n - ${num(b)})`,
+      n,
+      value: a * d,
+      steps: [tex`$${num(n)} - ${num(b)} = ${num(d)}$`, tex`$${num(a)} \cdot ${num(d)} = ${num(a * d)}$`],
+    };
+  },
+  // level 3: three operations
+  (rng) => {
+    const a = rng.int(2, 6);
+    const b = rng.int(2, 9);
+    const n = rng.int(5, 20);
+    const s = n + b;
+    const c = rng.int(1, a * s - 1);
+    return {
+      tex: tex`${num(a)}(n + ${num(b)}) - ${num(c)}`,
+      n,
+      value: a * s - c,
+      steps: [tex`$${num(n)} + ${num(b)} = ${num(s)}$`, tex`$${num(a)} \cdot ${num(s)} = ${num(a * s)}$`, tex`$${num(a * s)} - ${num(c)} = ${num(a * s - c)}$`],
+    };
+  },
+  (rng) => {
+    const c = rng.int(2, 6);
+    const q = rng.int(2, 9);
+    const b = rng.int(1, 9);
+    const n = c * q - b;
+    const d = rng.int(2, 20);
+    return {
+      tex: tex`(n + ${num(b)}) : ${num(c)} + ${num(d)}`,
+      n,
+      value: q + d,
+      steps: [tex`$${num(n)} + ${num(b)} = ${num(n + b)}$`, tex`$${num(n + b)} : ${num(c)} = ${num(q)}$`, tex`$${num(q)} + ${num(d)} = ${num(q + d)}$`],
+    };
+  },
 ];
 
-/** A variable expression suited to the level. */
+/**
+ * A variable expression suited to the level: one operation after a product (L1), a bracket or a
+ * division (L2), three operations (L3).
+ */
 function varExpr(rng: Rng, level: number): VarExpr {
-  const pool =
-    level === 1 ? [VAR_MAKERS[0], VAR_MAKERS[1]] : level === 2 ? [VAR_MAKERS[0], VAR_MAKERS[2], VAR_MAKERS[3]] : VAR_MAKERS;
+  const pool = level === 1 ? VAR_MAKERS.slice(0, 2) : level === 2 ? VAR_MAKERS.slice(2, 5) : VAR_MAKERS.slice(5);
   return rng.pick(pool)(rng);
 }
 
@@ -395,101 +436,63 @@ const variable: GeneratorDef = {
   },
 };
 
-/** Match a verbal phrase with its expression. */
+/** "5-tel", "3-mal", "4-gyel" … for 2–9. */
+const WITH: Record<number, string> = { 2: '2-vel', 3: '3-mal', 4: '4-gyel', 5: '5-tel', 6: '6-tal', 7: '7-tel', 8: '8-cal', 9: '9-cel' };
+/** kétszerese … hatszorosa, and the "-nél" forms. */
+const TIMES: Record<number, [string, string]> = {
+  2: ['kétszerese', 'kétszeresénél'],
+  3: ['háromszorosa', 'háromszorosánál'],
+  4: ['négyszerese', 'négyszeresénél'],
+  5: ['ötszöröse', 'ötszörösénél'],
+  6: ['hatszorosa', 'hatszorosánál'],
+};
+/** fele, harmada, negyede, ötöde. */
+const PART: Record<number, string> = { 2: 'fele', 3: 'harmada', 4: 'negyede', 5: 'ötöde' };
+
+/** Match a verbal phrase with its expression; the numbers are random. */
 const translate: GeneratorDef = {
   id: 'translate',
   title: 'Szövegből kifejezés',
   levels: [1, 2, 3],
   generate(rng, level): Question {
     type Item = { phrase: string; correct: string; wrongs: string[]; why: string };
-    const l1: Item[] = [
-      {
-        phrase: 'az $n$ szám 5-tel nagyobb',
-        correct: '$n + 5$',
-        wrongs: ['$n - 5$', '$5n$', '$n : 5$'],
-        why: 'Az „5-tel nagyobb” összeadást jelent: $n + 5$.',
-      },
-      {
-        phrase: 'az $n$ szám 5-tel kisebb',
-        correct: '$n - 5$',
-        wrongs: ['$n + 5$', '$5 - n$', '$5n$'],
-        why: 'Az „5-tel kisebb” kivonást jelent: $n - 5$.',
-      },
-      {
-        phrase: 'az $n$ szám háromszorosa',
-        correct: '$3n$',
-        wrongs: ['$n + 3$', '$n : 3$', '$3 + n$'],
-        why: 'A „háromszorosa” szorzást jelent: $3 \\cdot n = 3n$.',
-      },
-      {
-        phrase: 'az $n$ szám fele',
-        correct: '$n : 2$',
-        wrongs: ['$2n$', '$n - 2$', '$2 : n$'],
-        why: 'A „fele” osztást jelent: $n : 2$.',
-      },
-    ];
-    const l2: Item[] = [
-      {
-        phrase: 'az $n$ számnál 4-gyel nagyobb szám kétszerese',
-        correct: '$2(n + 4)$',
-        wrongs: ['$2n + 4$', '$n + 4 \\cdot 2$', '$(n + 2) \\cdot 4$'],
-        why: 'Előbb a 4-gyel nagyobb szám: $n + 4$, aztán annak a kétszerese: $2(n + 4)$. A zárójel kell, különben csak az $n$-t szoroznánk.',
-      },
-      {
-        phrase: 'az $n$ szám és a 6 összegének a fele',
-        correct: '$(n + 6) : 2$',
-        wrongs: ['$n + 6 : 2$', '$n : 2 + 6$', '$(n + 2) : 6$'],
-        why: 'Előbb az összeg: $n + 6$, aztán annak a fele: $(n + 6) : 2$.',
-      },
-      {
-        phrase: 'az $n$ szám kétszeresénél 7-tel kevesebb',
-        correct: '$2n - 7$',
-        wrongs: ['$2(n - 7)$', '$n - 7 \\cdot 2$', '$7 - 2n$'],
-        why: 'Előbb a kétszeres: $2n$, abból 7-tel kevesebb: $2n - 7$.',
-      },
-      {
-        phrase: 'az $n$ szám és a 3 különbségének a háromszorosa',
-        correct: '$3(n - 3)$',
-        wrongs: ['$3n - 3$', '$n - 3 \\cdot 3$', '$3n + 3$'],
-        why: 'Előbb a különbség: $n - 3$, aztán annak a háromszorosa: $3(n - 3)$.',
-      },
-    ];
-    const l3: Item[] = [
-      {
-        phrase: 'az $n$ szám és a 4 összegének a kétszeresénél 3-mal kevesebb',
-        correct: '$2(n + 4) - 3$',
-        wrongs: ['$2n + 4 - 3$', '$2(n + 4 - 3)$', '$2n + 8 + 3$'],
-        why: 'Előbb az összeg kétszerese: $2(n + 4)$, abból 3-mal kevesebb: $2(n + 4) - 3$.',
-      },
-      {
-        phrase: 'az $n$ szám háromszorosának és a 6-nak az összege',
-        correct: '$3n + 6$',
-        wrongs: ['$3(n + 6)$', '$3n \\cdot 6$', '$n + 3 \\cdot 6$'],
-        why: 'A háromszoros: $3n$, ehhez adjuk a 6-ot: $3n + 6$.',
-      },
-      {
-        phrase: 'az $n$ számnál 2-vel kisebb szám harmadrésze',
-        correct: '$(n - 2) : 3$',
-        wrongs: ['$n - 2 : 3$', '$n : 3 - 2$', '$(n - 3) : 2$'],
-        why: 'Előbb a 2-vel kisebb szám: $n - 2$, aztán annak a harmadrésze: $(n - 2) : 3$.',
-      },
-      {
-        phrase: 'az $n$ szám és a 7 különbségének a kétszerese',
-        correct: '$2(n - 7)$',
-        wrongs: ['$2n - 7$', '$n - 7 \\cdot 2$', '$2n + 7$'],
-        why: 'Előbb a különbség: $n - 7$, aztán annak a kétszerese: $2(n - 7)$.',
-      },
-    ];
-    const item = rng.pick(level === 1 ? l1 : level === 2 ? l2 : l3);
-    const intro = rng.pick([
-      'Melyik kifejezés felel meg ennek?',
-      'Melyik kifejezést jelenti ez?',
-      'Melyik kifejezés illik ehhez a szöveghez?',
-    ]);
+    // all different, so that no wrong option happens to be equal to the right one
+    const m = rng.int(2, 6);
+    const f = rng.intExcept(2, 5, [m]);
+    const k = rng.intExcept(2, 9, [m, f]);
+    const K = num(k);
+    const M = num(m);
+    const F = num(f);
+    let item: Item;
+    if (level === 1) {
+      item = rng.pick<Item>([
+        { phrase: `az $n$ számnál ${WITH[k]} nagyobb szám`, correct: `$n + ${K}$`, wrongs: [`$n - ${K}$`, `$${K}n$`, `$n : ${K}$`], why: `${Article(k)} „${WITH[k]} nagyobb” összeadást jelent: $n + ${K}$.` },
+        { phrase: `az $n$ számnál ${WITH[k]} kisebb szám`, correct: `$n - ${K}$`, wrongs: [`$n + ${K}$`, `$${K} - n$`, `$${K}n$`], why: `${Article(k)} „${WITH[k]} kisebb” kivonást jelent: $n - ${K}$.` },
+        { phrase: `az $n$ szám ${TIMES[m][0]}`, correct: `$${M}n$`, wrongs: [`$n + ${M}$`, `$n : ${M}$`, `$n - ${M}$`], why: `${Article(TIMES[m][0])} „${TIMES[m][0]}” szorzást jelent: $${M} \\cdot n = ${M}n$.` },
+        { phrase: `az $n$ szám ${PART[f]}`, correct: `$n : ${F}$`, wrongs: [`$${F}n$`, `$n - ${F}$`, `$${F} : n$`], why: `${Article(PART[f])} „${PART[f]}” osztást jelent: $n : ${F}$.` },
+      ]);
+    } else if (level === 2) {
+      item = rng.pick<Item>([
+        { phrase: `az $n$ számnál ${WITH[k]} nagyobb szám ${TIMES[m][0]}`, correct: `$${M}(n + ${K})$`, wrongs: [`$${M}n + ${K}$`, `$n + ${K} \\cdot ${M}$`, `$(n + ${M}) \\cdot ${K}$`], why: `Előbb ${article(k)} ${WITH[k]} nagyobb szám: $n + ${K}$, aztán annak ${article(TIMES[m][0])} ${TIMES[m][0]}: $${M}(n + ${K})$. A zárójel kell, különben csak az $n$-t szoroznánk.` },
+        { phrase: `az $n$ szám és ${article(k)} ${K} összegének ${article(PART[f])} ${PART[f]}`, correct: `$(n + ${K}) : ${F}$`, wrongs: [`$n + ${K} : ${F}$`, `$n : ${F} + ${K}$`, `$(n + ${F}) : ${K}$`], why: `Előbb az összeg: $n + ${K}$, aztán annak ${article(PART[f])} ${PART[f]}: $(n + ${K}) : ${F}$.` },
+        { phrase: `az $n$ szám ${TIMES[m][1]} ${WITH[k]} kevesebb`, correct: `$${M}n - ${K}$`, wrongs: [`$${M}(n - ${K})$`, `$n - ${K} \\cdot ${M}$`, `$${K} - ${M}n$`], why: `Előbb ${article(TIMES[m][0])} ${TIMES[m][0].replace(/a$|e$/, '')}: $${M}n$, abból ${WITH[k]} kevesebb: $${M}n - ${K}$.` },
+        { phrase: `az $n$ szám és ${article(k)} ${K} különbségének ${article(TIMES[m][0])} ${TIMES[m][0]}`, correct: `$${M}(n - ${K})$`, wrongs: [`$${M}n - ${K}$`, `$n - ${K} \\cdot ${M}$`, `$${M}n + ${K}$`], why: `Előbb a különbség: $n - ${K}$, aztán annak ${article(TIMES[m][0])} ${TIMES[m][0]}: $${M}(n - ${K})$.` },
+      ]);
+    } else {
+      const c = rng.intExcept(2, 9, [m, f, k]);
+      const C = num(c);
+      item = rng.pick<Item>([
+        { phrase: `az $n$ szám és ${article(k)} ${K} összegének ${article(TIMES[m][1])} ${TIMES[m][1]} ${WITH[c]} kevesebb`, correct: `$${M}(n + ${K}) - ${C}$`, wrongs: [`$${M}n + ${K} - ${C}$`, `$${M}(n + ${K} - ${C})$`, `$${M}n + ${num(m * k)} + ${C}$`], why: `Előbb az összeg ${TIMES[m][0]}: $${M}(n + ${K})$, abból ${WITH[c]} kevesebb: $${M}(n + ${K}) - ${C}$.` },
+        { phrase: `az $n$ szám ${TIMES[m][0]} és ${article(k)} ${K} összege`, correct: `$${M}n + ${K}$`, wrongs: [`$${M}(n + ${K})$`, `$${M}n \\cdot ${K}$`, `$n + ${M} \\cdot ${K}$`], why: `A ${TIMES[m][0]}: $${M}n$; az összeghez ehhez adjuk hozzá a másik számot: $${M}n + ${K}$.` },
+        { phrase: `az $n$ számnál ${WITH[k]} kisebb szám ${PART[f]}`, correct: `$(n - ${K}) : ${F}$`, wrongs: [`$n - ${K} : ${F}$`, `$n : ${F} - ${K}$`, `$(n - ${F}) : ${K}$`], why: `Előbb ${article(k)} ${WITH[k]} kisebb szám: $n - ${K}$, aztán annak ${article(PART[f])} ${PART[f]}: $(n - ${K}) : ${F}$.` },
+        { phrase: `az $n$ szám ${PART[f]} és ${article(c)} ${C} szorzata`, correct: `$n : ${F} \\cdot ${C}$`, wrongs: [`$n : (${F} \\cdot ${C})$`, `$n \\cdot ${F} : ${C}$`, `$(n + ${C}) : ${F}$`], why: `Előbb ${article(PART[f])} ${PART[f]}: $n : ${F}$, ezt szorozzuk ${WITH[c]}: $n : ${F} \\cdot ${C}$.` },
+      ]);
+    }
+    const intro = rng.pick(['Melyik kifejezés felel meg ennek?', 'Melyik kifejezést jelenti ez?', 'Melyik kifejezés illik ehhez a szöveghez?']);
     return {
       prompt: tex`${intro}\n\n**${item.phrase}**`,
       answer: textChoice(item.correct, item.wrongs),
-      hint: 'A „nagyobb” összeadás, a „kisebb” kivonás, a „szorosa” szorzás, a „fele” vagy „harmadrésze” osztás. A zárójel a sorrendet őrzi.',
+      hint: 'A „nagyobb” összeadás, a „kisebb” kivonás, a „-szorosa” szorzás, a „fele”, „harmada” osztás. A zárójel a sorrendet őrzi.',
       solution: [item.why, tex`Helyesen: **${item.correct}**.`],
     };
   },
@@ -503,7 +506,7 @@ const formula: GeneratorDef = {
   generate(rng, level): Question {
     if (level === 1) {
       const a = rng.int(3, 12);
-      const b = rng.int(3, 12);
+      const b = rng.intExcept(3, 12, [a]); // a rectangle, not a square
       const sum = a + b;
       const k = 2 * sum;
       return {

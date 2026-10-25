@@ -6,6 +6,8 @@
  * All figures are built from the same data as the question.
  */
 import {
+  article,
+  Article,
   choice,
   defineSubtopic,
   joinHu,
@@ -30,13 +32,13 @@ const art = (letter: string) => (VOWEL_LETTERS.has(letter[0].toUpperCase()) ? 'a
 const Art = (letter: string) => (art(letter) === 'az' ? 'Az' : 'A');
 
 const POINT_SETS = [
-  ['A', 'B', 'C', 'D', 'E', 'F'],
-  ['K', 'L', 'M', 'N', 'P', 'Q'],
-  ['P', 'Q', 'R', 'S', 'T', 'U'],
-  ['D', 'E', 'F', 'G', 'H', 'I'],
+  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+  ['K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S'],
+  ['P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'],
+  ['D', 'E', 'F', 'G', 'H', 'K', 'L', 'M'],
 ];
 
-/** Six points, no three of them collinear. */
+/** Eight points, no three of them collinear. */
 const POINT_COORDS: [number, number][] = [
   [0, 0],
   [4, 0],
@@ -44,6 +46,8 @@ const POINT_COORDS: [number, number][] = [
   [1, 4],
   [0, 3],
   [2, 1],
+  [6, 1.5],
+  [5, 5.5],
 ];
 
 /** A line p, with A and B on it and C off it. */
@@ -221,7 +225,8 @@ const incidenceTf: GeneratorDef = {
 
     const onList = names.slice(0, 3);
     const off = names[3];
-    const kind = level === 1 ? rng.pick(['on', 'not', 'through'] as const) : rng.pick(['on', 'not', 'through', 'collinear', 'notCollinear'] as const);
+    // level 1: one point and the line; level 2: three points (collinear or not)
+    const kind = level === 1 ? rng.pick(['on', 'not', 'through'] as const) : rng.pick(['collinear', 'notCollinear'] as const);
     let text: string;
     let value: boolean;
     if (kind === 'on' || kind === 'through') {
@@ -303,7 +308,7 @@ const conceptTf: GeneratorDef = {
               { text: 'Négy pont közül mindig kiválasztható három, amely egy egyenesen van.', value: false, why: 'Általános helyzetű négy pontnál ez nem igaz.' },
               { text: tex`Ha ${art(three[0])} $${three[0]}$, $${three[1]}$ és $${three[2]}$ pontok egy egyenesen vannak, akkor ${art(three[0])} $${three[0]}${three[1]}$ szakasz része ${art(three[0])} $${three[0]}${three[2]}$ egyenesnek.`, value: true, why: 'A szakasz két pontja ugyanazon az egyenesen van.' },
               { text: tex`${Art(A)} $${A}$ és $${B}$ pontok mindig meghatároznak egy szakaszt.`, value: true, why: 'Két különböző pont egy szakaszt határoz meg.' },
-              { text: tex`${Art(A)} $${A}$ és $${B}$ pontokon át pontosan egy egyenes húzható.`, value: true, why: 'Két pont egyértelműen meghatároz egy egyenest.' },
+              { text: 'Ha két különböző egyenesnek két közös pontja van, akkor a két egyenes ugyanaz.', value: true, why: 'Két ponton át csak egy egyenes húzható, tehát a két egyenes egybeesik.' },
               { text: tex`Ha ${art(A)} $${A}$ pont illeszkedik ${art(line)} $${line}$ egyenesre, akkor ${art(line)} $${line}$ egyenes átmegy ${art(A)} $${A}$ ponton.`, value: true, why: 'Az illeszkedés és az „átmegy” ugyanazt fejezi ki.' },
               { text: tex`${Art(line)} $${line}$ egyenes és egy másik egyenes ugyanaz, ha mindkettő átmegy ${art(A)} $${A}$ és $${B}$ pontokon.`, value: true, why: 'Két pont csak egy egyenest határoz meg.' },
               { text: tex`${Art(line)} $${line}$ egyenes és egy másik egyenes ugyanaz, ha csak ${art(A)} $${A}$ ponton mennek át.`, value: false, why: 'Egy ponton át végtelen sok egyenes húzható.' },
@@ -326,11 +331,11 @@ const between: GeneratorDef = {
   title: 'Közöttiség az egyenesen',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const count = level === 3 ? 4 : 3;
+    const count = level === 1 ? 3 : 4;
     const names = rng.sample(rng.pick(POINT_SETS), count);
     const layout = rng.int(0, 3);
     const figure = betweenFigureFor(names, count, layout);
-    if (count === 3) {
+    if (level === 1) {
       const correct = names[1];
       return {
         prompt: 'Melyik pont van a másik kettő között?',
@@ -339,22 +344,38 @@ const between: GeneratorDef = {
         hint: 'Keresd meg az egyenesen a három pont sorrendjét!',
         solution: [
           tex`Az egyenesen a sorrend: $${names[0]}$, $${names[1]}$, $${names[2]}$.`,
-          `Ezért **${names[1]}** van a másik kettő között.`,
+          tex`Ezért **$${names[1]}$** van a másik kettő között.`,
         ],
       };
     }
-    const askLeft = rng.chance(0.5);
-    const [left, right, correct] = askLeft ? [names[0], names[2], names[1]] : [names[1], names[3], names[2]];
-    const wrongs = names.filter((n) => n !== correct);
+    const order = tex`Az egyenesen a sorrend: $${names[0]}$, $${names[1]}$, $${names[2]}$, $${names[3]}$.`;
+    if (level === 2) {
+      const askLeft = rng.chance(0.5);
+      const [left, right, correct] = askLeft ? [names[0], names[2], names[1]] : [names[1], names[3], names[2]];
+      const wrongs = names.filter((n) => n !== correct);
+      return {
+        prompt: tex`Melyik pont van ${article(left)} $${left}$ és $${right}$ pontok között?`,
+        figure,
+        answer: choice(rng, correct, wrongs, { count: 4, format: (v) => `$${v}$` }),
+        hint: tex`Haladj az egyenesen ${article(left)} $${left}$ ponttól ${article(right)} $${right}$ pontig!`,
+        solution: [order, tex`${Article(left)} $${left}$ és $${right}$ pontok között **$${correct}$** van.`],
+      };
+    }
+    // level 3: how many points lie between two given points (the pair is given in either order)
+    const [i, j] = rng.pick([
+      [0, 2],
+      [1, 3],
+      [0, 3],
+    ] as const);
+    const [first, second] = rng.chance(0.5) ? [names[i], names[j]] : [names[j], names[i]];
+    const inside = names.slice(i + 1, j);
     return {
-      prompt: tex`Melyik pont van ${art(left)} $${left}$ és $${right}$ pontok között?`,
+      prompt: tex`Hány pont van az ábrán ${article(first)} $${first}$ és $${second}$ pontok között?`,
       figure,
-      answer: choice(rng, correct, wrongs, { count: 4, format: (v) => `$${v}$` }),
-      hint: tex`Haladj az egyenesen ${art(left)} $${left}$ ponttól ${art(right)} $${right}$ pontig!`,
-      solution: [
-        tex`Az egyenesen a sorrend: $${names[0]}$, $${names[1]}$, $${names[2]}$, $${names[3]}$.`,
-        `${Art(left)} $${left}$ és $${right}$ pontok között **${correct}** van.`,
-      ],
+      answer: { type: 'number', value: inside.length },
+      inputLabel: 'pont =',
+      hint: 'Keresd meg a két pontot az egyenesen, és számold meg, mi van köztük!',
+      solution: [order, tex`${Article(first)} $${first}$ és $${second}$ között ${joinHu(inside.map((n) => `$${n}$`))} van: **${num(inside.length)}** pont.`],
     };
   },
 };
@@ -372,7 +393,8 @@ const notation: GeneratorDef = {
         ? rng.pick(['segment', 'ray'] as const)
         : level === 2
           ? rng.pick(['line', 'in', 'notin'] as const)
-          : rng.pick(['segment', 'ray', 'line', 'in', 'notin'] as const);
+          : ('figure' as const);
+    if (kind === 'figure') return notationFromFigure(rng);
     if (kind === 'segment') {
       return {
         prompt: tex`Melyik jelölés jelöli ${art(A)} $${A}$ és $${B}$ végpontú **szakaszt**?`,
@@ -425,13 +447,57 @@ const notation: GeneratorDef = {
   },
 };
 
+/** Level 3 of `notation`: which notation names the drawn segment, ray or line? */
+function notationFromFigure(rng: Rng): Question {
+  const [A, B] = rng.sample(LETTERS, 2);
+  const what = rng.pick(['segment', 'rayAB', 'rayBA', 'line'] as const);
+  const angle = rng.pick([0, 20, -25, 40]);
+  const rad = (angle * Math.PI) / 180;
+  const pA: [number, number] = [0, 0];
+  const pB: [number, number] = [4 * Math.cos(rad), 4 * Math.sin(rad)];
+  const item =
+    what === 'segment'
+      ? { kind: 'segment' as const, from: A, to: B, color: 'accent' as const }
+      : what === 'line'
+        ? { kind: 'line' as const, through: [A, B] as [string, string], color: 'accent' as const }
+        : what === 'rayAB'
+          ? { kind: 'ray' as const, from: A, through: B, color: 'accent' as const }
+          : { kind: 'ray' as const, from: B, through: A, color: 'accent' as const };
+  const options = {
+    segment: tex`$\overline{${A}${B}}$`,
+    rayAB: tex`$\overrightarrow{${A}${B}}$`,
+    rayBA: tex`$\overrightarrow{${B}${A}}$`,
+    line: tex`$\overleftrightarrow{${A}${B}}$`,
+  };
+  const name = { segment: 'szakasz', rayAB: 'félegyenes', rayBA: 'félegyenes', line: 'egyenes' }[what];
+  const start = what === 'rayBA' ? B : A;
+  return {
+    prompt: 'Melyik jelölés illik az ábrán kiemelt alakzathoz?',
+    figure: {
+      type: 'geometry',
+      points: { [A]: pA, [B]: pB },
+      items: [item, { kind: 'point', at: A }, { kind: 'point', at: B }],
+    },
+    answer: textChoice(options[what], (Object.keys(options) as (keyof typeof options)[]).filter((k) => k !== what).map((k) => options[k])),
+    hint: 'Végpontja van, vagy végtelen? Ha egy irányban végtelen, melyik a kezdőpontja?',
+    solution: [
+      what === 'segment'
+        ? 'Az alakzatnak két végpontja van: ez szakasz.'
+        : what === 'line'
+          ? 'Az alakzat mindkét irányban végtelen: ez egyenes.'
+          : tex`Az alakzat ${article(start)} $${start}$ pontból indul, és a másik irányban végtelen: ez félegyenes.`,
+      tex`A jelölése: ${options[what]} (${name}).`,
+    ],
+  };
+}
+
 /** Number of lines or segments determined by n points in general position. */
 const count: GeneratorDef = {
   id: 'count',
   title: 'Pontok által meghatározott egyenesek és szakaszok',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const n = level === 1 ? rng.pick([3, 4]) : level === 2 ? rng.pick([4, 5]) : rng.pick([5, 6]);
+    const n = level === 1 ? rng.pick([3, 4]) : level === 2 ? rng.pick([5, 6]) : rng.pick([7, 8]);
     const names = rng.pick(POINT_SETS).slice(0, n);
     const askLines = rng.chance(0.5);
     const value = (n * (n - 1)) / 2;

@@ -107,7 +107,7 @@ const dataPieFigure: Figure = {
   show: 'value',
 };
 
-/** A 12 000 Ft coat with a 25% discount: 9 000 Ft to pay and 3 000 Ft discount. */
+/** A 12 000 dinár coat with a 25% discount: 9 000 dinár to pay and 3 000 dinár discount. */
 const discountFigure: Figure = {
   type: 'barModel',
   rows: [
@@ -118,7 +118,7 @@ const discountFigure: Figure = {
       ],
     },
   ],
-  total: { label: '12 000 Ft' },
+  total: { label: '12 000 dinár' },
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -208,16 +208,54 @@ const convert: GeneratorDef = {
   title: 'Átváltás tört, tizedes tört és százalék között',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const kinds: ('to-fraction' | 'to-percent-frac' | 'to-percent-dec' | 'to-decimal')[] =
-      level === 1
-        ? ['to-fraction', 'to-percent-frac', 'to-percent-dec']
-        : level === 2
-          ? ['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal']
-          : ['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal'];
-    const kind = rng.pick(kinds);
+    // The levels use different numbers: L1 tens, 25 % and 75 %; L2 the other multiples of 5;
+    // L3 percents like 8 %, 12 %, 12,5 % (and eighths).
+    const PCT: number[][] = [
+      [10, 20, 30, 40, 50, 60, 70, 80, 90, 25, 75],
+      [5, 15, 35, 45, 55, 65, 85, 95],
+      [2, 4, 6, 8, 12, 16, 24, 36, 48, 64, 72, 88, 12.5, 37.5, 62.5, 87.5],
+    ];
+    const FRAC: [number, number][][] = [
+      [
+        [1, 2],
+        [1, 4],
+        [3, 4],
+        [1, 5],
+        [2, 5],
+        [3, 5],
+        [4, 5],
+        [1, 10],
+        [3, 10],
+        [7, 10],
+        [9, 10],
+      ],
+      [
+        [1, 20],
+        [3, 20],
+        [7, 20],
+        [9, 20],
+        [11, 20],
+        [13, 20],
+        [17, 20],
+        [19, 20],
+      ],
+      [
+        [1, 25],
+        [3, 25],
+        [6, 25],
+        [1, 50],
+        [3, 50],
+        [7, 50],
+        [1, 8],
+        [3, 8],
+        [5, 8],
+        [7, 8],
+      ],
+    ];
+    const kind = rng.pick(['to-fraction', 'to-percent-frac', 'to-percent-dec', 'to-decimal'] as const);
     if (kind === 'to-fraction') {
-      const special = level === 3 && rng.chance(0.35);
-      const p = special ? rng.pick([12.5, 37.5, 62.5, 87.5]) : rng.int(1, 19) * 5;
+      const p = rng.pick(PCT[level - 1]);
+      const special = !Number.isInteger(p);
       const [n, d] = special ? EIGHTHS[p] : [p / gcd(p, 100), 100 / gcd(p, 100)];
       return {
         prompt: tex`Írd fel tört alakban, legegyszerűbben!\n\n$${percentTex(p)}$`,
@@ -232,39 +270,7 @@ const convert: GeneratorDef = {
       };
     }
     if (kind === 'to-percent-frac') {
-      const easy: [number, number][] = [
-        [1, 2],
-        [1, 4],
-        [3, 4],
-        [1, 5],
-        [2, 5],
-        [3, 5],
-        [4, 5],
-        [1, 10],
-        [3, 10],
-        [7, 10],
-        [9, 10],
-      ];
-      const hard: [number, number][] = [
-        [1, 20],
-        [3, 20],
-        [7, 20],
-        [9, 20],
-        [1, 25],
-        [3, 25],
-        [6, 25],
-        [1, 50],
-        [3, 50],
-        [7, 50],
-      ];
-      const eighth: [number, number][] = [
-        [1, 8],
-        [3, 8],
-        [5, 8],
-        [7, 8],
-      ];
-      const pool = level === 1 ? easy : level === 2 ? [...easy, ...hard] : [...easy, ...hard, ...eighth];
-      const [n, d] = rng.pick(pool);
+      const [n, d] = rng.pick(FRAC[level - 1]);
       const p = clean((n * 100) / d);
       return {
         prompt: tex`Hány százalék?\n\n$${f(n, d)}$`,
@@ -278,9 +284,7 @@ const convert: GeneratorDef = {
       };
     }
     if (kind === 'to-percent-dec') {
-      const easy = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95];
-      const hard = [0.08, 0.12, 0.24, 0.36, 0.48, 0.64, 0.72, 0.88, 0.125, 0.375, 0.625, 0.875];
-      const x = rng.pick(level === 3 ? [...easy, ...hard] : easy);
+      const x = clean(rng.pick(PCT[level - 1]) / 100);
       const p = clean(x * 100);
       return {
         prompt: tex`Írd fel százalékban!\n\n$${num(x)}$`,
@@ -289,9 +293,7 @@ const convert: GeneratorDef = {
         solution: [tex`$${num(x)} \cdot 100 = ${num(p)}$.`, `Az érték **${num(p)}%**.`],
       };
     }
-    const easyP = rng.int(1, 19) * 5;
-    const hardP = rng.pick([8, 12, 24, 36, 48, 64, 72, 88, 12.5, 37.5, 62.5, 87.5]);
-    const p = level === 3 ? rng.pick([easyP, hardP]) : easyP;
+    const p = rng.pick(PCT[level - 1]);
     const value = clean(p / 100);
     return {
       prompt: tex`Írd fel tizedes tört alakban!\n\n$${percentTex(p)}$`,
@@ -457,34 +459,34 @@ const discount: GeneratorDef = {
     const newPrice = rise ? clean(price + change) : clean(price - change);
     const prompt = rise
       ? askNew
-        ? tex`A vonaljegy ára ${num(price)} Ft volt. ${num(p)}%-kal emelkedett. Mennyi most?`
-        : tex`A vonaljegy ára ${num(price)} Ft volt. ${num(p)}%-kal emelkedett. Mennyivel nőtt az ár?`
+        ? tex`A vonaljegy ára ${num(price)} dinár volt. ${num(p)}%-kal emelkedett. Mennyi most?`
+        : tex`A vonaljegy ára ${num(price)} dinár volt. ${num(p)}%-kal emelkedett. Mennyivel nőtt az ár?`
       : askNew
-        ? tex`Egy kabát ára ${num(price)} Ft. ${num(p)}% kedvezménnyel adják. Mennyit fizetünk érte?`
-        : tex`Egy kabát ára ${num(price)} Ft. ${num(p)}% kedvezményt adnak. Mennyi a kedvezmény összege?`;
+        ? tex`Egy kabát ára ${num(price)} dinár. ${num(p)}% kedvezménnyel adják. Mennyit fizetünk érte?`
+        : tex`Egy kabát ára ${num(price)} dinár. ${num(p)}% kedvezményt adnak. Mennyi a kedvezmény összege?`;
     const answer = askNew ? newPrice : change;
     return {
       prompt,
-      answer: { type: 'number', value: answer, unit: 'Ft' },
+      answer: { type: 'number', value: answer, unit: 'dinár' },
       hint: askNew
         ? rise
           ? 'A változás az ár megadott százaléka. Számítsd ki, majd add hozzá az eredeti árhoz!'
           : 'A változás az ár megadott százaléka. Számítsd ki, majd vond ki az eredeti árból!'
         : 'A változás az ár megadott százaléka. Számítsd ki!',
       solution: [
-        tex`A változás: $${num(price)} \cdot \frac{${num(p)}}{100} = ${num(change)}$ Ft.`,
+        tex`A változás: $${num(price)} \cdot \frac{${num(p)}}{100} = ${num(change)}$ dinár.`,
         ...(askNew
           ? [
               rise
-                ? tex`Az új ár: $${num(price)} + ${num(change)} = ${num(newPrice)}$ Ft.`
-                : tex`A fizetendő ár: $${num(price)} - ${num(change)} = ${num(newPrice)}$ Ft.`,
+                ? tex`Az új ár: $${num(price)} + ${num(change)} = ${num(newPrice)}$ dinár.`
+                : tex`A fizetendő ár: $${num(price)} - ${num(change)} = ${num(newPrice)}$ dinár.`,
             ]
           : []),
         askNew
-          ? `Az új ár **${num(answer)} Ft**.`
+          ? `Az új ár **${num(answer)} dinár**.`
           : rise
-            ? `Az ár **${num(answer)} Ft**-tal nőtt.`
-            : `A kedvezmény összege **${num(answer)} Ft**.`,
+            ? `Az ár **${num(answer)} dinárral** nőtt.`
+            : `A kedvezmény összege **${num(answer)} dinár**.`,
       ],
     };
   },
@@ -496,8 +498,13 @@ const mistake: GeneratorDef = {
   title: 'Tipikus hiba: osztás a százalékkal',
   levels: [1, 2],
   generate(rng, level): Question {
-    const q = rng.pick([80, 120, 200, 240, 400, 600]);
-    const p = rng.pick([5, 15, 20, 25, 30, 35, 40, 45, 50]);
+    // the wrong calculation q : p must come out exact, so it looks like a real (wrong) answer
+    let q = 0;
+    let p = 0;
+    do {
+      q = rng.pick([80, 120, 200, 240, 400, 600]);
+      p = rng.pick([5, 15, 20, 25, 30, 35, 40, 45, 50]);
+    } while (q % p !== 0);
     const correct = clean((q * p) / 100);
     const wrong = clean(q / p);
     if (level === 1) {
@@ -561,27 +568,27 @@ const whole: GeneratorDef = {
     if (kind === 'discount') {
       const sale = clean((original * (100 - p)) / 100);
       return {
-        prompt: tex`Egy kabátot ${num(p)}% kedvezménnyel ${num(sale)} Ft-ért adnak. Mennyi volt az eredeti ára?`,
-        answer: { type: 'number', value: original, unit: 'Ft' },
+        prompt: tex`Egy kabátot ${num(p)}% kedvezménnyel ${num(sale)} dinárért adnak. Mennyi volt az eredeti ára?`,
+        answer: { type: 'number', value: original, unit: 'dinár' },
         hint: 'A fizetett ár az eredeti ár $(100 - p)\\%$-a.',
         solution: [
           tex`A fizetett ár az eredeti ár $${num(100 - p)}\%$-a.`,
-          tex`$1\% = ${num(sale)} : ${num(100 - p)} = ${num(clean(sale / (100 - p)), 3)}$ Ft.`,
-          tex`$100\% = ${num(clean(sale / (100 - p)), 3)} \cdot 100 = ${num(original)}$ Ft.`,
-          `Az eredeti ár **${num(original)} Ft** volt.`,
+          tex`$1\% = ${num(sale)} : ${num(100 - p)} = ${num(clean(sale / (100 - p)), 3)}$ dinár.`,
+          tex`$100\% = ${num(clean(sale / (100 - p)), 3)} \cdot 100 = ${num(original)}$ dinár.`,
+          `Az eredeti ár **${num(original)} dinár** volt.`,
         ],
       };
     }
     const risen = clean((original * (100 + p)) / 100);
     return {
-      prompt: tex`Egy termék ára ${num(p)}%-kal emelkedett, így ${num(risen)} Ft lett. Mennyi volt az eredeti ára?`,
-      answer: { type: 'number', value: original, unit: 'Ft' },
+      prompt: tex`Egy termék ára ${num(p)}%-kal emelkedett, így ${num(risen)} dinár lett. Mennyi volt az eredeti ára?`,
+      answer: { type: 'number', value: original, unit: 'dinár' },
       hint: 'Az új ár az eredeti ár $(100 + p)\\%$-a.',
       solution: [
         tex`Az új ár az eredeti ár $${num(100 + p)}\%$-a.`,
-        tex`$1\% = ${num(risen)} : ${num(100 + p)} = ${num(clean(risen / (100 + p)), 3)}$ Ft.`,
-        tex`$100\% = ${num(clean(risen / (100 + p)), 3)} \cdot 100 = ${num(original)}$ Ft.`,
-        `Az eredeti ár **${num(original)} Ft** volt.`,
+        tex`$1\% = ${num(risen)} : ${num(100 + p)} = ${num(clean(risen / (100 + p)), 3)}$ dinár.`,
+        tex`$100\% = ${num(clean(risen / (100 + p)), 3)} \cdot 100 = ${num(original)}$ dinár.`,
+        `Az eredeti ár **${num(original)} dinár** volt.`,
       ],
     };
   },
@@ -678,13 +685,13 @@ export default defineSubtopic({
         {
           type: 'example',
           title: 'Kedvezmény',
-          problem: 'Egy kabát ára $12\\,000$ Ft. $25\\%$ kedvezményt adnak. Mennyit fizetünk?',
+          problem: 'Egy kabát ára $12\\,000$ dinár. $25\\%$ kedvezményt adnak. Mennyit fizetünk?',
           figure: discountFigure,
           steps: [
-            { text: 'A kedvezmény: $12\\,000 \\cdot \\frac{25}{100} = 3\\,000$ Ft.' },
-            { text: 'Fizetendő: $12\\,000 - 3\\,000 = 9\\,000$ Ft.' },
+            { text: 'A kedvezmény: $12\\,000 \\cdot \\frac{25}{100} = 3\\,000$ dinár.' },
+            { text: 'Fizetendő: $12\\,000 - 3\\,000 = 9\\,000$ dinár.' },
           ],
-          answer: '**9 000 Ft**-ot fizetünk.',
+          answer: '**9 000 dinárt** fizetünk.',
         },
         { type: 'practice', generator: 'percent-of', level: 2, count: 2 },
         { type: 'practice', generator: 'discount', level: 2 },

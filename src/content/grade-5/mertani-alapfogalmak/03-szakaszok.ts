@@ -163,8 +163,8 @@ const unitConvert: GeneratorDef = {
     }
     if (level === 2) {
       const c = rng.pick(CONVERSIONS);
-      const n = rng.int(2, c.factor >= 1000 ? 9 : 25);
-      if (rng.chance(0.4)) {
+      if (rng.chance(0.5)) {
+        const n = rng.int(2, c.factor >= 1000 ? 9 : 25);
         const given = n * c.factor;
         return {
           prompt: tex`Hány ${c.from} ${article(num(given))} $${num(given)}$ ${c.to}?`,
@@ -178,6 +178,8 @@ const unitConvert: GeneratorDef = {
           ],
         };
       }
+      // bigger numbers than level 1 (which uses 2–9 with factors 10 and 100)
+      const n = c.factor >= 1000 ? rng.int(2, 9) : rng.int(10, 25);
       const value = n * c.factor;
       return {
         prompt: tex`Hány ${c.to} ${article(num(n))} $${num(n)}$ ${c.from}?`,
@@ -462,14 +464,11 @@ const perimeter: GeneratorDef = {
   levels: [1, 2, 3],
   generate(rng, level): Question {
     if (level === 1) {
-      const [a, b, c] = rng.pick([
-        [3, 4, 5],
-        [4, 5, 6],
-        [5, 6, 7],
-        [4, 6, 7],
-        [5, 5, 6],
-        [6, 7, 8],
-      ]);
+      // any triangle with sides 3–9 cm (each side shorter than the other two together)
+      let [a, b, c] = [0, 0, 0];
+      do {
+        [a, b, c] = [rng.int(3, 9), rng.int(3, 9), rng.int(3, 9)];
+      } while (a + b <= c || b + c <= a || a + c <= b);
       return {
         prompt: 'Mekkora a háromszög kerülete?',
         figure: triangleFigure(a, b, c),

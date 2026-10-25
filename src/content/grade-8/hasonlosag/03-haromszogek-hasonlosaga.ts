@@ -5,8 +5,11 @@
  * corresponding sides and angles, the notation △ABC ~ △A₁B₁C₁, and the perimeter ratio (= k).
  */
 import {
+  article,
   choice,
+  type Rng,
   defineSubtopic,
+  gcd,
   num,
   tex,
   texFrac,
@@ -27,8 +30,8 @@ type TriSides = [number, number, number];
 const mid = (a: XY, b: XY): XY => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 const labelAt = (at: XY, text: string, dir: 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'): GeoItem => ({ kind: 'label', at, text, dir });
 
-/** "a" or "az" for a side/angle name: az AB, a BC, az α, a β. */
-const art = (name: string) => (/^[AÁEÉIÍOÓÖŐUÚÜŰ]|^α/.test(name) ? 'az' : 'a');
+/** "a" or "az" for a side/angle name: az AB, a BC, az FD, az α, a β. */
+const art = (name: string) => (/^α/.test(name) ? 'az' : article(name));
 const capArt = (name: string) => (art(name) === 'az' ? 'Az' : 'A');
 
 /** Coordinates of a triangle with sides a = BC, b = CA, c = AB, base AB horizontal. */
@@ -95,6 +98,30 @@ function twoTriangles(opts: {
   };
 }
 
+/** A random scalene triangle with whole sides 3–12 cm (a = BC, b = CA, c = AB), not too flat or tall. */
+function randomTri(rng: Rng): TriSides {
+  for (;;) {
+    const t: TriSides = [rng.int(3, 12), rng.int(3, 12), rng.int(3, 12)];
+    const [x, y, z] = [...t].sort((u, v) => u - v);
+    // AB (drawn horizontally) is not the shortest side, so the triangle is not a tall needle
+    if (x !== y && y !== z && z <= x + y - 2 && t[2] >= y) return t;
+  }
+}
+
+/** Renames the points of a figure (the second triangle's A₁, B₁, C₁ → e.g. E, F, D). */
+function renamePoints(fig: Figure, names: Record<string, string>): Figure {
+  if (fig.type !== 'geometry') return fig;
+  const r = (x: unknown) => (typeof x === 'string' && x in names ? names[x] : x);
+  const points = Object.fromEntries(Object.entries(fig.points ?? {}).map(([k, v]) => [r(k) as string, v]));
+  const items = fig.items.map((it) => {
+    const o: Record<string, unknown> = { ...it };
+    for (const key of ['from', 'to', 'vertex']) if (key in o) o[key] = r(o[key]);
+    if (Array.isArray(o.points)) o.points = o.points.map(r);
+    return o as unknown as GeoItem;
+  });
+  return { ...fig, points, items };
+}
+
 /** Two similar rectangles, like a photo and its enlargement. */
 const photoFigure: Figure = {
   type: 'geometry',
@@ -117,8 +144,13 @@ const ratioK: GeneratorDef = {
   title: 'A hasonlósági arány',
   levels: [1, 2],
   generate(rng, level): Question {
-    const base: TriSides = level === 1 ? rng.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17]] as TriSides[]) : rng.pick([[4, 5, 6], [4, 6, 8], [5, 12, 13], [6, 8, 10]] as TriSides[]);
-    const k = level === 1 ? rng.pick([2, 3]) : rng.pick([0.5, 1.5, 2.5]);
+    // level 1: an enlargement by a whole number; level 2: k is a fraction (shrinking too)
+    let base: TriSides;
+    let k: number;
+    do {
+      base = randomTri(rng);
+      k = level === 1 ? rng.int(2, 4) : rng.pick([0.5, 1.5, 2.5, 0.25, 0.75, 1.25]);
+    } while (!Number.isInteger(base[2] * k * 10));
     const ab = base[2];
     const a1b1 = ab * k;
     return {
@@ -143,28 +175,57 @@ const missingSide: GeneratorDef = {
   levels: [1, 2, 3],
   generate(rng, level): Question {
     if (level === 3) {
-      const base: TriSides = [6, 8, 10];
-      const k = rng.pick([1.5, 2, 2.5]);
-      const longest = 10 * k;
-      const answer = (6 + 8) * k;
+      // the longest sides give k, then the sum of the two other sides
+      const base = randomTri(rng);
+      const [x, y, z] = [...base].sort((u, v) => u - v);
+      let k = rng.pick([1.5, 2, 2.5, 3, 0.5]);
+      while (!Number.isInteger(z * k * 10) || !Number.isInteger(x * k * 10) || !Number.isInteger(y * k * 10)) k = rng.pick([2, 3]);
+      const longest = z * k;
+      const answer = (x + y) * k;
       return {
-        prompt: tex`Az egyik háromszög oldalai $6$, $8$ és $10$ cm. A hasonló másik háromszög leghosszabb oldala $${num(longest)}$ cm. Mennyi a másik két oldal összege?`,
+        prompt: tex`Az egyik háromszög oldalai $${num(x)}$, $${num(y)}$ és $${num(z)}$ cm. A hozzá hasonló háromszög leghosszabb oldala $${num(longest)}$ cm. Mennyi a másik két oldal összege?`,
         answer: { type: 'number', value: answer, unit: 'cm' },
         hint: 'Előbb keresd meg a hasonlósági arányt a leghosszabb oldalakból, aztán számold ki a másik két oldalt!',
         solution: [
-          tex`A leghosszabb oldalak: $10$ cm és $${num(longest)}$ cm, ezért $k = ${num(longest)} : 10 = ${num(k)}$.`,
-          tex`A másik két oldal: $6 \cdot ${num(k)} = ${num(6 * k)}$ cm és $8 \cdot ${num(k)} = ${num(8 * k)}$ cm.`,
-          tex`Az összegük: $${num(6 * k)} + ${num(8 * k)} = ${num(answer)}$ cm.`,
+          tex`A leghosszabb oldalak: $${num(z)}$ cm és $${num(longest)}$ cm, ezért $k = ${num(longest)} : ${num(z)} = ${num(k)}$.`,
+          tex`A másik két oldal: $${num(x)} \cdot ${num(k)} = ${num(x * k)}$ cm és $${num(y)} \cdot ${num(k)} = ${num(y * k)}$ cm.`,
+          tex`Az összegük: $${num(x * k)} + ${num(y * k)} = ${num(answer)}$ cm.`,
           tex`A másik két oldal összege **${num(answer)} cm**.`,
         ],
       };
     }
-    const base: TriSides = level === 1 ? rng.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17]] as TriSides[]) : rng.pick([[4, 5, 6], [4, 6, 8], [5, 12, 13], [6, 8, 10]] as TriSides[]);
-    const k = level === 1 ? rng.pick([2, 3]) : rng.pick([1.25, 1.5]);
+    // level 1: k is a whole number; level 2: k is a fraction, or the side of the first triangle is asked
+    let base: TriSides;
+    let k: number;
+    do {
+      base = randomTri(rng);
+      k = level === 1 ? rng.int(2, 4) : rng.pick([0.5, 1.5, 2.5, 0.75, 1.25]);
+    } while (!Number.isInteger(base[0] * k * 10) || !Number.isInteger(base[2] * k * 10));
     const a = base[0];
     const c = base[2];
     const a1 = a * k;
     const c1 = c * k;
+    if (level === 2 && rng.chance(0.5)) {
+      // backwards: from the image to the original
+      return {
+        prompt: tex`A két háromszög hasonló. $A_1B_1 = ${num(c1)}$ cm, $B_1C_1 = ${num(a1)}$ cm, $AB = ${num(c)}$ cm. Milyen hosszú a $BC$?`,
+        figure: twoTriangles({
+          base,
+          k,
+          labels1: { c: `${num(c)} cm`, a: '?' },
+          labels2: { c: `${num(c1)} cm`, a: `${num(a1)} cm` },
+          baseLabelsInside: true,
+        }),
+        answer: { type: 'number', value: a, unit: 'cm' },
+        inputLabel: '$BC =$',
+        hint: 'Előbb számold ki a hasonlósági arányt: $k = A_1B_1 : AB$. Az eredeti oldal a kép $k$-ad része.',
+        solution: [
+          tex`A hasonlósági arány: $k = ${num(c1)} : ${num(c)} = ${num(k)}$.`,
+          tex`$B_1C_1 = k \cdot BC$, ezért $BC = B_1C_1 : k = ${num(a1)} : ${num(k)} = ${num(a)}$ cm.`,
+          tex`A $BC$ **${num(a)} cm** hosszú.`,
+        ],
+      };
+    }
     return {
       prompt: tex`A két háromszög hasonló. $AB = ${num(c)}$ cm, $BC = ${num(a)}$ cm, $A_1B_1 = ${num(c1)}$ cm. Milyen hosszú a $B_1C_1$?`,
       figure: twoTriangles({
@@ -187,42 +248,62 @@ const missingSide: GeneratorDef = {
   },
 };
 
-/** Which side or angle corresponds to the given one? */
+/** Which side or angle corresponds to the given one? The second triangle's letters are permuted. */
 const matchingParts: GeneratorDef = {
   id: 'matching-parts',
   title: 'Megfelelő oldalak és szögek',
   levels: [1, 2],
   generate(rng, level): Question {
-    const base: TriSides = [6, 8, 10];
+    // △ABC ~ △XYZ: the vertices of the second triangle in the order that matches A, B, C
+    const letters = rng.pick([['D', 'E', 'F'], ['K', 'L', 'M'], ['P', 'Q', 'R']]);
+    const img = rng.shuffle(letters); // img[i] corresponds to 'ABC'[i]
+    const second = img.join('');
+    const notation = tex`$\triangle ABC \sim \triangle ${second}$`;
+    const figure = renamePoints(twoTriangles({ base: randomTri(rng), k: 1.5 }), { 'A₁': img[0], 'B₁': img[1], 'C₁': img[2] });
+    const sideOf = (i: number, j: number, names: string[]) => names[i] + names[j];
+    const pairs: [number, number][] = [[0, 1], [1, 2], [2, 0]];
+    const ABC = ['A', 'B', 'C'];
+    const hint = tex`A jelölésben a csúcsok sorrendje mutatja a megfelelést: $A \leftrightarrow ${img[0]}$, $B \leftrightarrow ${img[1]}$, $C \leftrightarrow ${img[2]}$.`;
+    const corr = tex`A csúcsok megfelelése: $A \leftrightarrow ${img[0]}$, $B \leftrightarrow ${img[1]}$, $C \leftrightarrow ${img[2]}$.`;
     if (level === 1) {
-      const side = rng.pick(['AB', 'BC', 'CA'] as const);
-      const correctName = side === 'AB' ? 'A_1B_1' : side === 'BC' ? 'B_1C_1' : 'C_1A_1';
-      const correct = `$${correctName}$`;
-      const wrongs = side === 'AB' ? ['$B_1C_1$', '$C_1A_1$'] : side === 'BC' ? ['$A_1B_1$', '$C_1A_1$'] : ['$A_1B_1$', '$B_1C_1$'];
+      // a side of ABC → the matching side of the second triangle
+      const pi = rng.int(0, 2);
+      const [i, j] = pairs[pi];
+      const side = sideOf(i, j, ABC);
+      const correctName = sideOf(i, j, img);
+      const wrongs = pairs.filter((_, q) => q !== pi).map(([u, v]) => `$${sideOf(u, v, img)}$`);
       return {
-        prompt: tex`A $\triangle ABC \sim \triangle A_1B_1C_1$ hasonlóságban melyik oldal felel meg ${art(side)} $${side}$ oldalnak?`,
-        figure: twoTriangles({ base, k: 2 }),
-        answer: choice(rng, correct, wrongs, { count: 3 }),
-        hint: tex`A jelölésben a csúcsok sorrendje mutatja a megfelelést: $A \leftrightarrow A_1$, $B \leftrightarrow B_1$, $C \leftrightarrow C_1$.`,
-        solution: [
-          tex`A csúcsok megfelelése: $A \leftrightarrow A_1$, $B \leftrightarrow B_1$, $C \leftrightarrow C_1$.`,
-          tex`${capArt(side)} $${side}$ oldalnak ${art(correctName)} $${correctName}$ oldal felel meg.`,
-        ],
+        prompt: tex`${notation}. Melyik oldal felel meg ${art(side)} $${side}$ oldalnak?`,
+        figure,
+        answer: choice(rng, `$${correctName}$`, wrongs, { count: 3 }),
+        hint,
+        solution: [corr, tex`${capArt(side)} $${side}$ oldalnak ${art(correctName)} $${correctName}$ oldal felel meg.`],
       };
     }
-    const angle = rng.pick(['α', 'β', 'γ'] as const);
-    const correctName = angle === 'α' ? 'α_1' : angle === 'β' ? 'β_1' : 'γ_1';
-    const correct = `$${correctName}$`;
-    const wrongs = angle === 'α' ? ['$β_1$', '$γ_1$'] : angle === 'β' ? ['$α_1$', '$γ_1$'] : ['$α_1$', '$β_1$'];
+    if (rng.chance(0.5)) {
+      // backwards: a side of the second triangle → the matching side of ABC
+      const pi = rng.int(0, 2);
+      const [i, j] = pairs[pi];
+      const side = sideOf(j, i, img); // written in the other direction, e.g. FE
+      const correctName = sideOf(j, i, ABC);
+      const wrongs = pairs.filter((_, q) => q !== pi).map(([u, v]) => `$${sideOf(v, u, ABC)}$`);
+      return {
+        prompt: tex`${notation}. Az $ABC$ háromszög melyik oldala felel meg ${art(side)} $${side}$ oldalnak?`,
+        figure,
+        answer: choice(rng, `$${correctName}$`, wrongs, { count: 3 }),
+        hint,
+        solution: [corr, tex`${capArt(side)} $${side}$ oldal végpontjai $${side[0]}$ és $${side[1]}$, ezeknek $${correctName[0]}$ és $${correctName[1]}$ felel meg: ${art(correctName)} $${correctName}$ oldal.`],
+      };
+    }
+    // the angle at a vertex of ABC → the vertex of the equal angle
+    const i = rng.int(0, 2);
+    const v = ABC[i];
     return {
-      prompt: tex`A $\triangle ABC \sim \triangle A_1B_1C_1$ hasonlóságban melyik szög egyenlő ${art(angle)} $${angle}$ szöggel?`,
-      figure: twoTriangles({ base, k: 2, angles: 'second', markAngle: angle }),
-      answer: choice(rng, correct, wrongs, { count: 3 }),
-      hint: 'A megfelelő csúcsoknál lévő szögek egyenlők.',
-      solution: [
-        tex`A megfelelő csúcsok: $A \leftrightarrow A_1$, $B \leftrightarrow B_1$, $C \leftrightarrow C_1$.`,
-        tex`${capArt(angle)} $${angle}$ szögnek ${art(correctName)} $${correctName}$ szög felel meg.`,
-      ],
+      prompt: tex`${notation}. A másik háromszög melyik csúcsánál van ${art(v)} $${v}$ csúcsnál lévő szöggel egyenlő szög?`,
+      figure,
+      answer: choice(rng, `$${img[i]}$`, img.filter((_, q) => q !== i).map((x) => `$${x}$`), { count: 3 }),
+      hint: tex`A megfelelő csúcsoknál lévő szögek egyenlők. ${hint}`,
+      solution: [corr, tex`${capArt(v)} $${v}$ csúcsnak ${art(img[i])} $${img[i]}$ felel meg, ott van az egyenlő szög.`],
     };
   },
 };
@@ -299,17 +380,19 @@ const perimeterSimilar: GeneratorDef = {
         ],
       };
     }
-    const pool: { ratio: [number, number]; k: [number, number]; side: number }[] = [
-      { ratio: [9, 25], k: [5, 3], side: 6 },
-      { ratio: [4, 9], k: [3, 2], side: 8 },
-      { ratio: [16, 25], k: [5, 4], side: 8 },
-      { ratio: [1, 4], k: [2, 1], side: 5 },
-      { ratio: [9, 16], k: [4, 3], side: 9 },
-    ];
-    const { ratio, k, side } = rng.pick(pool);
+    // the areas are in ratio q² : p², so the sides are in ratio q : p
+    let p = rng.int(2, 6);
+    let q = rng.int(1, p - 1);
+    while (gcd(p, q) !== 1) {
+      p = rng.int(2, 6);
+      q = rng.int(1, p - 1);
+    }
+    const k: [number, number] = [p, q];
+    const ratio: [number, number] = [q * q, p * p];
+    const side = q * rng.int(1, 4) * (q === 1 ? rng.int(2, 3) : 1);
     const answer = (side * k[0]) / k[1];
     return {
-      prompt: tex`Két hasonló háromszög területének aránya $${num(ratio[0])} : ${num(ratio[1])}$. A kisebbik egyik oldala $${num(side)}$ cm. Melyik a megfelelő oldal a nagyobbikban?`,
+      prompt: tex`Két hasonló háromszög területének aránya $${num(ratio[0])} : ${num(ratio[1])}$. A kisebbik egyik oldala $${num(side)}$ cm. Milyen hosszú a megfelelő oldal a nagyobbikban?`,
       answer: { type: 'number', value: answer, unit: 'cm' },
       hint: 'A területek aránya $k^2$. Előbb keresd meg $k$-t, aztán szorozd meg az oldalt!',
       solution: [

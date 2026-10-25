@@ -337,16 +337,22 @@ const solveAddSub: GeneratorDef = {
   title: 'Összeadásos és kivonásos egyenlőtlenség',
   levels: [1, 2, 3],
   generate(rng, level): Question {
+    // L1: x + a < b, x − a < b with one-digit numbers (largest solution);
+    // L2: lower bounds and a − x (smallest solution, or the number of solutions);
+    // L3: everything with two-digit numbers
     const kinds =
       level === 1
-        ? (['add-lt', 'add-le', 'sub-lt', 'sub2-le'] as const)
-        : (['add-lt', 'add-le', 'add-gt', 'add-ge', 'sub-lt', 'sub-ge', 'sub2-le', 'sub2-gt'] as const);
+        ? (['add-lt', 'add-le', 'sub-lt'] as const)
+        : level === 2
+          ? (['add-gt', 'add-ge', 'sub-ge', 'sub2-le', 'sub2-gt'] as const)
+          : (['add-lt', 'add-le', 'add-gt', 'add-ge', 'sub-lt', 'sub-ge', 'sub2-le', 'sub2-gt'] as const);
     const kind = rng.pick(kinds);
     const askUpper: BoundAsk = level === 1 ? 'largest' : rng.pick(['count', 'largest'] as const);
+    const big = level === 3;
     const askLower: BoundAsk = 'smallest';
     if (kind === 'add-lt' || kind === 'add-le' || kind === 'add-gt' || kind === 'add-ge') {
-      const a = rng.int(2, level === 1 ? 9 : 15);
-      const c = rng.int(1, level === 1 ? 9 : 15);
+      const a = big ? rng.int(16, 60) : rng.int(2, 9);
+      const c = big ? rng.int(10, 40) : rng.int(1, 9);
       const b = a + c;
       const relation = tex`$x + ${num(a)} ${kind === 'add-lt' ? '<' : kind === 'add-le' ? '\\le' : kind === 'add-gt' ? '>' : '\\ge'} ${num(b)}$`;
       const rearrange = tex`$x ${kind === 'add-lt' ? '<' : kind === 'add-le' ? '\\le' : kind === 'add-gt' ? '>' : '\\ge'} ${num(b)} - ${num(a)} = ${num(c)}$`;
@@ -361,8 +367,8 @@ const solveAddSub: GeneratorDef = {
       });
     }
     if (kind === 'sub-lt' || kind === 'sub-ge') {
-      const a = rng.int(2, level === 1 ? 8 : 12);
-      const c = a + rng.int(2, level === 1 ? 8 : 15);
+      const a = big ? rng.int(16, 60) : rng.int(2, 9);
+      const c = a + (big ? rng.int(10, 40) : rng.int(2, 9));
       const b = c - a;
       const relation = tex`$x - ${num(a)} ${kind === 'sub-lt' ? '<' : '\\ge'} ${num(b)}$`;
       const rearrange = tex`$x ${kind === 'sub-lt' ? '<' : '\\ge'} ${num(b)} + ${num(a)} = ${num(c)}$`;
@@ -376,8 +382,8 @@ const solveAddSub: GeneratorDef = {
         rearrange,
       });
     }
-    const b = rng.int(2, level === 1 ? 9 : 15);
-    const c = rng.int(2, level === 1 ? 9 : 15);
+    const b = big ? rng.int(16, 60) : rng.int(2, 9);
+    const c = big ? rng.int(10, 40) : rng.int(2, 9);
     const a = b + c;
     const relation = tex`$${num(a)} - x ${kind === 'sub2-le' ? '\\le' : '>'} ${num(b)}$`;
     const rearrange = tex`$x ${kind === 'sub2-le' ? '\\ge' : '<'} ${num(a)} - ${num(b)} = ${num(c)}$`;
@@ -407,8 +413,8 @@ const solveMulDiv: GeneratorDef = {
         : (['mul-lt', 'mul-le', 'mul-gt', 'mul-ge'] as const);
     const kind = rng.pick(kinds);
     const askUpper: BoundAsk = rng.pick(['count', 'largest'] as const);
-    const a = rng.int(2, level === 2 ? 6 : 9);
-    const c = rng.int(2, level === 2 ? 8 : 12);
+    const a = level === 2 ? rng.int(2, 6) : rng.int(7, 12);
+    const c = level === 2 ? rng.int(2, 9) : rng.int(10, 15);
     const b = a * c;
     const sign = kind === 'mul-lt' ? '<' : kind === 'mul-le' ? '\\le' : kind === 'mul-gt' ? '>' : '\\ge';
     const relation = tex`$${num(a)} \cdot x ${sign} ${num(b)}$`;
@@ -436,7 +442,7 @@ const storyInequality: GeneratorDef = {
     const budgetWord = atLeast ? 'legalább' : 'legfeljebb';
     if (kind.startsWith('mul')) {
       const boxes = rng.int(2, 9);
-      const per = rng.int(2, level === 2 ? 9 : 12);
+      const per = level === 2 ? rng.int(2, 9) : rng.int(11, 25);
       const total = boxes * per;
       const sign = atLeast ? '\\ge' : '\\le';
       const correct = tex`$${num(boxes)}x ${sign} ${num(total)}$`;

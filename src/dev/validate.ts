@@ -743,7 +743,14 @@ export interface StressOptions {
 }
 
 /** Issues of one generator × level, aggregated: identical failures collapse to first seed × count. */
-export function stressTestGenerator(subId: string, gen: GeneratorDef, level: Difficulty, seeds: number): ValidationIssue[] {
+export function stressTestGenerator(
+  subId: string,
+  gen: GeneratorDef,
+  level: Difficulty,
+  seeds: number,
+  /** Receives the distinct question keys, for the level-overlap check. */
+  keysOut?: Set<string>,
+): ValidationIssue[] {
   const whereBase = `${subId}/${gen.id} L${level}`;
   const aggregated = new Map<string, { level: 'error' | 'warning'; message: string; first: number; count: number }>();
   const add = (level: 'error' | 'warning', seed: number, message: string) => {
@@ -768,6 +775,7 @@ export function stressTestGenerator(subId: string, gen: GeneratorDef, level: Dif
     // the figure counts too: "Melyik szakasz a hosszabb?" over a new figure is a new question
     distinct.add(`${q.prompt}\u0000${JSON.stringify(q.answer)}\u0000${JSON.stringify(q.figure ?? null)}`);
   }
+  if (keysOut) for (const k of distinct) keysOut.add(k);
   if (seeds >= 50 && distinct.size < 10) {
     return [
       ...[...aggregated.values()].map((a) => ({
@@ -789,10 +797,44 @@ export function stressTestGenerator(subId: string, gen: GeneratorDef, level: Dif
   }));
 }
 
+/**
+ * Levels of one generator must ask different (harder) questions. Warns when two levels share
+ * at least 10 % of the smaller level's distinct questions.
+ */
+export function levelOverlapIssues(subId: string, gen: GeneratorDef, keys: Map<Difficulty, Set<string>>): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const levels = [...keys.keys()].sort();
+  for (let i = 0; i < levels.length; i++) {
+    for (let j = i + 1; j < levels.length; j++) {
+      const a = keys.get(levels[i])!;
+      const b = keys.get(levels[j])!;
+      let shared = 0;
+      for (const k of a) if (b.has(k)) shared++;
+      const smaller = Math.min(a.size, b.size);
+      if (smaller > 0 && shared / smaller >= 0.1) {
+        issues.push({
+          level: 'warning',
+          where: `${subId}/${gen.id}`,
+          message: `L${levels[i]} and L${levels[j]} share ${shared} of ${smaller} distinct questions — each level must ask different, harder questions`,
+        });
+      }
+    }
+  }
+  return issues;
+}
+
 /** Stress test of a whole module (all generators × levels × seeds). */
 export function stressTestModule(mod: SubtopicModule, seeds: number): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
-  for (const gen of mod.generators) for (const level of gen.levels) issues.push(...stressTestGenerator(mod.id, gen, level, seeds));
+  for (const gen of mod.generators) {
+    const keys = new Map<Difficulty, Set<string>>();
+    for (const level of gen.levels) {
+      const set = new Set<string>();
+      keys.set(level, set);
+      issues.push(...stressTestGenerator(mod.id, gen, level, seeds, set));
+    }
+    if (seeds >= 50) issues.push(...levelOverlapIssues(mod.id, gen, keys));
+  }
   return issues;
 }
 

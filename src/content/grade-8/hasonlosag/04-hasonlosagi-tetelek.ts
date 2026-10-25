@@ -7,6 +7,8 @@
 import {
   article,
   clean,
+  gcd,
+  type Rng,
   defineSubtopic,
   num,
   simplifyRoot,
@@ -60,6 +62,30 @@ function shadowFigure(h1: number, s1: number, h2: number, s2: number): Figure {
     lab([x2 + s2 / 2, 0], `${num(s2)} m`, 's'),
   ];
   return { type: 'geometry', points: {}, items, notToScale: f !== 1 };
+}
+
+/**
+ * Random shadow data [h1, s1, s2, h2] with h1 : s1 = h2 : s2 = p : q (p, q small and coprime).
+ * h1 is in `small` metres, h2 in `big` metres; every value has at most one decimal.
+ */
+function shadowData(rng: Rng, small: [number, number], big: [number, number]): [number, number, number, number] {
+  for (;;) {
+    const p = rng.int(2, 6);
+    const q = rng.intExcept(2, 6, [p]);
+    if (gcd(p, q) !== 1) continue;
+    const u = rng.pick([0.1, 0.2, 0.3, 0.4, 0.5]);
+    const v = rng.int(1, 30) * rng.pick([0.5, 1]);
+    const [h1, s1, h2, s2] = [p * u, q * u, p * v, q * v].map((x) => clean(x));
+    if (h1 >= small[0] && h1 <= small[1] && h2 >= big[0] && h2 <= big[1]) return [h1, s1, s2, h2];
+  }
+}
+
+/** A random triangle with whole sides 3–12 (not too flat). */
+function randomSides(rng: Rng): [number, number, number] {
+  for (;;) {
+    const t = [rng.int(3, 12), rng.int(3, 12), rng.int(3, 12)].sort((u, v) => u - v) as [number, number, number];
+    if (t[0] !== t[1] && t[1] !== t[2] && t[2] <= t[0] + t[1] - 2) return t;
+  }
 }
 
 /** A river between two parallel banks, with the similar right triangles used to measure it. */
@@ -156,28 +182,38 @@ const criterionMc: GeneratorDef = {
     const kind = rng.pick(kinds);
     const correct = CRITERIA[kind];
     const wrongs = (Object.keys(CRITERIA) as Criterion[]).filter((k) => k !== kind).map((k) => CRITERIA[k]);
+    // level 1: the data stand in the same order and k is a whole number; level 2: the order is
+    // mixed, k is a fraction, or the third angle has to be computed
     let prompt: string;
     let figure: Figure | undefined;
+    const k = level === 1 ? rng.int(2, 3) : rng.pick([1.5, 2.5, 0.5]);
     if (kind === 'sss') {
-      const base = rng.pick([[3, 4, 5], [5, 12, 13], [6, 8, 10]] as [number, number, number][]);
-      const k = rng.pick([2, 3]);
-      prompt = tex`Az egyik háromszög oldalai $${num(base[0])}$, $${num(base[1])}$ és $${num(base[2])}$ cm; a másiké $${num(base[0] * k)}$, $${num(base[1] * k)}$ és $${num(base[2] * k)}$ cm. Melyik feltételt lehet alkalmazni?`;
+      const base = randomSides(rng);
+      const other = base.map((x) => x * k);
+      const shown = level === 1 ? other : rng.shuffle(other);
+      prompt = tex`Az egyik háromszög oldalai $${num(base[0])}$, $${num(base[1])}$ és $${num(base[2])}$ cm; a másiké $${num(shown[0])}$, $${num(shown[1])}$ és $${num(shown[2])}$ cm. Melyik feltételt lehet alkalmazni?`;
     } else if (kind === 'sas') {
-      const k = rng.pick([1.5, 2]);
-      const angle = rng.pick([40, 50, 60, 70]);
-      prompt = tex`Két oldal $4$ és $6$ cm, a bezárt szög $${num(angle)}°$; a másikban $${num(4 * k)}$ és $${num(6 * k)}$ cm, a bezárt szög $${num(angle)}°$. Melyik feltételt lehet alkalmazni?`;
+      const [x, y] = randomSides(rng);
+      const angle = rng.int(4, 14) * 10;
+      const [x1, y1] = level === 1 ? [x * k, y * k] : [y * k, x * k];
+      prompt = tex`Két oldal $${num(x)}$ és $${num(y)}$ cm, a bezárt szög $${num(angle)}°$; a másikban $${num(x1)}$ és $${num(y1)}$ cm, a bezárt szög $${num(angle)}°$. Melyik feltételt lehet alkalmazni?`;
     } else if (kind === 'aa') {
-      const a = rng.pick([40, 35, 50, 30]);
-      const b = rng.pick([60, 70, 80, 75]);
-      prompt = tex`Az egyik háromszögben két szög $${num(a)}°$ és $${num(b)}°$, a másikban $${num(b)}°$ és $${num(a)}°$. Melyik feltételt lehet alkalmazni?`;
+      const a = rng.int(3, 8) * 5;
+      const b = rng.int(8, 20) * 5;
+      const c = 180 - a - b;
+      prompt =
+        level === 1
+          ? tex`Az egyik háromszögben két szög $${num(a)}°$ és $${num(b)}°$, a másikban $${num(b)}°$ és $${num(a)}°$. Melyik feltételt lehet alkalmazni?`
+          : tex`Az egyik háromszögben két szög $${num(a)}°$ és $${num(b)}°$, a másikban $${num(b)}°$ és $${num(c)}°$. Melyik feltételt lehet alkalmazni?`;
     } else {
-      const angle = rng.pick([35, 40, 50]);
+      const [x, y] = randomSides(rng);
+      const angle = rng.int(5, 12) * 5;
       prompt = tex`A táblázatban a szög a nagyobbik oldallal szemközt van. Melyik feltételt lehet alkalmazni?`;
       figure = {
         type: 'table',
         header: ['', '1. háromszög', '2. háromszög'],
         rows: [
-          ['oldalak (cm)', '6 és 9', '8 és 12'],
+          ['oldalak (cm)', `${num(x)} és ${num(y)}`, `${num(x * k)} és ${num(y * k)}`],
           ['szög', `${num(angle)}°`, `${num(angle)}°`],
         ],
         rowHeaders: true,
@@ -202,16 +238,8 @@ const shadowHeight: GeneratorDef = {
   title: 'Magasság árnyékból',
   levels: [2, 3],
   generate(rng, level): Question {
-    const pool: [number, number, number, number][] = [
-      [1.5, 2, 120, 90],
-      [1.8, 2.4, 15, 11.25],
-      [2, 2.5, 20, 16],
-      [1.2, 1.6, 12, 9],
-      [1.6, 2, 10, 8],
-      [2.4, 3, 20, 16],
-      [0.9, 1.2, 10, 7.5],
-    ];
-    const [h1, s1, s2, h2] = rng.pick(pool);
+    // level 2: a stick and a pyramid; level 3: a person and a building, one more step
+    const [h1, s1, s2, h2] = level === 2 ? shadowData(rng, [0.8, 2], [30, 150]) : shadowData(rng, [1.5, 1.9], [12, 40]);
     if (level === 2) {
       return {
         prompt: tex`${capArticle(h1)} $${num(h1)}$ m magas bot árnyéka $${num(s1)}$ m. Ugyanekkor a piramis árnyéka $${num(s2)}$ m. Milyen magas a piramis?`,
@@ -252,18 +280,12 @@ const riverWidth: GeneratorDef = {
   title: 'A folyó szélessége',
   levels: [3],
   generate(rng): Question {
-    const pool: [number, number, number][] = [
-      // [BC, BE, CD]
-      [20, 15, 3],
-      [24, 18, 4],
-      [16, 12, 2],
-      [25, 20, 5],
-      [16, 12, 3],
-      [20, 15, 6],
-      [32, 24, 4],
-      [20, 15, 2.5],
-    ];
-    const [d, e, h] = rng.pick(pool);
+    // BE = m · EC, so the river is m times as wide as the pole is long
+    const ec = rng.int(3, 12);
+    const m = rng.pick([1.5, 2, 2.5, 3, 4]);
+    const e = clean(ec * m);
+    const d = e + ec;
+    const h = rng.int(2, 10) / 2;
     const w = clean((h * e) / (d - e));
     return {
       prompt: tex`A folyó szélességét hasonló háromszögekkel mérik. Az ábrán $BE = ${num(e)}$ m, $EC = ${num(d - e)}$ m, $CD = ${num(h)}$ m. Milyen széles a folyó?`,
@@ -367,17 +389,12 @@ const altitude: GeneratorDef = {
       };
     }
     // L3: a leg in root form
-    const pairs: [number, number][] = [
-      [4, 6],
-      [4, 7],
-      [5, 7],
-      [6, 8],
-      [2, 5],
-      [3, 5],
-      [4, 9],
-      [5, 9],
-    ];
-    const [p3, q3] = rng.pick(pairs);
+    let p3: number;
+    let q3: number;
+    do {
+      p3 = rng.int(2, 8);
+      q3 = rng.intExcept(2, 10, [p3]);
+    } while (Number.isInteger(Math.sqrt((p3 + q3) * p3)));
     const c = p3 + q3;
     const root = simplifyRoot(c * p3);
     const leg = Math.sqrt(c * p3);
@@ -390,7 +407,7 @@ const altitude: GeneratorDef = {
       solution: [
         tex`Az átfogó: $c = ${num(p3)} + ${num(q3)} = ${num(c)}$ cm.`,
         tex`$b^2 = c \cdot p = ${num(c)} \cdot ${num(p3)} = ${num(c * p3)}$`,
-        tex`$b = \sqrt{${num(c * p3)}} = ${texRoot(root.coef, root.radicand)} \approx ${num(leg, 2)}$`,
+        tex`$b = \sqrt{${num(c * p3)}}${root.coef === 1 ? '' : ` = ${texRoot(root.coef, root.radicand)}`} \approx ${num(leg, 2)}$`,
         tex`A $b$ befogó **$${texRoot(root.coef, root.radicand)}$ cm**.`,
       ],
     };

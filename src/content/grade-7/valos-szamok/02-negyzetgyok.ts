@@ -104,10 +104,11 @@ const sqrtDecimal: GeneratorDef = {
       k = rng.pick([2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15]);
       places = 1;
     } else if (rng.chance(0.5)) {
-      k = rng.int(2, 9);
+      // two decimal places: √0,0049, √0,0169
+      k = rng.pick([2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19]);
       places = 2;
     } else {
-      k = rng.pick([11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25]);
+      k = rng.pick([16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
       places = 1;
     }
     const x = k / 10 ** places;
@@ -192,8 +193,8 @@ const howMany: GeneratorDef = {
         display = texFrac(p * p, q * q);
         if (a < 0) display = `-${display}`;
       } else {
-        const k = rng.int(2, 10);
-        a = k * k * (rng.chance(0.4) ? -1 : 1);
+        // a two-digit whole number (level 1 stays between −9 and 9), square or not
+        a = rng.int(10, 99) * (rng.chance(0.4) ? -1 : 1);
         display = num(a);
       }
     }

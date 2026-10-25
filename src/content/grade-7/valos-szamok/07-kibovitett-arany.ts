@@ -73,13 +73,13 @@ const missingTerm: GeneratorDef = {
         const cost1 = kg1 * unitPrice;
         const cost2 = kg2 * unitPrice;
         return {
-          prompt: tex`Egy boltban $${num(kg1)}$ kg alma $${num(cost1)}$ Ft-ba kerül. Mennyibe kerül $${num(kg2)}$ kg ugyanabból az almából?`,
-          answer: { type: 'number', value: cost2, unit: 'Ft' },
+          prompt: tex`Egy boltban $${num(kg1)}$ kg alma $${num(cost1)}$ dinárba kerül. Mennyibe kerül $${num(kg2)}$ kg ugyanabból az almából?`,
+          answer: { type: 'number', value: cost2, unit: 'dinár' },
           hint: 'Az ár és a mennyiség egyenesen arányos. Előbb számítsd ki 1 kg árát!',
           solution: [
             tex`A megfelelő arány: $${num(kg1)} : ${num(cost1)} = ${num(kg2)} : x$.`,
             tex`$x = ${num(cost1)} : ${num(kg1)} \cdot ${num(kg2)} = ${num(unitPrice)} \cdot ${num(kg2)} = ${num(cost2)}$`,
-            tex`A keresett ár **${num(cost2)} Ft**.`,
+            tex`A keresett ár **${num(cost2)} dinár**.`,
           ],
         };
       }
@@ -218,13 +218,19 @@ const combineRatios: GeneratorDef = {
   title: 'Két arány összekapcsolása',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const max = level === 1 ? 4 : 9;
-    let p = rng.int(1, max);
-    let q = rng.int(2, max);
-    while (p === q || gcd(p, q) !== 1) q = rng.int(2, max);
-    let r = rng.int(1, max);
-    let s = rng.int(2, max);
-    while (r === s || gcd(r, s) !== 1) s = rng.int(2, max);
+    // level 1: the two b terms divide each other (only one ratio is extended); level 2: both are
+    // extended to the lcm; level 3: the same with bigger numbers, in words
+    const max = level === 1 ? 6 : level === 2 ? 9 : 12;
+    let p: number, q: number, r: number, s: number;
+    for (;;) {
+      p = rng.int(1, max);
+      q = rng.int(2, max);
+      r = rng.int(1, max);
+      s = rng.int(2, max);
+      if (p === q || gcd(p, q) !== 1 || r === s || gcd(r, s) !== 1) continue;
+      const divides = q % r === 0 || r % q === 0;
+      if (level === 1 ? divides : !divides && (level === 2 || Math.max(q, r) > 9 || lcm(q, r) > 20)) break;
+    }
     const L = lcm(q, r);
     const A = p * (L / q);
     const B = L;
@@ -248,8 +254,8 @@ const combineRatios: GeneratorDef = {
       hint: tex`A közös $b$ tagot mindkét arányban ugyanazzal a számmal kell szerepeltetni: keresd meg $${num(q)}$ és $${num(r)}$ legkisebb közös többszörösét!`,
       solution: [
         tex`A közös taghoz: $[${num(q)}; ${num(r)}] = ${num(L)}$.`,
-        tex`$a : b = ${num(p)} : ${num(q)} = ${num(A)} : ${num(B)}$`,
-        tex`$b : c = ${num(r)} : ${num(s)} = ${num(B)} : ${num(C)}$`,
+        tex`$a : b = ${num(p)} : ${num(q)}${L === q ? '' : ` = ${num(A)} : ${num(B)}`}$`,
+        tex`$b : c = ${num(r)} : ${num(s)}${L === r ? '' : ` = ${num(B)} : ${num(C)}`}$`,
         tex`Tehát $a : b : c = ${num(A)} : ${num(B)} : ${num(C)}${A === a && B === b && C === c ? '' : ` = ${num(a)} : ${num(b)} : ${num(c)}`}$.`,
         tex`A legegyszerűbb arány: **$${num(a)} : ${num(b)} : ${num(c)}$**.`,
       ],
@@ -276,15 +282,15 @@ const divideSum: GeneratorDef = {
       const total = s * m;
       const diff = (r - p) * m;
       return {
-        prompt: `Három testvér ${num(total)} Ft-ot oszt el egymás között $${num(p)} : ${num(q)} : ${num(r)}$ arányban. Mennyivel kap többet a legnagyobb rész a legkisebbnél?`,
-        answer: { type: 'number', value: diff, unit: 'Ft' },
+        prompt: `Három testvér ${num(total)} dinárt oszt el egymás között $${num(p)} : ${num(q)} : ${num(r)}$ arányban. Mennyivel kap többet a legnagyobb rész a legkisebbnél?`,
+        answer: { type: 'number', value: diff, unit: 'dinár' },
         hint: 'Előbb számítsd ki, mennyi egy arányos rész, aztán a legnagyobb és a legkisebb rész különbségét!',
         solution: [
           tex`A részek összege $${num(p)} + ${num(q)} + ${num(r)} = ${num(s)}$.`,
-          tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ Ft.`,
-          tex`A legkisebb rész $${num(p)} \cdot ${num(m)} = ${num(p * m)}$ Ft, a legnagyobb $${num(r)} \cdot ${num(m)} = ${num(r * m)}$ Ft.`,
-          tex`A különbség: $${num(r * m)} - ${num(p * m)} = ${num(diff)}$ Ft.`,
-          tex`A legnagyobb rész **${num(diff)} Ft-tal** nagyobb a legkisebbnél.`,
+          tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ dinár.`,
+          tex`A legkisebb rész $${num(p)} \cdot ${num(m)} = ${num(p * m)}$ dinár, a legnagyobb $${num(r)} \cdot ${num(m)} = ${num(r * m)}$ dinár.`,
+          tex`A különbség: $${num(r * m)} - ${num(p * m)} = ${num(diff)}$ dinár.`,
+          tex`A legnagyobb rész **${num(diff)} dinárral** nagyobb a legkisebbnél.`,
         ],
       };
     }
@@ -304,14 +310,14 @@ const divideSum: GeneratorDef = {
       const parts = [p * m, q * m, r * m];
       const ordinal = ['az első', 'a második', 'a harmadik'][ask];
       return {
-        prompt: `Ossz el ${num(total)} Ft-ot $${num(p)} : ${num(q)} : ${num(r)}$ arányban! Mennyi ${ordinal} rész?`,
-        answer: { type: 'number', value: parts[ask], unit: 'Ft' },
+        prompt: `Ossz el ${num(total)} dinárt $${num(p)} : ${num(q)} : ${num(r)}$ arányban! Mennyi ${ordinal} rész?`,
+        answer: { type: 'number', value: parts[ask], unit: 'dinár' },
         hint: tex`A részek arányosak: összesen $${num(p)} + ${num(q)} + ${num(r)}$ rész van. Előbb egy rész értékét számítsd ki!`,
         solution: [
           tex`A részek összege $${num(p)} + ${num(q)} + ${num(r)} = ${num(s)}$.`,
-          tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ Ft.`,
-          tex`${ordinal[0].toUpperCase()}${ordinal.slice(1)} rész $${num([p, q, r][ask])} \cdot ${num(m)} = ${num(parts[ask])}$ Ft.`,
-          tex`A keresett rész **${num(parts[ask])} Ft**.`,
+          tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ dinár.`,
+          tex`${ordinal[0].toUpperCase()}${ordinal.slice(1)} rész $${num([p, q, r][ask])} \cdot ${num(m)} = ${num(parts[ask])}$ dinár.`,
+          tex`A keresett rész **${num(parts[ask])} dinár**.`,
         ],
       };
     }
@@ -330,14 +336,14 @@ const divideSum: GeneratorDef = {
     const askSecond = rng.chance(0.5);
     const answerValue = askSecond ? q * m : p * m;
     return {
-      prompt: `Ossz el ${num(total)} Ft-ot $${num(p)} : ${num(q)}$ arányban! Mennyi ${askSecond ? 'a második' : 'az első'} rész?`,
-      answer: { type: 'number', value: answerValue, unit: 'Ft' },
+      prompt: `Ossz el ${num(total)} dinárt $${num(p)} : ${num(q)}$ arányban! Mennyi ${askSecond ? 'a második' : 'az első'} rész?`,
+      answer: { type: 'number', value: answerValue, unit: 'dinár' },
       hint: tex`A részek összesen $${num(p)} + ${num(q)}$ egyenlő részt tesznek ki. Előbb egy rész értékét határozd meg!`,
       solution: [
         tex`A részek összege $${num(p)} + ${num(q)} = ${num(s)}$.`,
-        tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ Ft.`,
-        tex`${askSecond ? 'A második' : 'Az első'} rész $${num(askSecond ? q : p)} \cdot ${num(m)} = ${num(answerValue)}$ Ft.`,
-        tex`A keresett rész **${num(answerValue)} Ft**.`,
+        tex`Egy rész: $${num(total)} : ${num(s)} = ${num(m)}$ dinár.`,
+        tex`${askSecond ? 'A második' : 'Az első'} rész $${num(askSecond ? q : p)} \cdot ${num(m)} = ${num(answerValue)}$ dinár.`,
+        tex`A keresett rész **${num(answerValue)} dinár**.`,
       ],
     };
   },
@@ -658,14 +664,14 @@ export default defineSubtopic({
         },
         {
           type: 'example',
-          title: '3600 Ft felosztása',
-          problem: 'Ossz el $3600$ Ft-ot $2 : 3 : 4$ arányban!',
+          title: '3600 dinár felosztása',
+          problem: 'Ossz el $3600$ dinárt $2 : 3 : 4$ arányban!',
           steps: [
             { text: 'A részek összege: $2 + 3 + 4 = 9$.' },
-            { text: 'Egy rész: $3600 : 9 = 400$ Ft.' },
-            { text: 'A részek: $800$ Ft, $1200$ Ft és $1600$ Ft.' },
+            { text: 'Egy rész: $3600 : 9 = 400$ dinár.' },
+            { text: 'A részek: $800$ dinár, $1200$ dinár és $1600$ dinár.' },
           ],
-          answer: 'A részek $800$ Ft, $1200$ Ft és $1600$ Ft.',
+          answer: 'A részek $800$ dinár, $1200$ dinár és $1600$ dinár.',
         },
         { type: 'practice', generator: 'divide-sum', level: 1 },
         { type: 'practice', generator: 'divide-sum', level: 2 },

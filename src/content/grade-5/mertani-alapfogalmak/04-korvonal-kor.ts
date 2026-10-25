@@ -14,6 +14,7 @@ import {
   type GeneratorDef,
   type GeoItem,
   type Question,
+  type Rng,
   type XY,
 } from '../../../kit';
 
@@ -22,8 +23,8 @@ import {
 // ---------------------------------------------------------------------------------------------
 
 const at = (x: number, y: number): XY => [x, y];
-/** "6 cm" → "$6$ cm": the number in math, the unit as text. */
-const ml = (len: string): string => len.replace(/^(.*) (\S+)$/, '$$$1$$ $2');
+/** "6 cm" → "$6$ cm", "r = 4 cm 6 mm" → "$r = 4$ cm $6$ mm": numbers in math, units as text. */
+const ml = (len: string): string => len.replace(/(r = )?(\d[\d,]*)/g, (_m, pre: string | undefined, n: string) => `$${pre ?? ''}${n}$`);
 const deg = (d: number): XY => [3 * Math.cos((d * Math.PI) / 180), 3 * Math.sin((d * Math.PI) / 180)];
 
 /** A circle of radius r around O with one point P and the dashed OP distance. */
@@ -137,6 +138,25 @@ const radiusDiameterFigure: Figure = {
 };
 
 /** The highlighted element for the naming exercise. */
+/** The element figure turned around O by `rot` degrees (point labels are re-placed automatically). */
+function rotatedElementFigure(kind: Parameters<typeof elementFigure>[0], rot: number): ReturnType<typeof elementFigure> {
+  const base = elementFigure(kind);
+  if (base.figure.type !== 'geometry' || rot === 0) return base;
+  const c = Math.cos((rot * Math.PI) / 180);
+  const sn = Math.sin((rot * Math.PI) / 180);
+  const turn = ([x, y]: XY): XY => [x * c - y * sn, x * sn + y * c];
+  const points = Object.fromEntries(Object.entries(base.figure.points ?? {}).map(([k, v]) => [k, turn(v as XY)]));
+  const items = base.figure.items.map((it) => {
+    if (it.kind === 'arc') return { ...it, from: (it.from as number) + rot, to: (it.to as number) + rot };
+    if (it.kind === 'point' && it.at !== 'O') {
+      const { labelDir: _drop, ...rest } = it;
+      return rest;
+    }
+    return it;
+  });
+  return { ...base, figure: { ...base.figure, points, items } as Figure };
+}
+
 function elementFigure(kind: 'radius' | 'diameter' | 'chord' | 'tangent' | 'secant' | 'arc' | 'centre'): {
   figure: Figure;
   correct: string;
@@ -232,7 +252,8 @@ const diameterRadius: GeneratorDef = {
   generate(rng, level): Question {
     if (level <= 2) {
       const unit = level === 1 ? 'cm' : rng.pick(['cm', 'dm', 'mm']);
-      const r = level === 1 ? rng.int(2, 9) : unit === 'dm' ? rng.int(2, 9) : unit === 'mm' ? rng.int(10, 45) : rng.int(4, 25);
+      // level 1: 2–9 cm; level 2: two-digit radii or other units
+      const r = level === 1 ? rng.int(2, 9) : unit === 'dm' ? rng.int(2, 9) : unit === 'mm' ? rng.int(10, 45) : rng.int(10, 25);
       const askDiameter = rng.chance(0.5);
       if (askDiameter) {
         const d = 2 * r;
@@ -302,59 +323,65 @@ const diameterRadius: GeneratorDef = {
   },
 };
 
+/**
+ * Radius and distance for the position questions, in the unit they are compared in.
+ * Level 1: both in cm. Level 2: one in mm, the other in cm. Level 3: "4 cm 5 mm" against mm.
+ */
+function radiusAndDistance(
+  rng: Rng,
+  level: number,
+  places: readonly ['in' | 'out', 'on', 'in' | 'out'] | readonly string[],
+  distanceInMm: boolean,
+): { r: number; d: number; unit: 'cm' | 'mm'; rLabel: string; dLabel: string; convert?: string; rCm: number; dCm: number } {
+  const place = rng.pick(places as readonly string[]);
+  if (level === 3) {
+    let r = 0;
+    do r = rng.int(21, 69);
+    while (r % 10 === 0);
+    const d = place === 'on' ? r : place === 'in' ? r - rng.int(1, 9) : r + rng.int(1, 9);
+    const rLabel = `${num(Math.floor(r / 10))} cm ${num(r % 10)} mm`;
+    return {
+      r,
+      d,
+      unit: 'mm',
+      rLabel,
+      dLabel: `${num(d)} mm`,
+      convert: tex`$${num(Math.floor(r / 10))}$ cm $${num(r % 10)}$ mm $= ${num(r)}$ mm.`,
+      rCm: r / 10,
+      dCm: d / 10,
+    };
+  }
+  const r = level === 1 ? rng.int(3, 8) : rng.int(3, 9);
+  const d = place === 'on' ? r : place === 'in' ? rng.int(1, r - 1) : r + rng.int(1, 4);
+  if (level === 1) return { r, d, unit: 'cm', rLabel: `${num(r)} cm`, dLabel: `${num(d)} cm`, rCm: r, dCm: d };
+  return distanceInMm
+    ? { r, d, unit: 'cm', rLabel: `${num(r)} cm`, dLabel: `${num(d * 10)} mm`, convert: tex`$${num(d * 10)}$ mm $= ${num(d)}$ cm.`, rCm: r, dCm: d }
+    : { r, d, unit: 'cm', rLabel: `${num(r * 10)} mm`, dLabel: `${num(d)} cm`, convert: tex`$${num(r * 10)}$ mm $= ${num(r)}$ cm.`, rCm: r, dCm: d };
+}
+
 /** Position of a point relative to a circle: inside, on the circle line, outside. */
 const pointPosition: GeneratorDef = {
   id: 'point-position',
   title: 'Pont helyzete a körhöz képest',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    let rCm: number;
-    let distCm: number;
-    let rLabel: string;
-    let dLabel: string;
-    let convert = false;
-    if (level === 1) {
-      rCm = rng.int(3, 8);
-      const place = rng.pick(['in', 'on', 'out'] as const);
-      distCm = place === 'on' ? rCm : place === 'in' ? rng.int(1, rCm - 1) : rCm + rng.int(1, 4);
-      rLabel = `${num(rCm)} cm`;
-      dLabel = `${num(distCm)} cm`;
-    } else if (level === 2) {
-      rCm = rng.int(3, 9);
-      const place = rng.pick(['in', 'on', 'out'] as const);
-      distCm = place === 'on' ? rCm : place === 'in' ? rng.int(1, rCm - 1) : rCm + rng.int(1, 4);
-      rLabel = `${num(rCm)} cm`;
-      dLabel = `${num(distCm * 10)} mm`;
-      convert = true;
-    } else {
-      rCm = rng.int(2, 6) * 5;
-      const place = rng.pick(['in', 'on', 'out'] as const);
-      distCm = place === 'on' ? rCm : place === 'in' ? rng.int(1, rCm - 1) : rCm + rng.int(1, 3);
-      rLabel = `${num(rCm)} cm`;
-      dLabel = `${num(distCm * 10)} mm`;
-      convert = true;
-    }
-    const relation = distCm < rCm ? 'in' : distCm > rCm ? 'out' : 'on';
+    const v = radiusAndDistance(rng, level, ['in', 'on', 'out'], true);
+    const relation = v.d < v.r ? 'in' : v.d > v.r ? 'out' : 'on';
     const correct = relation === 'in' ? 'A körön belül van' : relation === 'out' ? 'A körön kívül van' : 'A körvonalon van';
-    const wrongs =
-      relation === 'in'
-        ? ['A körvonalon van', 'A körön kívül van']
-        : relation === 'out'
-          ? ['A körvonalon van', 'A körön belül van']
-          : ['A körön belül van', 'A körön kívül van'];
+    const wrongs = ['A körön belül van', 'A körvonalon van', 'A körön kívül van'].filter((x) => x !== correct);
     return {
-      prompt: tex`A kör sugara ${ml(rLabel)}. A $P$ pont ${ml(dLabel)}-re van a középponttól. Hol van a $P$ pont?`,
-      figure: pointFigure(rCm, distCm, dLabel),
+      prompt: tex`A kör sugara ${ml(v.rLabel)}. A $P$ pont ${ml(v.dLabel)}-re van a középponttól. Hol van a $P$ pont?`,
+      figure: pointFigure(v.rCm, v.dCm, v.dLabel),
       answer: textChoice(correct, wrongs),
-      hint: 'Hasonlítsd össze a pont középponttól mért távolságát a sugárral!',
+      hint: 'Hasonlítsd össze a pont középponttól mért távolságát a sugárral! Előbb hozd őket azonos mértékegységre.',
       solution: [
-        tex`A sugár ${ml(`r = ${rLabel}`)}, a $P$ pont távolsága ${ml(dLabel)}.`,
-        ...(convert ? [tex`$${num(distCm * 10)}$ mm $= ${num(distCm)}$ cm.`] : []),
+        tex`A sugár ${ml(`r = ${v.rLabel}`)}, a $P$ pont távolsága ${ml(v.dLabel)}.`,
+        ...(v.convert ? [v.convert] : []),
         relation === 'in'
-          ? tex`$${num(distCm)} < ${num(rCm)}$, ezért a pont közelebb van, mint a körvonal: **a körön belül van**.`
+          ? tex`$${num(v.d)} < ${num(v.r)}$, ezért a pont közelebb van, mint a körvonal: **a körön belül van**.`
           : relation === 'out'
-            ? tex`$${num(distCm)} > ${num(rCm)}$, ezért a pont messzebb van, mint a körvonal: **a körön kívül van**.`
-            : tex`$${num(distCm)} = ${num(rCm)}$, ezért a pont **a körvonalon van**.`,
+            ? tex`$${num(v.d)} > ${num(v.r)}$, ezért a pont messzebb van, mint a körvonal: **a körön kívül van**.`
+            : tex`$${num(v.d)} = ${num(v.r)}$, ezért a pont **a körvonalon van**.`,
       ],
     };
   },
@@ -366,47 +393,22 @@ const linePosition: GeneratorDef = {
   title: 'Egyenes és kör közös pontjai',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    let rCm: number;
-    let distCm: number;
-    let rLabel: string;
-    let dLabel: string;
-    let convert = false;
-    if (level === 1) {
-      rCm = rng.int(3, 8);
-      const place = rng.pick(['out', 'tangent', 'secant'] as const);
-      distCm = place === 'out' ? rCm + rng.int(1, 3) : place === 'tangent' ? rCm : rng.int(1, rCm - 1);
-      rLabel = `${num(rCm)} cm`;
-      dLabel = `${num(distCm)} cm`;
-    } else if (level === 2) {
-      rCm = rng.int(3, 9);
-      const place = rng.pick(['out', 'tangent', 'secant'] as const);
-      distCm = place === 'out' ? rCm + rng.int(1, 3) : place === 'tangent' ? rCm : rng.int(1, rCm - 1);
-      rLabel = `${num(rCm * 10)} mm`;
-      dLabel = `${num(distCm)} cm`;
-      convert = true;
-    } else {
-      rCm = rng.int(2, 6);
-      const place = rng.pick(['out', 'tangent', 'secant'] as const);
-      distCm = place === 'out' ? rCm + 1 : place === 'tangent' ? rCm : rCm - 1;
-      rLabel = `${num(rCm * 10)} mm`;
-      dLabel = `${num(distCm)} cm`;
-      convert = true;
-    }
-    const common = distCm < rCm ? 2 : distCm === rCm ? 1 : 0;
+    const v = radiusAndDistance(rng, level, ['in', 'on', 'out'], false);
+    const common = v.d < v.r ? 2 : v.d === v.r ? 1 : 0;
     return {
-      prompt: tex`A kör sugara ${ml(rLabel)}. Egy egyenes ${ml(dLabel)}-re van a középponttól. Hány közös pontja van a körvonallal?`,
-      figure: lineFigure(rCm, distCm, dLabel),
+      prompt: tex`A kör sugara ${ml(v.rLabel)}. Egy egyenes ${ml(v.dLabel)}-re van a középponttól. Hány közös pontja van a körvonallal?`,
+      figure: lineFigure(v.rCm, v.dCm, v.dLabel),
       answer: { type: 'number', value: common },
       inputLabel: 'közös pont =',
-      hint: 'Hasonlítsd össze az egyenes távolságát a sugárral!',
+      hint: 'Hasonlítsd össze az egyenes távolságát a sugárral! Előbb hozd őket azonos mértékegységre.',
       solution: [
-        tex`A sugár ${ml(`r = ${rLabel}`)}, az egyenes távolsága ${ml(dLabel)}.`,
-        ...(convert ? [tex`$${num(rCm * 10)}$ mm $= ${num(rCm)}$ cm.`] : []),
+        tex`A sugár ${ml(`r = ${v.rLabel}`)}, az egyenes távolsága ${ml(v.dLabel)}.`,
+        ...(v.convert ? [v.convert] : []),
         common === 0
-          ? tex`$${num(distCm)} > ${num(rCm)}$, ezért az egyenes nem éri el a körvonalat: **0 közös pont**.`
+          ? tex`$${num(v.d)} > ${num(v.r)}$, ezért az egyenes nem éri el a körvonalat: **0 közös pont**.`
           : common === 1
-            ? tex`$${num(distCm)} = ${num(rCm)}$, ezért az egyenes **1 pontban érinti** a körvonalat.`
-            : tex`$${num(distCm)} < ${num(rCm)}$, ezért az egyenes **2 pontban metszi** a körvonalat.`,
+            ? tex`$${num(v.d)} = ${num(v.r)}$, ezért az egyenes **1 pontban érinti** a körvonalat.`
+            : tex`$${num(v.d)} < ${num(v.r)}$, ezért az egyenes **2 pontban metszi** a körvonalat.`,
       ],
     };
   },
@@ -418,12 +420,10 @@ const elementName: GeneratorDef = {
   title: 'A kör elemeinek neve',
   levels: [1, 2],
   generate(rng, level): Question {
-    const kinds =
-      level === 1
-        ? (['radius', 'diameter', 'centre'] as const)
-        : (['chord', 'tangent', 'secant', 'arc', 'radius', 'diameter'] as const);
+    // level 1: the parts through the centre; level 2: chord, arc, tangent and secant
+    const kinds = level === 1 ? (['radius', 'diameter', 'centre'] as const) : (['chord', 'tangent', 'secant', 'arc'] as const);
     const kind = rng.pick(kinds);
-    const { figure, correct, wrongs } = elementFigure(kind);
+    const { figure, correct, wrongs } = rotatedElementFigure(kind, rng.pick([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]));
     return {
       prompt: 'Mi a kiemelt elem neve?',
       figure,
@@ -478,8 +478,8 @@ const circleTf: GeneratorDef = {
               { text: 'A húr két végpontja a körvonalon van.', value: true, why: 'A húr végpontjai a körvonalon vannak.' },
               { text: 'Az érintőnek egy közös pontja van a körvonallal.', value: true, why: 'Az érintő egy pontban érint.' },
               { text: 'A szelőnek két közös pontja van a körvonallal.', value: true, why: 'A szelő két pontban metszi a körvonalat.' },
-              { text: 'A körvonal és a kör ugyanaz.', value: false, why: 'A kör a körvonalból és a belsejéből áll.' },
-              { text: 'A középpont a körvonalon van.', value: false, why: 'A középpont a kör belsejében van.' },
+              { text: 'Egy körnek végtelen sok sugara van.', value: true, why: 'A körvonal minden pontjához húzható egy sugár.' },
+              { text: 'Két húr mindig egyenlő hosszú.', value: false, why: 'A húrok hossza különböző lehet; a leghosszabb az átmérő.' },
               { text: 'A sugár az átmérő kétszerese.', value: false, why: 'Fordítva: az átmérő a sugár kétszerese.' },
               { text: 'Minden húr átmérő.', value: false, why: 'Csak a középponton átmenő húr átmérő.' },
               { text: 'Az átmérő nem húr.', value: false, why: 'Az átmérő is húr, csak éppen a középponton megy át.' },
@@ -490,7 +490,7 @@ const circleTf: GeneratorDef = {
               { text: 'Ha egy egyenes távolsága a középponttól nagyobb, mint a sugár, akkor nincs közös pontjuk.', value: true, why: 'Az egyenes nem éri el a körvonalat.' },
               { text: 'Két körnek lehet 0, 1 vagy 2 közös pontja.', value: true, why: 'Lehetnek külön, érinthetik egymást, vagy metszhetik egymást.' },
               { text: 'Két körnek lehet 3 közös pontja.', value: false, why: 'Két körnek legfeljebb 2 közös pontja lehet.' },
-              { text: 'Az átmérő a leghosszabb húr.', value: true, why: 'A középponton átmenő húr a legnagyobb.' },
+              { text: 'Ha egy pont távolsága a középponttól egyenlő a sugárral, akkor a pont a körvonalon van.', value: true, why: 'A körvonal pontjai éppen sugárnyi távolságra vannak a középponttól.' },
               { text: 'Ha egy egyenesnek egy közös pontja van a körvonallal, akkor az az egyenes érintő.', value: true, why: 'Az egy közös pontú egyenes az érintő.' },
               { text: 'Ha egy egyenesnek két közös pontja van a körvonallal, akkor az az egyenes szelő.', value: true, why: 'A két közös pontú egyenes a szelő.' },
               { text: 'A körvonal minden pontja ugyanolyan távolságra van a középponttól.', value: true, why: 'Ez a körvonal alaptulajdonsága.' },
