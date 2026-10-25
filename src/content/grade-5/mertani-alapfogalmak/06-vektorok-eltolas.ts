@@ -16,6 +16,7 @@ import {
   type GeneratorDef,
   type GeoItem,
   type Question,
+  type Rng,
   type XY,
   article,
 } from '../../../kit';
@@ -238,7 +239,7 @@ const vectorMagnitude: GeneratorDef = {
     const len = rng.int(3, 8);
     const a: XY = horizontal ? at(1, 2) : at(2, 1);
     const b: XY = horizontal ? at(1 + len, 2) : at(2, 1 + len);
-    const scale = level === 2 ? 2 : 1;
+    const scale = level === 2 ? rng.int(2, 5) : 1;
     return {
       prompt:
         level === 1
@@ -259,69 +260,116 @@ const vectorMagnitude: GeneratorDef = {
   },
 };
 
-/** Which vector is equal to / the opposite of v? */
+/** Which vector is equal to / the opposite of v? Random v, random layout. */
 const equalVectors: GeneratorDef = {
   id: 'equal-vectors',
   title: 'Egyenlő és ellentett vektorok',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const v = at(3, 1);
-    const roles = [
-      { key: 'equal', vec: at(3, 1) },
-      { key: 'opposite', vec: at(-3, -1) },
-      { key: 'longer', vec: at(4, 1) },
-      ...(level === 3 ? [{ key: 'different', vec: at(1, 3) }] : []),
+    let v: XY;
+    do v = at(rng.int(-3, 3), rng.int(-2, 2));
+    while (Math.abs(v[0]) + Math.abs(v[1]) < 2 || v[0] === 0 || Math.abs(v[0]) === Math.abs(v[1]));
+    // typical mistakes: the opposite, a vector of another direction, one of the same length turned by 90°
+    const skew = at(v[0] + Math.sign(v[0]), v[1] === 0 ? 1 : 0);
+    const turned = at(-v[1], v[0]);
+    const roles: { key: string; vec: XY }[] = [
+      { key: 'equal', vec: v },
+      { key: 'opposite', vec: at(-v[0], -v[1]) },
+      { key: 'skew', vec: skew },
+      ...(level === 3 ? [{ key: 'turned', vec: turned }] : []),
     ];
-    const labels = rng.shuffle(['a', 'b', 'c', ...(level === 3 ? ['d'] : [])]);
-    const placed = roles.map((r, i) => {
-      const from = at(1 + (i % 2) * 4, 6 - i * 2);
-      return { ...r, label: labels[i], from, to: at(from[0] + r.vec[0], from[1] + r.vec[1]) };
-    });
+    // cells of 4 × 3 grid units; each arrow starts at the corner that keeps it inside its cell
+    const cells = rng.shuffle([0, 1, 2, 3, 4, 5]);
+    const place = (vec: XY, cell: number) => {
+      const col = cell % 3;
+      const row = Math.floor(cell / 3);
+      const from = at(1 + col * 4 + (vec[0] >= 0 ? 0 : 3), 1 + row * 3 + (vec[1] >= 0 ? 0 : 2));
+      return { from, to: at(from[0] + vec[0], from[1] + vec[1]) };
+    };
+    const labels = rng.shuffle(['a', 'b', 'c', 'd'].slice(0, roles.length));
+    const placed = roles.map((r, i) => ({ ...r, label: labels[i], ...place(r.vec, cells[i + 1]) }));
+    const vPlace = place(v, cells[0]);
     const asked = level === 2 ? 'opposite' : 'equal';
     const correct = placed.find((p) => p.key === asked)!.label;
     return {
       prompt: level === 2 ? 'Melyik vektor ellentettje a $v$ vektornak?' : 'Melyik vektor egyenlő a $v$ vektorral?',
-      figure: gridFigure([
-        vectorPart('v', at(1, 8), at(4, 9), 'v'),
-        ...placed.map((p) => vectorPart(p.label, p.from, p.to, p.label)),
-        pointPart('O', at(0, 0), 'sw', 'highlight'),
-      ], 10, 9),
+      figure: gridFigure([vectorPart('v', vPlace.from, vPlace.to, 'v', 'highlight'), ...placed.map((p) => vectorPart(p.label, p.from, p.to, p.label))], 13, 7),
       answer: textChoice(`$${correct}$`, labels.filter((l) => l !== correct).map((l) => `$${l}$`)),
       hint: 'Egyenlő: ugyanaz az irány, ugyanaz az irányítás és ugyanakkora nagyság. Ellentett: ugyanakkora, de ellenkező irányítás.',
       solution: [
-        tex`A $v$ vektor ${vectorText(v[0], v[1])}.`,
+        tex`A $v$ vektor: ${vectorText(v[0], v[1])}.`,
         level === 2
-          ? tex`Az ellentettje ${vectorText(-v[0], -v[1])}, ugyanakkora hosszú.`
-          : tex`Az egyenlő vektorok ugyanígy ${vectorText(v[0], v[1])} mutatnak.`,
+          ? tex`Az ellentettje ugyanakkora, de visszafelé mutat: ${vectorText(-v[0], -v[1])}.`
+          : tex`Az egyenlő vektor ugyanígy mutat: ${vectorText(v[0], v[1])}.`,
         tex`A helyes válasz: **$${correct}$**.`,
       ],
     };
   },
 };
 
-/** Translation of a triangle or square: which coloured copy is the image? */
+/** Label direction for a vertex: away from the centre of the shape. */
+function awayFrom(q: XY, shape: XY[]): 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' {
+  const cx = shape.reduce((t, r) => t + r[0], 0) / shape.length;
+  const cy = shape.reduce((t, r) => t + r[1], 0) / shape.length;
+  const [dx, dy] = [q[0] - cx, q[1] - cy];
+  const v = dy > 0.3 ? 'n' : dy < -0.3 ? 's' : '';
+  const h = dx > 0.3 ? 'e' : dx < -0.3 ? 'w' : '';
+  return ((v + h) || 'n') as 'n';
+}
+
+/** A random triangle or convex quadrilateral with integer vertices in [0, 2] × [0, 2]. */
+function smallShape(rng: Rng, n: 3 | 4): XY[] {
+  for (;;) {
+    const pts: XY[] = n === 3 ? [at(0, 0), at(2, rng.int(0, 1)), at(rng.int(0, 2), 2)] : [at(0, rng.int(0, 1)), at(2, 0), at(rng.int(1, 2), 2), at(0, 2)];
+    const area2 = pts.reduce((sum, q, i) => sum + q[0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * q[1], 0);
+    if (Math.abs(area2) >= 3) return rng.chance(0.5) ? pts.map((q): XY => [2 - q[0], q[1]]) : pts;
+  }
+}
+
+/** Translation of a triangle or quadrilateral: which coloured copy is the image? */
 const translateFigure: GeneratorDef = {
   id: 'translate-figure',
   title: 'Alakzat eltolása',
   levels: [1, 2],
   generate(rng, level): Question {
-    const [correctColor, wrong1Color, wrong2Color] = rng.shuffle(['narancssárga', 'zöld', 'lila']);
-    const figure = translationFigure(level as 1 | 2, {
-      correct: colorKey(correctColor),
-      wrong1: colorKey(wrong1Color),
-      wrong2: colorKey(wrong2Color),
+    // level 1: a triangle moved up and sideways; level 2: a quadrilateral, also moved down
+    const n = level === 1 ? 3 : 4;
+    const dx = rng.int(3, 5) * rng.sign();
+    const dy = level === 1 ? 3 : 3 * rng.sign();
+    // shapes live in the band y ∈ [1, 6], the vector is drawn above them, in y ∈ [8, 11]
+    const x0 = dx > 0 ? 1 : 1 - dx;
+    const y0 = dy > 0 ? 1 : 4;
+    const original = smallShape(rng, n).map((q): XY => [x0 + q[0], y0 + q[1]]);
+    const shift = (sx: number, sy: number) => original.map((q): XY => [q[0] + sx, q[1] + sy]);
+    const [correctColor, wrongAColor, wrongBColor] = rng.shuffle(['narancssárga', 'zöld', 'lila']);
+    const poly = (pts: XY[], prefix: string, color: FigColor) => ({
+      points: Object.fromEntries(pts.map((q, i) => [`${prefix}${i}`, q])),
+      items: [{ kind: 'polygon' as const, points: pts.map((_, i) => `${prefix}${i}`), fill: color, color, vertexLabels: false as const }],
     });
-    const noun = level === 1 ? 'háromszög' : 'négyzet';
-    const name = level === 1 ? 'ABC' : 'ABCD';
+    const labels = n === 3 ? ['A', 'B', 'C'] : ['A', 'B', 'C', 'D'];
+    const noun = n === 3 ? 'háromszög' : 'négyszög';
+    const name = labels.join('');
+    const vFrom = at(dx > 0 ? 1 : 1 - dx, dy > 0 ? 8 : 11);
     return {
       prompt: tex`Melyik színű ${noun} ${article(name)} $${name}$ ${noun} eltolt képe a $v$ vektorral?`,
-      figure,
-      answer: textChoice(`a ${correctColor}`, [`a ${wrong1Color}`, `a ${wrong2Color}`]),
-      hint: 'A vektor minden csúcsot ugyanannyival mozdít el.',
+      figure: gridFigure(
+        [
+          poly(original, 'o', 'blue'),
+          poly(shift(dx, dy), 'c', colorKey(correctColor)),
+          poly(shift(dx, 0), 'wa', colorKey(wrongAColor)),
+          poly(shift(0, dy), 'wb', colorKey(wrongBColor)),
+          { points: {}, items: labels.map((label, i) => ({ kind: 'point' as const, at: `o${i}`, label, labelDir: awayFrom(original[i], original) })) },
+          vectorPart('v', vFrom, at(vFrom[0] + dx, vFrom[1] + dy), 'v', 'highlight'),
+        ],
+        Math.abs(dx) + 4,
+        12,
+      ),
+      answer: textChoice(`a ${correctColor}`, [`a ${wrongAColor}`, `a ${wrongBColor}`]),
+      hint: 'A vektor minden csúcsot ugyanannyival mozdít el. Olvasd le: hányat lép jobbra vagy balra, és hányat fel vagy le?',
       solution: [
-        `A ${wrong1Color} alakzat csak vízszintesen, a ${wrong2Color} csak függőlegesen tolódott el.`,
-        `A ${correctColor} alakzat minden csúcsa ugyanazzal a vektorral mozdult el.`,
-        `A helyes kép a **${correctColor}** alakzat.`,
+        tex`A $v$ vektor: ${vectorText(dx, dy)}.`,
+        `A ${wrongAColor} alakzat csak vízszintesen, a ${wrongBColor} csak függőlegesen tolódott el.`,
+        `A ${correctColor} alakzat minden csúcsa ${vectorText(dx, dy)} lépett: a helyes kép a **${correctColor}** alakzat.`,
       ],
     };
   },
@@ -357,7 +405,7 @@ const translationTf: GeneratorDef = {
               { text: 'A párhuzamos eltolás megfordítja az alakzatot.', value: false, why: 'Az eltolás megtartja az irányítást.' },
               { text: 'A kör eltolt képe kör.', value: true, why: 'Az eltolás megtartja az alakzatot.' },
               { text: 'A négyzet eltolt képe négyzet.', value: true, why: 'Az eltolás megtartja az alakzatot.' },
-              { text: 'A háromszög eltolt képe ugyanolyan alakú és méretű.', value: true, why: 'Az eltolás egybevágósági transzformáció.' },
+              { text: 'A háromszög eltolt képe ugyanolyan alakú és méretű.', value: true, why: 'Az eltolás nem változtat sem az alakon, sem a méreten.' },
               { text: 'A vektor irányítása a nyíl iránya.', value: true, why: 'A nyíl mutatja az irányítást.' },
               { text: 'A vektor kezdőpontját pötty jelöli.', value: true, why: 'A rajzon a kezdőpontot kis pont jelöli.' },
               { text: 'Az eltolás után a szakasz és a képe mindig metszi egymást.', value: false, why: 'A kép párhuzamos az eredetivel; nem feltétlenül metszi.' },
@@ -367,8 +415,8 @@ const translationTf: GeneratorDef = {
               { text: 'Ha két vektor nagysága egyenlő, akkor a két vektor egyenlő.', value: false, why: 'Az irány és az irányítás is számít.' },
               { text: 'Az $AB→$ vektor kezdőpontja $A$, végpontja $B$.', value: true, why: 'A nyíl $A$-ból $B$ felé mutat.' },
               { text: 'A vektor nyílhegye a végpontot jelöli.', value: true, why: 'A nyíl a végpontban van.' },
-              { text: 'A vektor kezdőpontját pötty jelöli.', value: true, why: 'Ez a rajzolási megállapodás.' },
-              { text: 'A párhuzamos eltolás egybevágósági transzformáció.', value: true, why: 'Megtartja az alakot és a méretet.' },
+              { text: 'Ha egy pontot a $v→$ vektorral eltolunk, majd a képét a $−v→$ vektorral, visszakapjuk az eredeti pontot.', value: true, why: 'A két eltolás kioltja egymást.' },
+              { text: 'Ha egy alakzatot kétszer egymás után ugyanazzal a vektorral tolunk el, az olyan, mintha kétszer akkora vektorral toltuk volna el.', value: true, why: 'A két egyforma lépés együtt kétszer akkora lépés ugyanabba az irányba.' },
               { text: 'Az eltolásnál a szakasz képe ugyanolyan hosszú.', value: true, why: 'A hosszúság nem változik.' },
               { text: 'Az eltolásnál a szög nagysága változik.', value: false, why: 'A szögek nagysága változatlan marad.' },
               { text: 'A $v→$ és a $−v→$ ugyanabba az irányba mutat.', value: false, why: 'Ellenkező irányba mutatnak.' },

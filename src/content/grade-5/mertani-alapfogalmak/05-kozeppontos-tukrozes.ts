@@ -15,8 +15,10 @@ import {
   type FigColor,
   type GeneratorDef,
   type Question,
+  type Rng,
   type XY,
   article,
+  Article,
 } from '../../../kit';
 
 // ---------------------------------------------------------------------------------------------
@@ -55,7 +57,15 @@ function pointChoiceFigure(o: XY, p: XY, candidates: { at: XY; label: string }[]
   };
 }
 
-/** A coordinate grid with O and P, showing their coordinates. */
+type Dir = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
+/** The compass direction of the step (dx, dy), to put a label away from a neighbouring point. */
+function dirOf(dx: number, dy: number): Dir {
+  const v = dy > 0 ? 'n' : dy < 0 ? 's' : '';
+  const h = dx > 0 ? 'e' : dx < 0 ? 'w' : '';
+  return ((v + h) || 'n') as Dir;
+}
+
+/** A coordinate grid with O and P, showing their coordinates; each label points away from the other. */
 function pointCoordsFigure(o: XY, p: XY): Figure {
   return {
     type: 'coordinate',
@@ -63,8 +73,8 @@ function pointCoordsFigure(o: XY, p: XY): Figure {
     y: [0, 8],
     grid: true,
     points: [
-      { at: o, label: 'O', color: 'highlight', showCoords: true, labelDir: 'ne' },
-      { at: p, label: 'P', showCoords: true, labelDir: 'sw' },
+      { at: o, label: 'O', color: 'highlight', showCoords: true, labelDir: dirOf(o[0] - p[0], o[1] - p[1]) },
+      { at: p, label: 'P', showCoords: true, labelDir: dirOf(p[0] - o[0], p[1] - o[1]) },
     ],
   };
 }
@@ -77,8 +87,8 @@ function centreCoordsFigure(p: XY, pp: XY): Figure {
     y: [0, 8],
     grid: true,
     points: [
-      { at: p, label: 'P', showCoords: true, labelDir: 'sw' },
-      { at: pp, label: 'P′', showCoords: true, labelDir: 'ne' },
+      { at: p, label: 'P', showCoords: true, labelDir: dirOf(p[0] - pp[0], p[1] - pp[1]) },
+      { at: pp, label: 'P′', showCoords: true, labelDir: dirOf(pp[0] - p[0], pp[1] - p[1]) },
     ],
     segments: [{ from: p, to: pp, dashed: true, color: 'muted' }],
   };
@@ -170,139 +180,170 @@ const parallelogramAskFigure: Figure = {
 // 2. Generators
 // ---------------------------------------------------------------------------------------------
 
-/** The image of a point on the grid: P′ = 2O − P. */
+const GRID = { w: 10, h: 8 };
+/** Inside the grid, one unit away from the axes and the border (labels stay readable). */
+const inGrid = ([x, y]: XY) => x >= 1 && x <= GRID.w - 1 && y >= 1 && y <= GRID.h - 1;
+const same = (u: XY, v: XY) => u[0] === v[0] && u[1] === v[1];
+
+/** A centre O and a step d (not zero), so that O − d and O + d are both on the grid. */
+function centreAndStep(rng: Rng, maxStep: number): { o: XY; d: XY } {
+  for (;;) {
+    const o: XY = [rng.int(3, 7), rng.int(2, 6)];
+    const d: XY = [rng.int(-maxStep, maxStep), rng.int(-maxStep, maxStep)];
+    if (d[0] === 0 && d[1] === 0) continue;
+    if (Math.abs(d[0]) + Math.abs(d[1]) < 2) continue;
+    if (inGrid([o[0] - d[0], o[1] - d[1]]) && inGrid([o[0] + d[0], o[1] + d[1]])) return { o, d };
+  }
+}
+
+/** Four labelled candidate points: the correct one and three typical mistakes, all on the grid. */
+function candidatesFor(rng: Rng, correct: XY, mistakes: XY[], avoid: XY[]): { list: { at: XY; label: string }[]; label: string } {
+  const unique: XY[] = [correct];
+  for (const q of [...mistakes, [correct[0] + 1, correct[1]] as XY, [correct[0], correct[1] - 1] as XY, [correct[0] - 1, correct[1] + 1] as XY]) {
+    if (unique.length === 4) break;
+    if (inGrid(q) && !unique.some((u) => same(u, q)) && !avoid.some((u) => same(u, q))) unique.push(q);
+  }
+  const shuffled = rng.shuffle(unique);
+  const labels = ['A', 'B', 'C', 'D'];
+  const list = shuffled.map((q, i) => ({ at: q, label: labels[i] }));
+  return { list, label: labels[shuffled.findIndex((q) => same(q, correct))] };
+}
+
+const coords = (q: XY) => `(${num(q[0])}; ${num(q[1])})`;
+
+/** The image of a point on the grid: P′ = 2O − P. Level 3 goes backwards: P from P′. */
 const pointImage: GeneratorDef = {
   id: 'point-image',
   title: 'Pont képe a középpontos tükrözésnél',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const o: XY = level === 1 || level === 2 ? at(5, 4) : at(6, 4);
-    const p: XY = level === 1 ? at(rng.int(1, 3), rng.int(1, 3)) : level === 2 ? at(rng.int(2, 3), rng.int(2, 3)) : at(rng.int(1, 2), rng.int(1, 2));
-    const pp: XY = [2 * o[0] - p[0], 2 * o[1] - p[1]];
+    const { o, d } = centreAndStep(rng, level === 1 ? 3 : 4);
+    const p: XY = [o[0] - d[0], o[1] - d[1]];
+    const pp: XY = [o[0] + d[0], o[1] + d[1]];
     if (level === 1) {
-      const wrong1: XY = [pp[0], p[1]];
-      const wrong2: XY = [p[0], pp[1]];
-      const wrong3: XY = [pp[0] - 1, pp[1] + 1];
-      const unique: XY[] = [];
-      for (const q of [pp, wrong1, wrong2, wrong3]) {
-        if (!unique.some((u) => u[0] === q[0] && u[1] === q[1])) unique.push(q);
-      }
-      while (unique.length < 4) unique.push([pp[0] + unique.length, pp[1]]);
-      const shuffled = rng.shuffle(unique);
-      const labels = ['A', 'B', 'C', 'D'];
-      const candidates = shuffled.map((q, i) => ({ at: q, label: labels[i] }));
-      const correct = candidates[shuffled.findIndex((q) => q[0] === pp[0] && q[1] === pp[1])].label;
-      const dx = o[0] - p[0];
-      const dy = o[1] - p[1];
+      // typical mistakes: only one coordinate reflected, or the step not repeated
+      const { list, label } = candidatesFor(rng, pp, [[pp[0], p[1]], [p[0], pp[1]], [o[0] + d[0] - Math.sign(d[0] || 1), o[1] + d[1]]], [o, p]);
       return {
         prompt: 'A rácson $O$ a tükrözés középpontja. Melyik pont a $P$ pont képe?',
-        figure: pointChoiceFigure(o, p, candidates),
-        answer: textChoice(`$${correct}$`, labels.filter((l) => l !== correct).map((l) => `$${l}$`)),
+        figure: pointChoiceFigure(o, p, list),
+        answer: textChoice(`$${label}$`, ['A', 'B', 'C', 'D'].filter((l) => l !== label).map((l) => `$${l}$`)),
         hint: '$O$ a $PP′$ szakasz felezőpontja: a $P$-ből $O$-ig lépj, majd ugyanennyit tovább!',
         solution: [
-          tex`A $P$ pontból az $O$ pontba ${stepText(dx, dy)} kell lépni.`,
-          tex`Ugyanennyit lépünk tovább ugyanabba az irányba: az $O$-ból ${stepText(dx, dy)}.`,
-          tex`Így a $P′$ pont ${article(correct)} **$${correct}$** jelű pont.`,
+          tex`A $P$ pontból az $O$ pontba ${stepText(d[0], d[1])} kell lépni.`,
+          tex`Ugyanennyit lépünk tovább ugyanabba az irányba: az $O$-ból ${stepText(d[0], d[1])}.`,
+          tex`Így a $P′$ pont ${article(label)} **$${label}$** jelű pont.`,
         ],
       };
     }
-    const xRange = pp[0] > 10 ? 12 : 10;
-    const yRange = pp[1] > 8 ? 10 : 8;
+    if (level === 2) {
+      return {
+        prompt: tex`A rácson a tükrözés középpontja $O${coords(o)}$, a tükrözendő pont $P${coords(p)}$. Add meg a $P′$ koordinátáit!`,
+        figure: pointCoordsFigure(o, p),
+        answer: { type: 'numbers', fields: [{ label: '$x =$', value: pp[0] }, { label: '$y =$', value: pp[1] }] },
+        hint: '$O$ a $PP′$ szakasz felezőpontja. A $P$-ből $O$-ig mutató lépést ismételd meg $O$-tól tovább!',
+        solution: [
+          tex`A $P$-ből az $O$-ba ${stepText(d[0], d[1])} kell lépni.`,
+          tex`Ugyanennyit lépünk tovább: $P′${coords(pp)}$.`,
+          tex`A kép koordinátái: **$x = ${num(pp[0])}$, $y = ${num(pp[1])}$**.`,
+        ],
+      };
+    }
+    // level 3: backwards — the image is known, where was the point?
     return {
-      prompt: tex`A rácson a tükrözés középpontja $O(${num(o[0])}; ${num(o[1])})$, a tükrözendő pont $P(${num(p[0])}; ${num(p[1])})$. Add meg a $P′$ koordinátáit!`,
+      prompt: tex`A középpontos tükrözés középpontja $O${coords(o)}$. A $P$ pont képe $P′${coords(pp)}$. Add meg a $P$ pont koordinátáit!`,
       figure: {
         type: 'coordinate',
-        x: [0, xRange],
-        y: [0, yRange],
+        x: [0, GRID.w],
+        y: [0, GRID.h],
         grid: true,
         points: [
-          { at: o, label: 'O', color: 'highlight', showCoords: true, labelDir: 'ne' },
-          { at: p, label: 'P', showCoords: true, labelDir: 'sw' },
+          { at: o, label: 'O', color: 'highlight', showCoords: true, labelDir: dirOf(-d[0], -d[1]) },
+          { at: pp, label: 'P′', showCoords: true, labelDir: dirOf(d[0], d[1]) },
         ],
       },
-      answer: {
-        type: 'numbers',
-        fields: [
-          { label: '$x =$', value: pp[0] },
-          { label: '$y =$', value: pp[1] },
-        ],
-      },
-      hint: '$O$ a $PP′$ szakasz felezőpontja. A $P$-ből $O$-ig mutató lépést ismételd meg $O$-tól tovább!',
+      answer: { type: 'numbers', fields: [{ label: '$x =$', value: p[0] }, { label: '$y =$', value: p[1] }] },
+      hint: 'A $P$ és a $P′$ egymás képei: a $P′$-ből $O$-ig lépj, majd ugyanennyit tovább!',
       solution: [
-        tex`$P(${num(p[0])}; ${num(p[1])})$, $O(${num(o[0])}; ${num(o[1])})$.`,
-        tex`A $P$-ből az $O$-ba ${stepText(o[0] - p[0], o[1] - p[1])} kell lépni.`,
-        tex`Ugyanennyit lépünk tovább: $P′(${num(pp[0])}; ${num(pp[1])})$.`,
-        tex`A kép koordinátái: **$x = ${num(pp[0])}$, $y = ${num(pp[1])}$**.`,
+        tex`A $P′$-ből az $O$-ba ${stepText(-d[0], -d[1])} kell lépni.`,
+        tex`Ugyanennyit tovább lépve: $P${coords(p)}$.`,
+        tex`A $P$ koordinátái: **$x = ${num(p[0])}$, $y = ${num(p[1])}$**.`,
       ],
     };
   },
 };
 
-/** Find the centre O from a point and its image: O is the midpoint of PP′. */
+/** Find the centre O from a point and its image: O is the midpoint of PP′. Level 3 then uses it. */
 const centre: GeneratorDef = {
   id: 'centre',
   title: 'A tükrözés középpontjának megtalálása',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const p: XY = level === 3 ? at(rng.int(1, 2), rng.int(1, 2)) : at(rng.int(2, 4), rng.int(1, 3));
-    const dx = level === 3 ? rng.int(2, 3) : rng.int(1, 2);
-    const dy = level === 3 ? 2 : rng.int(1, 2);
-    const pp: XY = [p[0] + 2 * dx, p[1] + 2 * dy];
-    const o: XY = [p[0] + dx, p[1] + dy];
+    const { o, d } = centreAndStep(rng, 3);
+    const p: XY = [o[0] - d[0], o[1] - d[1]];
+    const pp: XY = [o[0] + d[0], o[1] + d[1]];
+    const full: XY = [2 * d[0], 2 * d[1]];
     if (level === 1) {
-      const wrongs: XY[] = [
-        [o[0] + 1, o[1]],
-        [o[0], o[1] + 1],
-        [p[0] + dx, p[1]],
-      ];
-      const unique: XY[] = [];
-      for (const q of [o, ...wrongs]) {
-        if (!unique.some((u) => u[0] === q[0] && u[1] === q[1])) unique.push(q);
-      }
-      while (unique.length < 4) unique.push([o[0] + unique.length, o[1] + unique.length]);
-      const shuffled = rng.shuffle(unique);
-      const labels = ['A', 'B', 'C', 'D'];
-      const candidates = shuffled.map((q, i) => ({ at: q, label: labels[i] }));
-      const correct = candidates[shuffled.findIndex((q) => q[0] === o[0] && q[1] === o[1])].label;
+      // typical mistakes: the full step instead of half, or half of only one coordinate
+      const { list, label } = candidatesFor(rng, o, [[p[0] + d[0], p[1]], [p[0], p[1] + d[1]], [o[0] + Math.sign(d[0] || 1), o[1]]], [p, pp]);
       return {
         prompt: 'A rácson $P′$ a $P$ pont képe. Melyik pont a tükrözés középpontja?',
         figure: {
           type: 'coordinate',
-          x: [0, 10],
-          y: [0, 8],
+          x: [0, GRID.w],
+          y: [0, GRID.h],
           grid: true,
-          points: [
-            { at: p, label: 'P' },
-            { at: pp, label: 'P′' },
-            ...candidates.map((c) => ({ at: c.at, label: c.label })),
-          ],
+          points: [{ at: p, label: 'P' }, { at: pp, label: 'P′' }, ...list.map((c) => ({ at: c.at, label: c.label }))],
           segments: [{ from: p, to: pp, dashed: true, color: 'muted' }],
         },
-        answer: textChoice(`$${correct}$`, labels.filter((l) => l !== correct).map((l) => `$${l}$`)),
+        answer: textChoice(`$${label}$`, ['A', 'B', 'C', 'D'].filter((l) => l !== label).map((l) => `$${l}$`)),
         hint: 'A tükrözés középpontja a $PP′$ szakasz felezőpontja.',
         solution: [
-          tex`A $P$ és a $P′$ között a felezőpontot keressük.`,
-          tex`A $P$-ből a $P′$-be ${stepText(pp[0] - p[0], pp[1] - p[1])} kell lépni; ennek a fele ${stepText(dx, dy)}.`,
-          tex`A középpont ${article(correct)} **$${correct}$** jelű pont.`,
+          'A $P$ és a $P′$ között a felezőpontot keressük.',
+          tex`A $P$-ből a $P′$-be ${stepText(full[0], full[1])} kell lépni; ennek a fele ${stepText(d[0], d[1])}.`,
+          tex`A középpont ${article(label)} **$${label}$** jelű pont.`,
         ],
       };
     }
-    return {
-      prompt: tex`A rácson a $P(${num(p[0])}; ${num(p[1])})$ pont képe $P′(${num(pp[0])}; ${num(pp[1])})$. Add meg a tükrözés középpontjának koordinátáit!`,
-      figure: centreCoordsFigure(p, pp),
-      answer: {
-        type: 'numbers',
-        fields: [
-          { label: '$x =$', value: o[0] },
-          { label: '$y =$', value: o[1] },
+    if (level === 2) {
+      return {
+        prompt: tex`A rácson a $P${coords(p)}$ pont képe $P′${coords(pp)}$. Add meg a tükrözés középpontjának koordinátáit!`,
+        figure: centreCoordsFigure(p, pp),
+        answer: { type: 'numbers', fields: [{ label: '$x =$', value: o[0] }, { label: '$y =$', value: o[1] }] },
+        hint: 'A tükrözés középpontja a $PP′$ szakasz felezőpontja. Keresd meg a két pont „közepét”!',
+        solution: [
+          tex`A $P$-ből a $P′$-be ${stepText(full[0], full[1])} kell lépni.`,
+          tex`A felezőpont ennek a felénél van: $O${coords(o)}$.`,
+          tex`A középpont koordinátái: **$x = ${num(o[0])}$, $y = ${num(o[1])}$**.`,
         ],
+      };
+    }
+    // level 3: two steps — find O, then reflect another point Q with the same centre
+    let q: XY;
+    let qq: XY;
+    do {
+      q = [rng.int(1, GRID.w - 1), rng.int(1, GRID.h - 1)];
+      qq = [2 * o[0] - q[0], 2 * o[1] - q[1]];
+    } while (!inGrid(qq) || same(q, o) || same(q, p) || same(q, pp) || Math.abs(q[0] - o[0]) + Math.abs(q[1] - o[1]) < 2);
+    return {
+      prompt: tex`Egy középpontos tükrözésnél a $P${coords(p)}$ pont képe $P′${coords(pp)}$. Ugyanennél a tükrözésnél mi a $Q${coords(q)}$ pont képe?`,
+      figure: {
+        type: 'coordinate',
+        x: [0, GRID.w],
+        y: [0, GRID.h],
+        grid: true,
+        points: [
+          { at: p, label: 'P', showCoords: true },
+          { at: pp, label: 'P′', showCoords: true },
+          { at: q, label: 'Q', showCoords: true, color: 'orange' },
+        ],
+        segments: [{ from: p, to: pp, dashed: true, color: 'muted' }],
       },
-      hint: 'A tükrözés középpontja a $PP′$ szakasz felezőpontja. Keresd meg a két pont „közepét”!',
+      answer: { type: 'numbers', fields: [{ label: '$x =$', value: qq[0] }, { label: '$y =$', value: qq[1] }] },
+      hint: 'Először keresd meg a középpontot: a $PP′$ szakasz felezőpontját. Utána tükrözd rá $Q$-t!',
       solution: [
-        tex`$P(${num(p[0])}; ${num(p[1])})$, $P′(${num(pp[0])}; ${num(pp[1])})$.`,
-        tex`A $P$-ből a $P′$-be ${stepText(pp[0] - p[0], pp[1] - p[1])} kell lépni.`,
-        tex`A felezőpont ennek a felénél van: $O(${num(o[0])}; ${num(o[1])})$.`,
-        tex`A középpont koordinátái: **$x = ${num(o[0])}$, $y = ${num(o[1])}$**.`,
+        tex`A középpont a $PP′$ felezőpontja: $O${coords(o)}$.`,
+        tex`A $Q$-ból az $O$-ba ${stepText(o[0] - q[0], o[1] - q[1])} kell lépni; ugyanennyit tovább: $Q′${coords(qq)}$.`,
+        tex`A kép koordinátái: **$x = ${num(qq[0])}$, $y = ${num(qq[1])}$**.`,
       ],
     };
   },
@@ -337,7 +378,7 @@ const propertiesTf: GeneratorDef = {
               { text: 'A középpontos tükrözés megfordítja a sík irányítását.', value: false, why: 'Az irányítás megmarad; a tengelyes tükrözés fordítja meg.' },
               { text: 'A paralelogramma átlói felezik egymást.', value: true, why: 'Ez a paralelogramma egyik alaptulajdonsága.' },
               { text: 'Ha egy négyszög átlói felezik egymást, akkor a négyszög paralelogramma.', value: true, why: 'Ez a paralelogramma felismerésének egyik módja.' },
-              { text: 'A középpontos tükrözésnél a képpont és az eredeti pont a középponttól egyenlő távolságra van.', value: true, why: 'A középpont a felezőpont.' },
+              { text: 'A középpontos tükrözésnél a szakasz és a képe mindig egy egyenesre esik.', value: false, why: 'Csak akkor, ha a szakasz egyenese átmegy a középponton; különben a kép párhuzamos az eredetivel.' },
               { text: 'A középpontos tükrözésnél a szakasz képe mindig rövidebb.', value: false, why: 'A kép ugyanolyan hosszú.' },
               { text: 'A középpontos tükrözésnél a szög nagysága változatlan marad.', value: true, why: 'A tükrözés megtartja a szögeket.' },
               { text: 'A középpontos tükrözésnél a képpont az eredeti pont és a középpont között van.', value: false, why: 'A középpont van a két pont között, a felezőpontjukon.' },
@@ -350,8 +391,8 @@ const propertiesTf: GeneratorDef = {
               { text: 'Minden háromszög középpontosan tükrös.', value: false, why: 'Általában egy háromszögnek nincs szimmetriaközéppontja.' },
               { text: 'A középpontos tükrözés megtartja az alakot és a méretet.', value: true, why: 'A tükrözés egybevágósági transzformáció.' },
               { text: 'A középpontos tükrözésnél a csúcsok sorrendje megfordul.', value: false, why: 'Az irányítás megmarad, ezért a sorrend nem fordul meg.' },
-              { text: 'Két pont középpontosan tükrös egymásra, ha a felezőpontjuk a tükrözés középpontja.', value: true, why: 'Ez a középpontos tükrözés definíciója.' },
-              { text: 'Egy alakzatnak legfeljebb egy szimmetriaközéppontja lehet.', value: true, why: 'Ha két középpont lenne, az alakzat végtelen nagy lenne.' },
+              { text: 'Két pont egymás képe, ha az őket összekötő szakasz felezőpontja a tükrözés középpontja.', value: true, why: 'Ez a középpontos tükrözés definíciója.' },
+              { text: 'A téglalap középpontosan tükrös az átlói metszéspontjára.', value: true, why: 'A téglalap is paralelogramma: az átlói felezik egymást.' },
               { text: 'A paralelogramma átlóinak metszéspontja a paralelogramma szimmetriaközéppontja.', value: true, why: 'Az átlók felezik egymást.' },
               { text: 'A szabályos háromszög középpontosan tükrös.', value: false, why: 'A szabályos háromszögnek nincs szimmetriaközéppontja.' },
             ];
@@ -365,27 +406,72 @@ const propertiesTf: GeneratorDef = {
   },
 };
 
-/** Which coloured copy is the image of the triangle / square / rectangle? */
+/** A random shape with integer vertices inside the box [1, 4] × [1, 3]. */
+function randomShape(rng: Rng, shape: 'triangle' | 'square' | 'rectangle' | 'quad'): XY[] {
+  for (;;) {
+    if (shape === 'square') {
+      const a = rng.int(1, 2);
+      const [x, y] = [rng.int(1, 4 - a), rng.int(1, 3 - a)];
+      return [at(x, y), at(x + a, y), at(x + a, y + a), at(x, y + a)];
+    }
+    if (shape === 'rectangle') {
+      const [a, b] = rng.pick([
+        [3, 1],
+        [3, 2],
+        [2, 1],
+        [1, 2],
+      ]);
+      const [x, y] = [rng.int(1, 4 - a), rng.int(1, 3 - b)];
+      return [at(x, y), at(x + a, y), at(x + a, y + b), at(x, y + b)];
+    }
+    const n = shape === 'triangle' ? 3 : 4;
+    const pts: XY[] = [];
+    for (let i = 0; i < n; i++) pts.push(at(rng.int(1, 4), rng.int(1, 3)));
+    // twice the signed area: the shape must not be flat, and a quadrilateral must be convex
+    const area2 = pts.reduce((sum, q, i) => sum + q[0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * q[1], 0);
+    if (Math.abs(area2) < 4) continue;
+    if (n === 4) {
+      const crosses = pts.map((q, i) => {
+        const r = pts[(i + 1) % n];
+        const t = pts[(i + 2) % n];
+        return (r[0] - q[0]) * (t[1] - r[1]) - (r[1] - q[1]) * (t[0] - r[0]);
+      });
+      if (!crosses.every((c) => c > 0) && !crosses.every((c) => c < 0)) continue;
+    }
+    // not mirror-symmetric about a vertical or horizontal line, so the wrong copies really differ
+    const xs = pts.map((q) => q[0]);
+    const ys = pts.map((q) => q[1]);
+    const mirrorX = pts.map((q): XY => [Math.min(...xs) + Math.max(...xs) - q[0], q[1]]);
+    const mirrorY = pts.map((q): XY => [q[0], Math.min(...ys) + Math.max(...ys) - q[1]]);
+    const sameSet = (u: XY[]) => u.every((q) => pts.some((r) => same(q, r)));
+    if (sameSet(mirrorX) || sameSet(mirrorY)) continue;
+    return pts;
+  }
+}
+
+/** Which coloured copy is the image of the shape? (triangle → square or rectangle → quadrilateral) */
 const imageMc: GeneratorDef = {
   id: 'image-mc',
   title: 'Melyik alakzat a képe?',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const shape = level === 1 ? 'triangle' : level === 2 ? 'square' : 'rectangle';
+    const shape = level === 1 ? 'triangle' : level === 2 ? rng.pick(['square', 'rectangle'] as const) : 'quad';
     const o: XY = at(5, 4);
-    const original: XY[] =
-      shape === 'triangle'
-        ? [at(1, 1), at(3, 1), at(2, 3)]
-        : shape === 'square'
-          ? [at(1, 1), at(3, 1), at(3, 3), at(1, 3)]
-          : [at(1, 1), at(4, 1), at(4, 3), at(1, 3)];
+    // the original sits in one quarter of the grid; turning the whole picture moves it
+    const base = randomShape(rng, shape);
+    const flipX = rng.chance(0.5);
+    const flipY = rng.chance(0.5);
+    const place = (q: XY): XY => [flipX ? 10 - q[0] : q[0], flipY ? 8 - q[1] : q[1]];
+    const original = base.map(place);
     const image = original.map((q): XY => [2 * o[0] - q[0], 2 * o[1] - q[1]]);
-    const translated = original.map((q): XY => [q[0], q[1] + 4]);
-    const axial = original.map((q): XY => [2 * 5 - q[0], q[1]]);
+    const translated = original.map((q): XY => [q[0], flipY ? q[1] - 4 : q[1] + 4]);
+    const axial = original.map((q): XY => [10 - q[0], q[1]]);
     const vertexLabels = shape === 'triangle' ? ['A', 'B', 'C'] : ['A', 'B', 'C', 'D'];
+    const name = shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : shape === 'rectangle' ? 'téglalap' : 'négyszög';
+    const label = shape === 'triangle' ? 'ABC' : 'ABCD';
     const [correctColor, wrong1Color, wrong2Color] = rng.shuffle(['narancssárga', 'zöld', 'lila']);
     return {
-      prompt: tex`Melyik színű ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} ${article(shape === 'triangle' ? 'ABC' : 'ABCD')} $${shape === 'triangle' ? 'ABC' : 'ABCD'}$ ${shape === 'triangle' ? 'háromszög' : shape === 'square' ? 'négyzet' : 'téglalap'} képe?`,
+      prompt: tex`Melyik színű ${name} ${article(label)} $${label}$ ${name} képe az $O$ pontra tükrözve?`,
       figure: {
         type: 'coordinate',
         x: [0, 10],
@@ -400,61 +486,109 @@ const imageMc: GeneratorDef = {
         points: [{ at: o, label: 'O', color: 'highlight' }],
       },
       answer: textChoice(`a ${correctColor}`, [`a ${wrong1Color}`, `a ${wrong2Color}`]),
-      hint: 'A képet úgy kapod, hogy minden csúcsot tükrözöl az $O$ pontra.',
+      hint: 'A képet úgy kapod, hogy minden csúcsot tükrözöl az $O$ pontra: a csúcs az $O$ túloldalára kerül, ugyanolyan messzire.',
       solution: [
         tex`A középpontos tükrözésnél minden csúcs az $O$-val ellentétes oldalra kerül, ugyanolyan messzire.`,
-        `A ${wrong1Color} alakzat el van tolva, a ${wrong2Color} tengelyesen tükrözött; egyik sem a középpontos kép.`,
+        `A ${wrong1Color} alakzat csak el van tolva, a ${wrong2Color} tengelyesen tükrözött; egyik sem a középpontos kép.`,
         `A helyes kép a **${correctColor}** alakzat.`,
       ],
     };
   },
 };
 
-/** The link to the parallelogram: opposite vertices are images of each other. */
+/** The link to the parallelogram: a vertex, a side, and finally the fourth vertex by coordinates. */
 const parallelogramCentre: GeneratorDef = {
   id: 'parallelogram-centre',
   title: 'Paralelogramma és középpontos tükrözés',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    if (level === 1) {
-      const askA = rng.chance(0.5);
-      const from = askA ? 'A' : 'C';
-      const to = askA ? 'C' : 'A';
-      const wrongs = ['A', 'B', 'C', 'D', 'O'].filter((v) => v !== from && v !== to).map((v) => `$${v}$`);
+    const v = rng.pick([
+      ['A', 'B', 'C', 'D'],
+      ['K', 'L', 'M', 'N'],
+      ['P', 'Q', 'R', 'S'],
+      ['E', 'F', 'G', 'H'],
+    ]);
+    if (level <= 2) {
+      const w = rng.int(50, 65) / 10;
+      const sh = rng.pick([-1.2, 0.8, 1.6]);
+      const h = rng.int(26, 34) / 10;
+      const ox = sh < 0 ? -sh : 0;
+      const pts: XY[] = [at(ox, 0), at(ox + w, 0), at(ox + w + sh, h), at(ox + sh, h)];
+      const O: XY = [(pts[0][0] + pts[2][0]) / 2, h / 2];
+      const figure: Figure = {
+        type: 'geometry',
+        points: { [v[0]]: pts[0], [v[1]]: pts[1], [v[2]]: pts[2], [v[3]]: pts[3], O },
+        items: [
+          { kind: 'polygon', points: v, fill: 'accent' },
+          { kind: 'segment', from: v[0], to: v[2], dashed: true, color: 'muted' },
+          { kind: 'segment', from: v[1], to: v[3], dashed: true, color: 'muted' },
+          { kind: 'point', at: 'O', color: 'highlight', labelDir: 'e' },
+        ],
+      };
+      if (level === 1) {
+        const i = rng.int(0, 3);
+        const from = v[i];
+        const to = v[(i + 2) % 4];
+        return {
+          prompt: tex`A paralelogramma átlói az $O$ pontban metszik egymást. Melyik pont ${article(from)} $${from}$ csúcs képe az $O$-ra tükrözésnél?`,
+          figure,
+          answer: textChoice(`$${to}$`, [...v.filter((x) => x !== from && x !== to), 'O'].map((x) => `$${x}$`)),
+          hint: 'A paralelogramma átlói felezik egymást.',
+          solution: [tex`${Article(from + to)} $${from}${to}$ átló felezőpontja $O$.`, tex`Ezért ${article(from)} $${from}$ csúcs képe ${article(to)} **$${to}$** csúcs.`],
+        };
+      }
+      // level 2: the image of a side
+      const i = rng.int(0, 3);
+      const side = v[i] + v[(i + 1) % 4];
+      const image = v[(i + 2) % 4] + v[(i + 3) % 4];
+      const others = [v[(i + 1) % 4] + v[(i + 2) % 4], v[(i + 3) % 4] + v[i], side];
       return {
-        prompt: tex`A paralelogramma átlói az $O$ pontban metszik egymást. Melyik pont ${from === 'A' ? 'az' : 'a'} $${from}$ csúcs képe az $O$-ra tükrözésnél?`,
-        figure: parallelogramAskFigure,
-        answer: textChoice(`$${to}$`, wrongs),
-        hint: 'A paralelogramma átlói felezik egymást, ezért $A$ és $C$ egymás képei.',
-        solution: ['Az $AC$ átló felezőpontja $O$.', `Ezért ${from === 'A' ? 'az' : 'a'} $${from}$ csúcs képe ${to === 'A' ? 'az' : 'a'} **$${to}$** csúcs.`],
+        prompt: tex`A paralelogrammát az átlói $O$ metszéspontjára tükrözzük. Melyik szakasz ${article(side)} $${side}$ oldal képe?`,
+        figure,
+        answer: textChoice(`$${image}$`, others.map((x) => `$${x}$`)),
+        hint: 'Tükrözd külön a két végpontot: mindegyik a vele szemközti csúcsba kerül.',
+        solution: [
+          tex`${Article(v[i])} $${v[i]}$ képe $${v[(i + 2) % 4]}$, ${article(v[(i + 1) % 4])} $${v[(i + 1) % 4]}$ képe $${v[(i + 3) % 4]}$.`,
+          tex`Ezért ${article(side)} $${side}$ oldal képe ${article(image)} **$${image}$** oldal — a szemközti oldal.`,
+        ],
       };
     }
-    if (level === 2) {
-      const askB = rng.chance(0.5);
-      const from = askB ? 'B' : 'D';
-      const to = askB ? 'D' : 'B';
-      const wrongs = ['A', 'B', 'C', 'D', 'O'].filter((v) => v !== from && v !== to).map((v) => `$${v}$`);
-      return {
-        prompt: tex`A paralelogramma átlói az $O$ pontban metszik egymást. Melyik pont ${article(from)} $${from}$ csúcs képe az $O$-ra tükrözésnél?`,
-        figure: parallelogramAskFigure,
-        answer: textChoice(`$${to}$`, wrongs),
-        hint: 'A $BD$ átló felezőpontja $O$.',
-        solution: ['A $BD$ átló felezőpontja $O$.', `Ezért ${article(from)} $${from}$ csúcs képe ${article(to)} **$${to}$** csúcs.`],
-      };
-    }
+    // level 3: three vertices on the grid, find the fourth with the centre
+    let A: XY;
+    let B: XY;
+    let C: XY;
+    let D: XY;
+    do {
+      A = [rng.int(1, 4), rng.int(1, 3)];
+      B = [A[0] + rng.int(3, 5), A[1] + rng.int(-1, 1)];
+      C = [B[0] + rng.int(-1, 2), B[1] + rng.int(2, 4)];
+      D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
+    } while (![A, B, C, D].every(inGrid) || (A[0] + C[0]) % 2 !== 0 || (A[1] + C[1]) % 2 !== 0);
+    const O: XY = [(A[0] + C[0]) / 2, (A[1] + C[1]) / 2];
     return {
-      prompt: 'Miért középpontosan tükrös a paralelogramma az átlói metszéspontjára?',
-      figure: parallelogramAskFigure,
-      answer: textChoice('Mert az átlói felezik egymást.', [
-        'Mert minden oldala egyenlő.',
-        'Mert minden szöge derékszög.',
-        'Mert az átlói merőlegesek egymásra.',
-      ]),
-      hint: 'A középpontos tükrözésnél a középpont a megfelelő csúcsokat összekötő szakasz felezőpontja.',
+      prompt: tex`${Article(v.join(''))} $${v.join('')}$ paralelogramma három csúcsa $${v[0]}${coords(A)}$, $${v[1]}${coords(B)}$ és $${v[2]}${coords(C)}$. Add meg ${article(v[3])} $${v[3]}$ csúcs koordinátáit!`,
+      figure: {
+        type: 'coordinate',
+        x: [0, GRID.w],
+        y: [0, GRID.h],
+        grid: true,
+        points: [
+          { at: A, label: v[0], showCoords: true },
+          { at: B, label: v[1], showCoords: true },
+          { at: C, label: v[2], showCoords: true },
+        ],
+        segments: [
+          { from: A, to: B },
+          { from: B, to: C },
+          { from: A, to: C, dashed: true, color: 'muted' },
+        ],
+      },
+      answer: { type: 'numbers', fields: [{ label: '$x =$', value: D[0] }, { label: '$y =$', value: D[1] }] },
+      hint: tex`A paralelogramma középpontosan tükrös az átlói metszéspontjára. Előbb keresd meg ${article(v[0] + v[2])} $${v[0]}${v[2]}$ átló felezőpontját!`,
       solution: [
-        'A paralelogramma átlói felezik egymást, tehát $O$ az $AC$ és a $BD$ átló felezőpontja is.',
-        'Ezért $A$ képe $C$, $B$ képe $D$.',
-        'A paralelogramma **az átlói metszéspontjára középpontosan tükrös**.',
+        tex`${Article(v[0] + v[2])} $${v[0]}${v[2]}$ átló felezőpontja $O${coords(O)}$.`,
+        tex`${Article(v[3])} $${v[3]}$ csúcs ${article(v[1])} $${v[1]}$ képe $O$-ra: ${article(v[1])} $${v[1]}$-ből $O$-ba ${stepText(O[0] - B[0], O[1] - B[1])}, és ugyanennyit tovább.`,
+        tex`${Article(v[3])} $${v[3]}$ koordinátái: **$x = ${num(D[0])}$, $y = ${num(D[1])}$**.`,
       ],
     };
   },

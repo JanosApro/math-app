@@ -8,6 +8,7 @@
  */
 import {
   article,
+  Article,
   defineSubtopic,
   num,
   suffix,
@@ -17,6 +18,7 @@ import {
   type GeneratorDef,
   type GeoItem,
   type Question,
+  type Rng,
   type XY,
 } from '../../../kit';
 
@@ -30,7 +32,7 @@ type LineDef = { a: XY; b: XY; label: string };
 const at = (x: number, y: number): XY => [x, y];
 
 /** Hungarian article before a line name: p = pé → a, q = kú → a, r = er → az, s = ess → az. */
-const VOWEL_LINE = new Set(['r', 's', 'e', 'f']);
+const VOWEL_LINE = new Set(['a', 'e', 'f', 'l', 'm', 'n', 'r', 's']);
 const lineArt = (name: string) => (VOWEL_LINE.has(name) ? 'az' : 'a');
 const LineArt = (name: string) => (VOWEL_LINE.has(name) ? 'Az' : 'A');
 
@@ -216,6 +218,128 @@ function fourThreeConcurrent(): LineDef[] {
   return [...threeConcurrent(), line('s', ...vertical(8))];
 }
 
+// --- random configurations (for the generators) ----------------------------------------------
+
+/**
+ * Kinds of line configurations, by the relative position of the lines:
+ * par = parallel lines, gen = no parallels and no three through a point, conc = through one point.
+ */
+type ConfigKind =
+  | 'cross2' // 2 crossing lines
+  | 'par2' // 2 parallel lines
+  | 'par3' // 3 parallel lines
+  | 'par2+1' // 2 parallel lines and a transversal
+  | 'gen3' // 3 lines in general position
+  | 'conc3' // 3 lines through one point
+  | 'gen4' // 4 lines in general position
+  | 'par2+2' // 2 parallel lines and 2 more crossing lines
+  | 'grid' // 2 pairs of parallel lines
+  | 'par3+1' // 3 parallel lines and a transversal
+  | 'conc3+1' // 3 lines through a point and a fourth line
+  | 'conc4' // 4 lines through one point
+  | 'par4'; // 4 parallel lines
+
+const FRAME = { w: 10, h: 7 };
+const LABEL_SETS = [
+  ['p', 'q', 'r', 's'],
+  ['a', 'b', 'c', 'd'],
+  ['e', 'f', 'g', 'h'],
+  ['k', 'l', 'm', 'n'],
+];
+
+/** The two points where a line (point + angle in degrees) leaves the frame, or null. */
+function clipToFrame(p: XY, deg: number): [XY, XY] | null {
+  const dx = Math.cos((deg * Math.PI) / 180);
+  const dy = Math.sin((deg * Math.PI) / 180);
+  const ts: number[] = [];
+  if (Math.abs(dx) > 1e-9) for (const x of [0, FRAME.w]) ts.push((x - p[0]) / dx);
+  if (Math.abs(dy) > 1e-9) for (const y of [0, FRAME.h]) ts.push((y - p[1]) / dy);
+  const inside = ts
+    .map((t) => [p[0] + t * dx, p[1] + t * dy] as XY)
+    .filter(([x, y]) => x >= -1e-6 && x <= FRAME.w + 1e-6 && y >= -1e-6 && y <= FRAME.h + 1e-6);
+  if (inside.length < 2) return null;
+  inside.sort((u, v) => u[0] - v[0] || u[1] - v[1]);
+  const a = inside[0];
+  const b = inside[inside.length - 1];
+  if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 5) return null;
+  return [a, b];
+}
+
+/** Distance of point q from the line through a and b. */
+function distToLine(q: XY, l: LineDef): number {
+  const [x1, y1] = l.a;
+  const [x2, y2] = l.b;
+  return Math.abs((x2 - x1) * (y1 - q[1]) - (x1 - q[0]) * (y2 - y1)) / Math.hypot(x2 - x1, y2 - y1);
+}
+
+/**
+ * A random configuration of the given kind, with all intersections well inside the picture and
+ * far enough apart to count them by eye. Labels are shuffled, so any letter can be the odd one out.
+ */
+function randomConfig(rng: Rng, kind: ConfigKind): LineDef[] {
+  const plan: Record<ConfigKind, { groups: number[]; conc: number }> = {
+    cross2: { groups: [1, 1], conc: 0 },
+    par2: { groups: [2], conc: 0 },
+    par3: { groups: [3], conc: 0 },
+    'par2+1': { groups: [2, 1], conc: 0 },
+    gen3: { groups: [1, 1, 1], conc: 0 },
+    conc3: { groups: [1, 1, 1], conc: 3 },
+    gen4: { groups: [1, 1, 1, 1], conc: 0 },
+    'par2+2': { groups: [2, 1, 1], conc: 0 },
+    grid: { groups: [2, 2], conc: 0 },
+    'par3+1': { groups: [3, 1], conc: 0 },
+    'conc3+1': { groups: [1, 1, 1, 1], conc: 3 },
+    conc4: { groups: [1, 1, 1, 1], conc: 4 },
+    par4: { groups: [4], conc: 0 },
+  };
+  const { groups, conc } = plan[kind];
+  const ANGLES = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165];
+  const angleGap = (a: number, b: number) => {
+    const d = Math.abs(a - b) % 180;
+    return Math.min(d, 180 - d);
+  };
+  for (let attempt = 0; attempt < 6000; attempt++) {
+    // one direction per group, at least 30° apart
+    const dirs: number[] = [];
+    for (const _ of groups) {
+      const options = ANGLES.filter((a) => dirs.every((d) => angleGap(a, d) >= 30));
+      if (options.length === 0) break;
+      dirs.push(rng.pick(options));
+    }
+    if (dirs.length < groups.length) continue;
+    const centre: XY = [rng.int(35, 65) / 10, rng.int(25, 45) / 10];
+    const lines: LineDef[] = [];
+    let index = 0;
+    let ok = true;
+    groups.forEach((size, g) => {
+      for (let k = 0; k < size; k++) {
+        const through: XY = index < conc ? centre : [rng.int(25, 75) / 10, rng.int(15, 55) / 10];
+        const seg = clipToFrame(through, dirs[g]);
+        if (!seg) ok = false;
+        else lines.push({ a: seg[0], b: seg[1], label: '' });
+        index++;
+      }
+    });
+    if (!ok) continue;
+    // parallel lines far enough apart
+    for (let i = 0; i < lines.length && ok; i++)
+      for (let j = i + 1; j < lines.length && ok; j++)
+        if (!lineIntersection(lines[i], lines[j]) && distToLine(lines[i].a, lines[j]) < 1.3) ok = false;
+    if (!ok) continue;
+    // intersections inside, distinct ones far apart, and no line passing close to a foreign crossing
+    const pts = intersectionPoints(lines);
+    if (pts.some(([x, y]) => x < 0.8 || x > FRAME.w - 0.8 || y < 0.7 || y > FRAME.h - 0.7)) continue;
+    for (let i = 0; i < pts.length && ok; i++)
+      for (let j = i + 1; j < pts.length && ok; j++) if (Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]) < 1.4) ok = false;
+    for (const q of pts) for (const l of lines) if (distToLine(q, l) > 1e-6 && distToLine(q, l) < 0.8) ok = false;
+    if (!ok) continue;
+    const labels = rng.pick(LABEL_SETS);
+    const order = rng.shuffle(lines.map((_, i) => i));
+    return order.map((i, k) => ({ ...lines[i], label: labels[k] }));
+  }
+  throw new Error(`no ${kind} configuration found`);
+}
+
 // --- static figures --------------------------------------------------------------------------
 
 const twoLinesFigure: Figure = linesFigure([line('p', ...horizontal(2.5)), line('q', at(0, 1), at(10, 5))], {
@@ -327,76 +451,106 @@ const linePosition: GeneratorDef = {
   title: 'Két egyenes helyzete az ábrán',
   levels: [1, 2],
   generate(rng, level): Question {
-    const t = rng.pick([tripleVertical(), tripleSlanted(), tripleVerticals()]);
-    const mode =
-      level === 1
-        ? rng.pick(['askP', 'askQ', 'notP', 'pair'] as const)
-        : rng.pick(['askP', 'askQ', 'notP', 'pair', 'statement', 'intersection'] as const);
-    const figure = linesFigure(t.lines, mode === 'intersection' ? { at: t.M, dir: 'ne' } : undefined);
-
-    if (mode === 'askP' || mode === 'askQ') {
-      const asked = mode === 'askP' ? 'p' : 'q';
-      const other = mode === 'askP' ? 'q' : 'p';
-      return {
-        prompt: tex`Melyik egyenes párhuzamos ${article(asked)} $${asked}$ egyenessel?`,
-        figure,
-        answer: textChoice(`$${other}$`, ['$r$', 'egyik sem']),
-        hint: 'Két egyenes párhuzamos, ha soha nem találkozik.',
-        solution: [
-          tex`Az ábrán a $p$ és a $q$ egyenesek soha nem metszik egymást: párhuzamosak.`,
-          tex`${LineArt('r')} $r$ egyenes metszi ${lineArt(asked)} $${asked}$ egyenest, ezért nem párhuzamos vele.`,
-          tex`A válasz: **$${other}$**.`,
-        ],
-      };
-    }
-    if (mode === 'notP') {
-      return {
-        prompt: 'Melyik egyenes nem párhuzamos a $p$ egyenessel?',
-        figure,
-        answer: textChoice('$r$', ['$q$', 'nincs ilyen']),
-        hint: 'Keresd meg azt az egyenest, amelyik metszi a $p$-t!',
-        solution: [
-          tex`A $q$ párhuzamos a $p$-vel, ezért nem lehet a válasz.`,
-          tex`Az $r$ egyenes metszi a $p$-t, tehát nem párhuzamos vele.`,
-          tex`A válasz: **$r$**.`,
-        ],
-      };
-    }
-    if (mode === 'pair') {
+    const pairText = (x: string, y: string) => tex`$${x}$ és $${y}$`;
+    if (level === 1) {
+      // three lines: one parallel pair and a transversal
+      const lines = randomConfig(rng, 'par2+1');
+      const [[x, y]] = parallelPairs(lines);
+      const t = lines.find((l) => l.label !== x && l.label !== y)!.label;
+      const figure = linesFigure(lines);
+      const mode = rng.pick(['ask', 'not', 'pair'] as const);
+      const [asked, other] = rng.shuffle([x, y]);
+      if (mode === 'ask') {
+        return {
+          prompt: tex`Melyik egyenes párhuzamos ${lineArt(asked)} $${asked}$ egyenessel?`,
+          figure,
+          answer: textChoice(`$${other}$`, [`$${t}$`, 'egyik sem']),
+          hint: 'Két egyenes párhuzamos, ha soha nem találkozik.',
+          solution: [
+            tex`${LineArt(asked)} $${asked}$ és ${lineArt(other)} $${other}$ egyenes soha nem metszi egymást: párhuzamosak.`,
+            tex`${LineArt(t)} $${t}$ egyenes metszi ${lineArt(asked)} $${asked}$ egyenest, ezért nem párhuzamos vele.`,
+            tex`A válasz: **$${other}$**.`,
+          ],
+        };
+      }
+      if (mode === 'not') {
+        return {
+          prompt: tex`Melyik egyenes nem párhuzamos ${lineArt(asked)} $${asked}$ egyenessel?`,
+          figure,
+          answer: textChoice(`$${t}$`, [`$${other}$`, 'nincs ilyen']),
+          hint: tex`Keresd meg azt az egyenest, amelyik metszi ${lineArt(asked)} $${asked}$ egyenest!`,
+          solution: [
+            tex`${LineArt(other)} $${other}$ párhuzamos ${lineArt(asked)} $${asked}$ egyenessel, ezért nem lehet a válasz.`,
+            tex`${LineArt(t)} $${t}$ egyenes metszi ${lineArt(asked)} $${asked}$ egyenest, tehát nem párhuzamos vele.`,
+            tex`A válasz: **$${t}$**.`,
+          ],
+        };
+      }
       return {
         prompt: 'Melyik két egyenes párhuzamos az ábrán?',
         figure,
-        answer: textChoice(tex`$p$ és $q$`, [tex`$p$ és $r$`, tex`$q$ és $r$`]),
+        answer: textChoice(pairText(x, y), [pairText(x, t), pairText(y, t)]),
         hint: 'A párhuzamos egyenesek soha nem találkoznak.',
         solution: [
-          tex`A $p$ és a $q$ egyenes soha nem metszi egymást: ők párhuzamosak.`,
-          tex`Az $r$ mindkettőt metszi, ezért egyikkel sem párhuzamos.`,
-          tex`A válasz: **$p$ és $q$**.`,
+          tex`${LineArt(x)} $${x}$ és ${lineArt(y)} $${y}$ egyenes soha nem metszi egymást: párhuzamosak.`,
+          tex`${LineArt(t)} $${t}$ mindkettőt metszi, ezért egyikkel sem párhuzamos.`,
+          tex`A válasz: **$${x}$ és $${y}$**.`,
+        ],
+      };
+    }
+    // level 2: four lines, one or two parallel pairs
+    const lines = randomConfig(rng, rng.pick(['grid', 'par2+2'] as const));
+    const names = lines.map((l) => l.label);
+    const parallel = parallelPairs(lines);
+    const isParallel = (u: string, v: string) => parallel.some(([a, b]) => (a === u && b === v) || (a === v && b === u));
+    const allPairs: [string, string][] = [];
+    for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) allPairs.push([names[i], names[j]]);
+    const crossing = allPairs.filter(([u, v]) => !isParallel(u, v));
+    const mode = rng.pick(['statement', 'intersection', 'count'] as const);
+    if (mode === 'statement') {
+      const [u, v] = rng.pick(parallel);
+      const wrongs = rng.sample(crossing, 3).map(([a, b]) => tex`$${a} \parallel ${b}$`);
+      return {
+        prompt: 'Melyik állítás igaz az ábrán látható egyenesekre?',
+        figure: linesFigure(lines),
+        answer: textChoice(tex`$${u} \parallel ${v}$`, wrongs),
+        hint: 'Keresd meg azt a két egyenest, amelyek soha nem találkoznak!',
+        solution: [
+          tex`${LineArt(u)} $${u}$ és ${lineArt(v)} $${v}$ egyenes soha nem metszi egymást: $${u} \parallel ${v}$.`,
+          'A többi felsorolt egyenespár az ábrán metszi egymást, ezért azok nem párhuzamosak.',
+          tex`Az igaz állítás: **$${u} \parallel ${v}$**.`,
         ],
       };
     }
     if (mode === 'intersection') {
+      const [u, v] = rng.pick(crossing);
+      const M = lineIntersection(lines.find((l) => l.label === u)!, lines.find((l) => l.label === v)!)!;
+      const wrongs = rng.sample(allPairs.filter(([a, b]) => !(a === u && b === v)), 3).map(([a, b]) => pairText(a, b));
       return {
         prompt: 'Melyik két egyenes metszi egymást az $M$ pontban?',
-        figure,
-        answer: textChoice(tex`$p$ és $r$`, [tex`$p$ és $q$`, tex`$q$ és $r$`]),
+        figure: linesFigure(lines, { at: M, dir: 'ne' }),
+        answer: textChoice(pairText(u, v), wrongs),
         hint: 'Keresd meg az $M$ pontot, és nézd meg, melyik két egyenes megy át rajta!',
         solution: [
-          tex`Az $M$ pont a $p$ és az $r$ egyenesen van.`,
-          tex`A $q$ egyenes párhuzamos $p$-vel, ezért nem megy át $M$-en.`,
-          tex`Az $M$ pontban a **$p$ és az $r$** egyenes metszi egymást.`,
+          tex`Az $M$ pont ${lineArt(u)} $${u}$ és ${lineArt(v)} $${v}$ egyenesen van.`,
+          'A másik két egyenes nem megy át az $M$ ponton.',
+          tex`Az $M$ pontban **${lineArt(u)} $${u}$ és ${lineArt(v)} $${v}$** egyenes metszi egymást.`,
         ],
       };
     }
+    const asked = rng.pick(names);
+    const partners = names.filter((n) => n !== asked && isParallel(asked, n));
     return {
-      prompt: 'Melyik állítás igaz az ábrán látható egyenesekre?',
-      figure,
-      answer: textChoice(tex`$p \parallel q$`, [tex`$p \parallel r$`, tex`$q \parallel r$`, tex`$p$ és $q$ metszi egymást`]),
-      hint: 'Keresd meg azt a két egyenest, amelyek soha nem találkoznak!',
+      prompt: tex`Hány egyenes párhuzamos az ábrán ${lineArt(asked)} $${asked}$ egyenessel?`,
+      figure: linesFigure(lines),
+      answer: { type: 'number', value: partners.length },
+      inputLabel: 'egyenes =',
+      hint: tex`Nézd végig a többi egyenest: melyik nem találkozik ${lineArt(asked)} $${asked}$ egyenessel?`,
       solution: [
-        tex`A $p$ és a $q$ egyenes soha nem metszi egymást: $p \parallel q$.`,
-        tex`Az $r$ egyenes mindkettőt metszi, ezért nem párhuzamos egyikkel sem.`,
-        tex`Az egyetlen igaz állítás: **$p \parallel q$**.`,
+        partners.length === 0
+          ? tex`Mindegyik másik egyenes metszi ${lineArt(asked)} $${asked}$ egyenest.`
+          : tex`Csak ${lineArt(partners[0])} $${partners[0]}$ egyenes nem találkozik ${lineArt(asked)} $${asked}$ egyenessel.`,
+        tex`Tehát **${num(partners.length)}** egyenes párhuzamos vele.`,
       ],
     };
   },
@@ -463,51 +617,38 @@ const positionTf: GeneratorDef = {
   },
 };
 
+/** The solution steps for counting intersection points. */
+function intersectionSteps(lines: LineDef[], n: number): string[] {
+  const k = lines.length;
+  const pairsTotal = (k * (k - 1)) / 2;
+  const par = parallelPairs(lines);
+  if (n === 0) return ['Az egyenesek párhuzamosak, ezért soha nem találkoznak.', 'Nincs közös pontjuk, tehát **0 metszéspont** van.'];
+  const steps: string[] = [tex`${Article(k)} ${num(k)} egyenesből ${num(pairsTotal)} egyenespár alkotható.`];
+  if (par.length > 0)
+    steps.push(tex`Ebből ${num(par.length)} pár párhuzamos (${par.map(([a, b]) => `$${a}$–$${b}$`).join(', ')}): ezeknek nincs metszéspontjuk.`);
+  const crossings = pairsTotal - par.length;
+  if (crossings > n) steps.push('Több egyenes megy át ugyanazon a ponton: ezt a pontot csak egyszer számoljuk.');
+  steps.push(tex`Összesen **${num(n)} metszéspont** van az ábrán.`);
+  return steps;
+}
+
 /** Number of intersection points of 2–4 lines, from the figure. */
 const intersections: GeneratorDef = {
   id: 'intersections',
   title: 'Metszéspontok száma',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const pool =
-      level === 1
-        ? [
-            () => [line('p', ...horizontal(1.5)), line('q', ...horizontal(5))],
-            () => [line('p', ...horizontal(2)), line('q', at(0, 1), at(10, 6))],
-            () => [line('p', ...horizontal(2)), line('q', at(0, 6), at(10, 1))],
-            () => threeParallel(),
-            () => threeConcurrent(),
-          ]
-        : level === 2
-          ? [threeGeneral, threeOneParallel, threeConcurrent, threeParallel, fourGeneral, fourOneParallel, fourTwoParallel]
-          : [fourGeneral, fourOneParallel, fourTwoParallel, fourConcurrent, fourThreeConcurrent, fourParallel];
-    const lines = rng.pick(pool)();
-    const points = intersectionPoints(lines);
-    const n = points.length;
-    const pairs = parallelPairs(lines);
-    const allSame = n === 1;
-    const solution: string[] = [];
-    if (n === 0) {
-      solution.push('Az egyenesek párhuzamosak, ezért soha nem találkoznak.');
-      solution.push('Nincs közös pontjuk, tehát **0 metszéspont** van.');
-    } else if (allSame && lines.length > 2) {
-      solution.push('Az ábrán minden egyenes ugyanabban az egy pontban metszi a többit.');
-      solution.push('Ezért összesen **1 metszéspont** van.');
-    } else {
-      solution.push(tex`Az ábrán az egyenesek páronként találkoznak; számold össze a találkozási pontokat!`);
-      if (pairs.length > 0 && lines.length > 2) {
-        solution.push(tex`A ${num(lines.length)} egyenes közül ${num(pairs.length * 2)}-${suffix(pairs.length * 2, 'nak', 'nek')} nincs metszéspontja a párjával.`);
-        solution.push(tex`Párhuzamos párok: ${pairs.map(([a, b]) => `$${a}$–$${b}$`).join(', ')}.`);
-      }
-      solution.push(tex`Összesen **${num(n)} metszéspont** van az ábrán.`);
-    }
+    const kinds: ConfigKind[] =
+      level === 1 ? ['cross2', 'par2', 'par3', 'par2+1'] : level === 2 ? ['gen3', 'conc3', 'grid', 'par3+1'] : ['gen4', 'par2+2', 'conc3+1', 'conc4'];
+    const lines = randomConfig(rng, rng.pick(kinds));
+    const n = intersectionPoints(lines).length;
     return {
-      prompt: tex`Hány metszéspontja van ${article(lines.length)} ${num(lines.length)} egyenesnek?`,
+      prompt: tex`Hány metszéspontja van az ábrán látható ${num(lines.length)} egyenesnek?`,
       figure: linesFigure(lines),
       answer: { type: 'number', value: n },
       inputLabel: 'metszéspont =',
       hint: 'Keresd meg az összes pontot, ahol két egyenes találkozik. A párhuzamosoknak nincs metszéspontjuk.',
-      solution,
+      solution: intersectionSteps(lines, n),
     };
   },
 };
@@ -518,23 +659,16 @@ const regions: GeneratorDef = {
   title: 'A sík részei egyenesekkel',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const pool =
-      level === 1
-        ? [
-            () => [line('p', ...horizontal(2)), line('q', at(0, 1), at(10, 6))],
-            () => [line('p', ...horizontal(2)), line('q', ...horizontal(5))],
-          ]
-        : level === 2
-          ? [threeGeneral, threeOneParallel, threeConcurrent, threeParallel]
-          : [fourOneParallel, fourTwoParallel, fourConcurrent, fourThreeConcurrent, fourParallel];
-    const lines = rng.pick(pool)();
+    const kinds: ConfigKind[] =
+      level === 1 ? ['cross2', 'par2', 'par3'] : level === 2 ? ['gen3', 'conc3', 'par2+1'] : ['gen4', 'par2+2', 'grid', 'conc3+1', 'par3+1'];
+    const lines = randomConfig(rng, rng.pick(kinds));
     const regionsN = regionCount(lines);
     const steps: string[] = ['Az első egyenes 2 részre osztja a síkot.'];
     let running = 2;
     for (let i = 1; i < lines.length; i++) {
       const add = newRegions(lines, i);
       running += add;
-      steps.push(tex`A ${num(i + 1)}. egyenes ${num(add)} új részt hoz létre, így ${num(running)} rész lesz.`);
+      steps.push(tex`${Article(lines[i].label)} $${lines[i].label}$ egyenes ${num(add)} új részt hoz létre, így ${num(running)} rész lesz.`);
     }
     steps.push(tex`A síkot összesen **${num(regionsN)} részre** osztják az egyenesek.`);
     return {
@@ -555,62 +689,100 @@ const shapeName: GeneratorDef = {
   levels: [1, 2],
   generate(rng, level): Question {
     if (level === 1) {
-      const mode = rng.pick(['notA', 'notB', 'notC', 'bothAB'] as const);
-      if (mode === 'bothAB') {
+      const [A, B, C] = rng.pick([
+        ['A', 'B', 'C'],
+        ['K', 'L', 'M'],
+        ['P', 'Q', 'R'],
+        ['D', 'E', 'F'],
+      ]);
+      const apex: XY = [rng.int(5, 45) / 10, rng.int(28, 42) / 10];
+      const sides = [A + B, B + C, C + A];
+      const figure: Figure = {
+        type: 'geometry',
+        points: { [A]: at(0, 0), [B]: at(5.5, 0), [C]: apex },
+        items: [{ kind: 'polygon', points: [A, B, C], fill: 'accent', sideLabels: sides }],
+      };
+      const mode = rng.pick(['opposite', 'both'] as const);
+      if (mode === 'both') {
+        const side = rng.pick(sides);
+        const [u, v] = [side[0], side[1]];
         return {
-          prompt: 'Melyik oldalon van rajta az $A$ és a $B$ csúcs is?',
-          figure: triangleRegion,
-          answer: textChoice('$AB$', ['$BC$', '$CA$']),
-          hint: 'Keresd meg az oldal nevét: a két végpontjának betűje szerepel benne.',
-          solution: ['Az $AB$ oldal két végpontja $A$ és $B$.', 'Ezért az $AB$ oldalon mindkét csúcs rajta van.'],
+          prompt: tex`Melyik oldalnak végpontja ${article(u)} $${u}$ és ${article(v)} $${v}$ csúcs is?`,
+          figure,
+          answer: textChoice(`$${side}$`, sides.filter((x) => x !== side).map((x) => `$${x}$`)),
+          hint: 'Az oldal neve a két végpontjának betűjéből áll.',
+          solution: [tex`${Article(side)} $${side}$ oldal két végpontja $${u}$ és $${v}$.`, tex`A válasz: **$${side}$**.`],
         };
       }
-      const missing = mode === 'notA' ? 'A' : mode === 'notB' ? 'B' : 'C';
-      const correct = missing === 'A' ? 'BC' : missing === 'B' ? 'CA' : 'AB';
-      const wrongs = ['AB', 'BC', 'CA'].filter((s) => s !== correct);
-      const art = missing === 'A' ? 'az' : 'a';
-      const Art = art === 'az' ? 'Az' : 'A';
-      const sideArt = correct.startsWith('A') ? 'az' : 'a';
-      const SideArt = sideArt === 'az' ? 'Az' : 'A';
+      const missing = rng.pick([A, B, C]);
+      const correct = sides.find((x) => !x.includes(missing))!;
       return {
-        prompt: tex`Melyik oldalnak nem végpontja ${art} $${missing}$ csúcs?`,
-        figure: triangleRegion,
-        answer: textChoice(`$${correct}$`, wrongs.map((s) => `$${s}$`)),
-        hint: tex`Keresd meg azt az oldalt, amelynek a nevében nem szerepel a(z) $${missing}$ betű!`,
+        prompt: tex`Melyik oldalnak nem végpontja ${article(missing)} $${missing}$ csúcs?`,
+        figure,
+        answer: textChoice(`$${correct}$`, sides.filter((x) => x !== correct).map((x) => `$${x}$`)),
+        hint: tex`Keresd meg azt az oldalt, amelynek a nevében nem szerepel ${article(missing)} $${missing}$ betű!`,
         solution: [
-          tex`${Art} $${missing}$ csúcs a két szomszédos oldalnak végpontja.`,
-          tex`${SideArt} $${correct}$ oldalnak egyik végpontja sem $${missing}$: ez a csúccsal szemközti oldal.`,
+          tex`${Article(missing)} $${missing}$ csúcs a két szomszédos oldalnak végpontja.`,
+          tex`${Article(correct)} $${correct}$ oldalnak egyik végpontja sem $${missing}$: ez a csúccsal szemközti oldal.`,
         ],
       };
     }
-    const mode = rng.pick(['name', 'parallel', 'pair'] as const);
+    const v = rng.pick([
+      ['A', 'B', 'C', 'D'],
+      ['K', 'L', 'M', 'N'],
+      ['P', 'Q', 'R', 'S'],
+      ['E', 'F', 'G', 'H'],
+    ]);
+    const w = rng.int(50, 65) / 10;
+    const shift = rng.pick([-1.4, -0.8, 0.8, 1.6]);
+    const h = rng.int(25, 34) / 10;
+    const ox = shift < 0 ? -shift : 0;
+    const figure: Figure = {
+      type: 'geometry',
+      points: { [v[0]]: at(ox, 0), [v[1]]: at(ox + w, 0), [v[2]]: at(ox + w + shift, h), [v[3]]: at(ox + shift, h) },
+      items: [{ kind: 'polygon', points: v, fill: 'accent', sideLabels: [v[0] + v[1], v[1] + v[2], v[2] + v[3], v[3] + v[0]] }],
+    };
+    const sides = [v[0] + v[1], v[1] + v[2], v[2] + v[3], v[3] + v[0]];
+    const mode = rng.pick(['name', 'pair', 'parallel'] as const);
     if (mode === 'name') {
+      const nm = (idx: number[]) => `$${idx.map((i) => v[i]).join('')}$`;
       return {
         prompt: 'Melyik név jelöli helyesen az ábrán látható paralelogrammát?',
-        figure: parallelogramRegion,
-        answer: textChoice('$ABCD$', ['$ABDC$', '$ACBD$', '$ADBC$']),
+        figure,
+        answer: textChoice(nm([0, 1, 2, 3]), [nm([0, 1, 3, 2]), nm([0, 2, 1, 3]), nm([0, 2, 3, 1])]),
         hint: 'A csúcsokat a kerület mentén, egymás után kell felsorolni.',
         solution: [
-          'A paralelogramma csúcsai a kerület mentén: $A$, $B$, $C$, $D$.',
-          'Ezért a helyes név $ABCD$; a többi felsorolás átlókon ugrál.',
+          tex`A paralelogramma csúcsai a kerület mentén: $${v[0]}$, $${v[1]}$, $${v[2]}$, $${v[3]}$.`,
+          tex`Ezért a helyes név ${nm([0, 1, 2, 3])}; a többi felsorolás átlón át ugrik.`,
         ],
       };
     }
     if (mode === 'pair') {
+      const first = rng.int(0, 1);
+      const [s1, s2] = [sides[first], sides[first + 2]];
+      const wrongs = [`$${sides[0]}$ és $${sides[1]}$`, `$${sides[1]}$ és $${sides[2]}$`, `$${sides[2]}$ és $${sides[3]}$`];
       return {
         prompt: 'Melyik oldalpár párhuzamos az ábrán látható paralelogrammán?',
-        figure: parallelogramRegion,
-        answer: textChoice(tex`$AB$ és $CD$`, [tex`$AB$ és $BC$`, tex`$BC$ és $CD$`]),
+        figure,
+        answer: textChoice(`$${s1}$ és $${s2}$`, rng.sample(wrongs, 2)),
         hint: 'A paralelogrammának két párhuzamos oldalpárja van: a szemközti oldalak.',
-        solution: ['A paralelogramma szemközti oldalai párhuzamosak.', 'Az $AB$ és a $CD$ szemközti oldalak, ezért párhuzamosak. Az $AB$ és a $BC$ szomszédos oldalak, nem párhuzamosak.'],
+        solution: [
+          'A paralelogramma szemközti oldalai párhuzamosak.',
+          tex`${Article(s1)} $${s1}$ és ${article(s2)} $${s2}$ szemközti oldalak, ezért **párhuzamosak**; a szomszédos oldalak nem azok.`,
+        ],
       };
     }
+    const i = rng.int(0, 3);
+    const opposite = sides[(i + 2) % 4];
     return {
-      prompt: 'Melyik oldal párhuzamos az $AB$ oldallal?',
-      figure: parallelogramRegion,
-      answer: textChoice('$CD$', ['$BC$', '$DA$', 'egyik sem']),
+      prompt: tex`Melyik oldal párhuzamos ${article(sides[i])} $${sides[i]}$ oldallal?`,
+      figure,
+      answer: textChoice(`$${opposite}$`, [`$${sides[(i + 1) % 4]}$`, `$${sides[(i + 3) % 4]}$`, 'egyik sem']),
       hint: 'A paralelogramma szemközti oldalai párhuzamosak.',
-      solution: ['A paralelogrammában a szemközti oldalak párhuzamosak.', 'Az $AB$ oldallal szemközt a $CD$ oldal van, ezért $AB \\parallel CD$.'],
+      solution: [
+        'A paralelogrammában a szemközti oldalak párhuzamosak.',
+        tex`${Article(sides[i])} $${sides[i]}$ oldallal szemközt ${article(opposite)} $${opposite}$ oldal van, ezért $${sides[i]} \parallel ${opposite}$.`,
+      ],
     };
   },
 };
