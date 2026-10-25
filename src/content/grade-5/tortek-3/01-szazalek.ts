@@ -107,7 +107,7 @@ const dataPieFigure: Figure = {
   show: 'value',
 };
 
-/** A 12 000 Ft coat with a 25% discount: 9 000 Ft to pay and 3 000 Ft discount. */
+/** A 12 000 dinár coat with a 25% discount: 9 000 dinár to pay and 3 000 dinár discount. */
 const discountFigure: Figure = {
   type: 'barModel',
   rows: [
@@ -118,7 +118,7 @@ const discountFigure: Figure = {
       ],
     },
   ],
-  total: { label: '12 000 Ft' },
+  total: { label: '12 000 dinár' },
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -457,34 +457,34 @@ const discount: GeneratorDef = {
     const newPrice = rise ? clean(price + change) : clean(price - change);
     const prompt = rise
       ? askNew
-        ? tex`A vonaljegy ára ${num(price)} Ft volt. ${num(p)}%-kal emelkedett. Mennyi most?`
-        : tex`A vonaljegy ára ${num(price)} Ft volt. ${num(p)}%-kal emelkedett. Mennyivel nőtt az ár?`
+        ? tex`A vonaljegy ára ${num(price)} dinár volt. ${num(p)}%-kal emelkedett. Mennyi most?`
+        : tex`A vonaljegy ára ${num(price)} dinár volt. ${num(p)}%-kal emelkedett. Mennyivel nőtt az ár?`
       : askNew
-        ? tex`Egy kabát ára ${num(price)} Ft. ${num(p)}% kedvezménnyel adják. Mennyit fizetünk érte?`
-        : tex`Egy kabát ára ${num(price)} Ft. ${num(p)}% kedvezményt adnak. Mennyi a kedvezmény összege?`;
+        ? tex`Egy kabát ára ${num(price)} dinár. ${num(p)}% kedvezménnyel adják. Mennyit fizetünk érte?`
+        : tex`Egy kabát ára ${num(price)} dinár. ${num(p)}% kedvezményt adnak. Mennyi a kedvezmény összege?`;
     const answer = askNew ? newPrice : change;
     return {
       prompt,
-      answer: { type: 'number', value: answer, unit: 'Ft' },
+      answer: { type: 'number', value: answer, unit: 'dinár' },
       hint: askNew
         ? rise
           ? 'A változás az ár megadott százaléka. Számítsd ki, majd add hozzá az eredeti árhoz!'
           : 'A változás az ár megadott százaléka. Számítsd ki, majd vond ki az eredeti árból!'
         : 'A változás az ár megadott százaléka. Számítsd ki!',
       solution: [
-        tex`A változás: $${num(price)} \cdot \frac{${num(p)}}{100} = ${num(change)}$ Ft.`,
+        tex`A változás: $${num(price)} \cdot \frac{${num(p)}}{100} = ${num(change)}$ dinár.`,
         ...(askNew
           ? [
               rise
-                ? tex`Az új ár: $${num(price)} + ${num(change)} = ${num(newPrice)}$ Ft.`
-                : tex`A fizetendő ár: $${num(price)} - ${num(change)} = ${num(newPrice)}$ Ft.`,
+                ? tex`Az új ár: $${num(price)} + ${num(change)} = ${num(newPrice)}$ dinár.`
+                : tex`A fizetendő ár: $${num(price)} - ${num(change)} = ${num(newPrice)}$ dinár.`,
             ]
           : []),
         askNew
-          ? `Az új ár **${num(answer)} Ft**.`
+          ? `Az új ár **${num(answer)} dinár**.`
           : rise
-            ? `Az ár **${num(answer)} Ft**-tal nőtt.`
-            : `A kedvezmény összege **${num(answer)} Ft**.`,
+            ? `Az ár **${num(answer)} dinárral** nőtt.`
+            : `A kedvezmény összege **${num(answer)} dinár**.`,
       ],
     };
   },
@@ -561,27 +561,27 @@ const whole: GeneratorDef = {
     if (kind === 'discount') {
       const sale = clean((original * (100 - p)) / 100);
       return {
-        prompt: tex`Egy kabátot ${num(p)}% kedvezménnyel ${num(sale)} Ft-ért adnak. Mennyi volt az eredeti ára?`,
-        answer: { type: 'number', value: original, unit: 'Ft' },
+        prompt: tex`Egy kabátot ${num(p)}% kedvezménnyel ${num(sale)} dinárért adnak. Mennyi volt az eredeti ára?`,
+        answer: { type: 'number', value: original, unit: 'dinár' },
         hint: 'A fizetett ár az eredeti ár $(100 - p)\\%$-a.',
         solution: [
           tex`A fizetett ár az eredeti ár $${num(100 - p)}\%$-a.`,
-          tex`$1\% = ${num(sale)} : ${num(100 - p)} = ${num(clean(sale / (100 - p)), 3)}$ Ft.`,
-          tex`$100\% = ${num(clean(sale / (100 - p)), 3)} \cdot 100 = ${num(original)}$ Ft.`,
-          `Az eredeti ár **${num(original)} Ft** volt.`,
+          tex`$1\% = ${num(sale)} : ${num(100 - p)} = ${num(clean(sale / (100 - p)), 3)}$ dinár.`,
+          tex`$100\% = ${num(clean(sale / (100 - p)), 3)} \cdot 100 = ${num(original)}$ dinár.`,
+          `Az eredeti ár **${num(original)} dinár** volt.`,
         ],
       };
     }
     const risen = clean((original * (100 + p)) / 100);
     return {
-      prompt: tex`Egy termék ára ${num(p)}%-kal emelkedett, így ${num(risen)} Ft lett. Mennyi volt az eredeti ára?`,
-      answer: { type: 'number', value: original, unit: 'Ft' },
+      prompt: tex`Egy termék ára ${num(p)}%-kal emelkedett, így ${num(risen)} dinár lett. Mennyi volt az eredeti ára?`,
+      answer: { type: 'number', value: original, unit: 'dinár' },
       hint: 'Az új ár az eredeti ár $(100 + p)\\%$-a.',
       solution: [
         tex`Az új ár az eredeti ár $${num(100 + p)}\%$-a.`,
-        tex`$1\% = ${num(risen)} : ${num(100 + p)} = ${num(clean(risen / (100 + p)), 3)}$ Ft.`,
-        tex`$100\% = ${num(clean(risen / (100 + p)), 3)} \cdot 100 = ${num(original)}$ Ft.`,
-        `Az eredeti ár **${num(original)} Ft** volt.`,
+        tex`$1\% = ${num(risen)} : ${num(100 + p)} = ${num(clean(risen / (100 + p)), 3)}$ dinár.`,
+        tex`$100\% = ${num(clean(risen / (100 + p)), 3)} \cdot 100 = ${num(original)}$ dinár.`,
+        `Az eredeti ár **${num(original)} dinár** volt.`,
       ],
     };
   },
@@ -678,13 +678,13 @@ export default defineSubtopic({
         {
           type: 'example',
           title: 'Kedvezmény',
-          problem: 'Egy kabát ára $12\\,000$ Ft. $25\\%$ kedvezményt adnak. Mennyit fizetünk?',
+          problem: 'Egy kabát ára $12\\,000$ dinár. $25\\%$ kedvezményt adnak. Mennyit fizetünk?',
           figure: discountFigure,
           steps: [
-            { text: 'A kedvezmény: $12\\,000 \\cdot \\frac{25}{100} = 3\\,000$ Ft.' },
-            { text: 'Fizetendő: $12\\,000 - 3\\,000 = 9\\,000$ Ft.' },
+            { text: 'A kedvezmény: $12\\,000 \\cdot \\frac{25}{100} = 3\\,000$ dinár.' },
+            { text: 'Fizetendő: $12\\,000 - 3\\,000 = 9\\,000$ dinár.' },
           ],
-          answer: '**9 000 Ft**-ot fizetünk.',
+          answer: '**9 000 dinárt** fizetünk.',
         },
         { type: 'practice', generator: 'percent-of', level: 2, count: 2 },
         { type: 'practice', generator: 'discount', level: 2 },
