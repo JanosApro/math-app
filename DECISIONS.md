@@ -229,3 +229,37 @@ Architectural choices and why. Add new entries at the end of a section.
 - `base: './'` in vite.config.ts so `dist/` works under any path (GitHub Pages project sites,
   Cloudflare Pages). Cloudflare Pages: build command `npm run build`, output directory `dist`
   (see HANDOFF.md).
+
+## Optional social layer (2026-10-25)
+- **Opt-in, pseudonymous, friends-only.** No email, real name, phone, contacts, messaging,
+  public profile or global leaderboard. Anonymous Supabase Auth creates the account; a random
+  friend code and an emoji avatar are the public identity. A recovery code (bcrypt hash
+  server-side) is the only recovery path because there is no email.
+- **Math progress stays local.** The social layer syncs only the summary needed for friends:
+  total XP, server-computed streak, server-awarded badges, friendships and weekly XP events.
+  Historical local XP/streak is not uploaded: the server cannot verify it, so shared numbers start
+  when social is enabled. The UI states this.
+- **Server owns the numbers.** The client sends `event_type` + an idempotency key, never an XP
+  amount, streak or badge. `award_xp` uses fixed amounts, `unique(user_id, event_key)`, daily type
+  caps, a daily total cap and a per-minute rate limit; `refresh_streak` computes the streak from
+  `activity_days`; `award_badges` awards only server-checkable badges (streak, XP thresholds,
+  first lesson, chapter event keys). The weekly leaderboard is aggregated from `xp_events`, not
+  from a client score.
+- **RLS + least privilege.** Every exposed table has RLS; direct reads are own-row only. Friends
+  see each other only through SECURITY DEFINER RPCs that check an accepted friendship. `profiles`
+  is column-granted without `recovery_hash`; there is no direct update grant. The service-role key
+  exists only in the `delete-account` and `recover-account` Edge Functions.
+- **Account deletion/recovery.** Deletion goes through the Edge Function and cascades through
+  foreign keys. Recovery signs in a fresh anonymous user, verifies the old recovery code in a
+  service-role-only SQL function, migrates the social identity and deletes the old auth user. The
+  recovery code is rate-limited and rotated after use.
+- **Local outbox.** Gameplay writes XP events to a separate localStorage outbox immediately; the
+  sync is best-effort and retries on `online`/visibility. Network errors keep events; validation
+  or cap errors drop them. Profile fields are only changed by explicit user actions, so stale
+  local data never overwrites the cloud profile.
+- **Residual limitation:** local gameplay cannot be fully verified server-side. Fixed amounts,
+  caps and the friends-only scope are the deliberate mitigation; a fully cheat-proof leaderboard
+  would require server-side question generation/checking and would break the offline-first design.
+- **Privacy review required.** `docs/SOCIAL_PRIVACY.md` documents the child-consent, retention,
+  deletion and GDPR points that must be reviewed before enabling this for students. Pseudonymous
+  data is still personal data.

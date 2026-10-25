@@ -56,6 +56,35 @@ Teacher feedback round (same day), done so far:
 - Browser scripts: `openPage({ motion: true })` in `scripts/dev/drive.mjs` keeps animations on
   (default is reduced motion, which makes the e2e run fast and stable).
 
+## Social layer (optional) — 2026-10-25
+The app now has an **optional, pseudonymous social layer** behind the `Barátok` tab. It is off
+until a Supabase project is configured; the math app works unchanged without it.
+
+- **Setup:** `docs/SOCIAL_SETUP.md` (Supabase project, anonymous auth, migration, Edge Functions,
+  env vars, tests). **Privacy review:** `docs/SOCIAL_PRIVACY.md` — read it before enabling this for
+  students; child consent, retention and deletion need a real review.
+- **Local progress is untouched.** Detailed lesson progress stays in `localStorage`. Only the
+  social summary is synced: nickname, emoji avatar, friend code, total XP, server-computed streak,
+  server-awarded badges, friendships and weekly XP events.
+- **Security:** RLS on every exposed table; direct reads are own-row only; friends-only data comes
+  from SECURITY DEFINER RPCs. The client never sends XP/streak/badges — only fixed event types and
+  idempotency keys. Fixed awards, daily caps, a per-minute rate limit and unique event keys limit
+  duplicate awards and basic leaderboard cheating. The service-role key exists only in the two
+  Edge Functions (`delete-account`, `recover-account`).
+- **Recovery:** anonymous auth + a random recovery code stored as a bcrypt hash. The
+  `recover-account` Edge Function migrates the old social identity to a fresh anonymous session
+  and deletes the old auth user. No email is collected.
+- **Shared XP starts when social is enabled.** Historical local XP/streak is deliberately not
+  uploaded (the server cannot verify it). The Friends screen says this.
+- **Deployment:** the GitHub Pages build reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+  from repository Actions variables; without them the deployed build keeps social off. The screen
+  uses four tabs (Profil / Barátok / Ranglista / Adatvédelem) so the main view fits 375 × 740.
+- **Files:** `src/social/**` (client, outbox, sync, hook, codes, tests), `src/screens/FriendsScreen.tsx`,
+  `supabase/migrations/202610250001_social_layer.sql`, `supabase/functions/**`,
+  `supabase/tests/social_security.test.sql`, `.env.example`.
+- **Checks:** `npm run test:social`, `npm run check`, `npm run build`; `supabase test db` for the
+  SQL/RLS tests (needs a local Supabase stack).
+
 ### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
 is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`
@@ -212,6 +241,7 @@ src/
   state/       progress store (localStorage), progress actions, dates (Europe/Belgrade), XP
   content/     grades.json, grade-N/topics.json, grade-N/daily.json, grade-N/<topic>/<NN-file>.ts,
                catalog.ts (pure logic), registry.ts (Vite loader)
+  social/      optional Supabase client, local outbox/sync, anonymous profile/friends hook, tests
   kit.ts       the ONLY import content files need
   i18n/hu.ts   every UI string (Hungarian)
   ui/          router, Rich text, sound, shell (placeholder)
@@ -224,6 +254,8 @@ scripts/       check.ts (npm run check), status.ts (npm run status), samples.ts 
                a lesson's questions + answers as text), dev/figure-preview.ts
                (figures → PNG), dev/pw.mjs + dev/screenshot.mjs (browser automation),
                dev/drive.mjs + dev/e2e.mjs (Playwright: plays the lessons, 30 checks)
-docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs)
+docs/          curriculum summaries, textbook style notes, tasks/ (remaining work specs),
+               SOCIAL_SETUP.md and SOCIAL_PRIVACY.md
+supabase/      SQL migrations, Edge Functions (delete/recover account), pgTAP security tests
 materials/     the teacher's textbook screenshots (reference only — never copy text)
 ```
