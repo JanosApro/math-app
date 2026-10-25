@@ -46,9 +46,16 @@ const simplifyRootGen: GeneratorDef = {
   title: 'Gyök egyszerűbb alakra hozása (√n = k√m)',
   levels: [1, 2],
   generate(rng, level): Question {
-    const radicands = level === 1 ? [2, 3, 5, 6, 7] : [2, 3, 5, 6, 7, 10, 11, 13, 14, 15];
-    const m = rng.pick(radicands);
-    const k = level === 1 ? rng.int(2, 5) : rng.int(2, 9);
+    // level 1: small factors (√12, √50); level 2: a bigger square factor or radicand (√98, √275)
+    const SMALL = [2, 3, 5, 6, 7];
+    let m = rng.pick(SMALL);
+    let k = rng.int(2, 5);
+    if (level === 2) {
+      do {
+        m = rng.pick([...SMALL, 10, 11, 13, 14, 15]);
+        k = rng.int(2, 9);
+      } while (k <= 5 && SMALL.includes(m));
+    }
     const n = k * k * m;
     const s = simplifyRoot(n);
     return {
@@ -246,15 +253,34 @@ const addRoots: GeneratorDef = {
         ],
       };
     }
+    if (level === 2 && rng.chance(0.5)) {
+      // three like terms: a√n − b√n + c√n
+      const n = rng.pick([2, 3, 5, 6, 7, 10, 11, 13]);
+      const a = rng.int(2, 9);
+      const b = rng.int(1, a - 1);
+      const c = rng.int(1, 6);
+      const coef = a - b + c;
+      return {
+        prompt: tex`Számítsd ki! $${texRoot(a, n)} - ${texRoot(b, n)} + ${texRoot(c, n)}$`,
+        answer: rootAnswer(coef, n),
+        hint: 'Mindhárom tag egynemű: csak az együtthatókkal kell számolni.',
+        solution: [
+          tex`Mindhárom tagnak ugyanaz a gyöktényezője: $\sqrt{${num(n)}}$.`,
+          tex`$(${num(a)} - ${num(b)} + ${num(c)})\sqrt{${num(n)}} = ${texRoot(coef, n)}$`,
+          tex`Az eredmény **$${texRoot(coef, n)}$**.`,
+        ],
+      };
+    }
+    // level 1: a sum with a small radicand; level 2: a difference
     const n = rng.pick(level === 1 ? [2, 3, 5, 7] : [2, 3, 5, 6, 7, 10, 11, 13]);
-    const add = level === 1 ? true : rng.chance(0.4);
+    const add = level === 1;
     let a: number;
     let b: number;
     if (add) {
       a = rng.int(1, 7);
       b = rng.int(1, 7);
     } else {
-      a = rng.int(2, 8);
+      a = rng.int(2, 9);
       b = rng.int(1, a - 1);
     }
     const coef = add ? a + b : a - b;

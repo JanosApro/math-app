@@ -218,13 +218,19 @@ const combineRatios: GeneratorDef = {
   title: 'Két arány összekapcsolása',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const max = level === 1 ? 4 : 9;
-    let p = rng.int(1, max);
-    let q = rng.int(2, max);
-    while (p === q || gcd(p, q) !== 1) q = rng.int(2, max);
-    let r = rng.int(1, max);
-    let s = rng.int(2, max);
-    while (r === s || gcd(r, s) !== 1) s = rng.int(2, max);
+    // level 1: the two b terms divide each other (only one ratio is extended); level 2: both are
+    // extended to the lcm; level 3: the same with bigger numbers, in words
+    const max = level === 1 ? 6 : level === 2 ? 9 : 12;
+    let p: number, q: number, r: number, s: number;
+    for (;;) {
+      p = rng.int(1, max);
+      q = rng.int(2, max);
+      r = rng.int(1, max);
+      s = rng.int(2, max);
+      if (p === q || gcd(p, q) !== 1 || r === s || gcd(r, s) !== 1) continue;
+      const divides = q % r === 0 || r % q === 0;
+      if (level === 1 ? divides : !divides && (level === 2 || Math.max(q, r) > 9 || lcm(q, r) > 20)) break;
+    }
     const L = lcm(q, r);
     const A = p * (L / q);
     const B = L;
@@ -248,8 +254,8 @@ const combineRatios: GeneratorDef = {
       hint: tex`A közös $b$ tagot mindkét arányban ugyanazzal a számmal kell szerepeltetni: keresd meg $${num(q)}$ és $${num(r)}$ legkisebb közös többszörösét!`,
       solution: [
         tex`A közös taghoz: $[${num(q)}; ${num(r)}] = ${num(L)}$.`,
-        tex`$a : b = ${num(p)} : ${num(q)} = ${num(A)} : ${num(B)}$`,
-        tex`$b : c = ${num(r)} : ${num(s)} = ${num(B)} : ${num(C)}$`,
+        tex`$a : b = ${num(p)} : ${num(q)}${L === q ? '' : ` = ${num(A)} : ${num(B)}`}$`,
+        tex`$b : c = ${num(r)} : ${num(s)}${L === r ? '' : ` = ${num(B)} : ${num(C)}`}$`,
         tex`Tehát $a : b : c = ${num(A)} : ${num(B)} : ${num(C)}${A === a && B === b && C === c ? '' : ` = ${num(a)} : ${num(b)} : ${num(c)}`}$.`,
         tex`A legegyszerűbb arány: **$${num(a)} : ${num(b)} : ${num(c)}$**.`,
       ],

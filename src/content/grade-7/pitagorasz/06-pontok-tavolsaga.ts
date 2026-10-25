@@ -17,6 +17,8 @@ import {
   type GeneratorDef,
   type Question,
   type XY,
+  type Difficulty,
+  type Rng,
   article,
   Article,
 } from '../../../kit';
@@ -87,13 +89,92 @@ const SMALL_TRIPLES: [number, number, number][] = [
 
 /** Differences where the distance is a root (not a whole number). */
 const ROOT_DIFFS: [number, number][] = [
-  [1, 3],
+  [3, 7],
   [2, 3],
   [3, 5],
   [4, 5],
   [2, 5],
   [5, 6],
 ];
+
+/**
+ * A(x; y) with negative coordinates and B = A + (dx; dy). The helper legs may cross an axis,
+ * but not at their midpoint, where the leg label sits next to the axis numbers.
+ */
+function negativePoints(rng: Rng, dx: number, dy: number): [XY, XY] {
+  for (;;) {
+    const x = rng.int(-6, -2);
+    const y = rng.int(-6, -2);
+    if (Math.abs(y + dy / 2) >= 1 && Math.abs(x + dx / 2) >= 1) return [[x, y], [x + dx, y + dy]];
+  }
+}
+
+/** Squared length of the segment PQ. */
+const sq2 = (P: XY, Q: XY) => (P[0] - Q[0]) ** 2 + (P[1] - Q[1]) ** 2;
+
+/** Is the triangle right-angled / isosceles (from the squared side lengths)? */
+function classify(A: XY, B: XY, C: XY): { right: boolean; iso: boolean } {
+  const s = [sq2(A, B), sq2(B, C), sq2(C, A)].sort((x, y) => x - y);
+  return { right: s[0] + s[1] === s[2], iso: s[0] === s[1] || s[1] === s[2] };
+}
+
+/**
+ * A random triangle of the given kind on the grid. Level 1: one side horizontal (a leg or the
+ * base on a grid line); level 2: no side parallel to an axis. Randomly mirrored, turned by 90°
+ * and shifted.
+ */
+function gridTriangle(rng: Rng, level: Difficulty, kind: 'right' | 'iso' | 'both' | 'none'): [XY, XY, XY] {
+  for (let attempt = 0; attempt < 500; attempt++) {
+    let B: XY;
+    let C: XY;
+    if (level === 1) {
+      if (kind === 'right' || kind === 'both') {
+        const a = rng.int(2, 6);
+        B = [a, 0];
+        C = [0, kind === 'both' ? a : rng.intExcept(2, 6, [a])];
+      } else if (kind === 'iso') {
+        const h = rng.int(1, 3);
+        B = [2 * h, 0];
+        C = [h, rng.intExcept(2, 6, [h])];
+      } else {
+        B = [rng.int(3, 6), 0];
+        C = [rng.int(1, 5), rng.int(2, 5)];
+      }
+    } else {
+      const p = rng.int(1, 3);
+      const q = rng.intExcept(1, 4, [p]);
+      B = [p, q];
+      if (kind === 'right') C = [-2 * q, 2 * p];
+      else if (kind === 'both') C = [-q, p];
+      else if (kind === 'iso') C = rng.chance(0.5) ? [q, p] : [-q, -p];
+      else C = [rng.int(-4, 4), rng.int(-4, 4)];
+    }
+    // mirror / turn: (x, y) → (±x, ±y), maybe swapped
+    const sx = rng.sign();
+    const sy = rng.sign();
+    const swap = rng.chance(0.5);
+    const map = ([x, y]: XY): XY => (swap ? [sy * y, sx * x] : [sx * x, sy * y]);
+    let pts = [map([0, 0]), map(B), map(C)];
+    const minX = Math.min(...pts.map((p) => p[0]));
+    const minY = Math.min(...pts.map((p) => p[1]));
+    const tx = rng.int(-4, 1) - minX;
+    const ty = rng.int(-4, 1) - minY;
+    pts = rng.shuffle(pts.map(([x, y]) => [x + tx, y + ty] as XY));
+    const [P, Q, R] = pts;
+    const c = classify(P, Q, R);
+    const area2 = (Q[0] - P[0]) * (R[1] - P[1]) - (Q[1] - P[1]) * (R[0] - P[0]);
+    const want = { right: kind === 'right' || kind === 'both', iso: kind === 'iso' || kind === 'both' };
+    const sides: [XY, XY][] = [
+      [P, Q],
+      [Q, R],
+      [R, P],
+    ];
+    const axisSides = sides.filter(([U, V]) => U[0] === V[0] || U[1] === V[1]).length;
+    const inRange = pts.every(([x, y]) => Math.abs(x) <= 7 && Math.abs(y) <= 7);
+    if (area2 !== 0 && c.right === want.right && c.iso === want.iso && inRange && (level === 1 ? axisSides >= 1 : axisSides === 0)) return [P, Q, R];
+  }
+  throw new Error(`gridTriangle: no ${kind} triangle found`);
+}
 
 // ---------------------------------------------------------------------------------------------
 // 2. Generators
@@ -129,10 +210,7 @@ const distance: GeneratorDef = {
     }
     if (level === 2) {
       const [dx, dy] = rng.pick(ROOT_DIFFS);
-      const x = rng.int(-6, -2);
-      const y = rng.int(-6, -2);
-      const A: XY = [x, y];
-      const B: XY = [x + dx, y + dy];
+      const [A, B] = negativePoints(rng, dx, dy);
       const n = dx * dx + dy * dy;
       const root = simplifyRoot(n);
       return {
@@ -243,27 +321,32 @@ const distanceMc: GeneratorDef = {
   generate(rng, level): Question {
     const unit = 'egység';
     if (level === 1) {
-      const A: XY = [1, 2];
-      const B: XY = [4, 6];
+      // which expression gives the distance — with the concrete differences of two grid points
+      const dx = rng.int(2, 6);
+      const dy = rng.intExcept(2, 6, [dx]);
+      // a random corner: B up-right or down-right of A, and the labels may swap
+      const x = rng.int(1, 9 - dx);
+      const up = rng.chance(0.5);
+      const y = up ? rng.int(1, 9 - dy) : rng.int(dy + 1, 9);
+      const A: XY = [x, y];
+      const B: XY = [x + dx, up ? y + dy : y - dy];
+      const [P, Q]: [XY, XY] = rng.chance(0.5) ? [A, B] : [B, A];
+      const ddx = num(dx);
+      const ddy = num(dy);
       return {
-        prompt: tex`Melyik képlettel számolható ki az $A(x_1; y_1)$ és $B(x_2; y_2)$ pontok távolsága?`,
-        figure: distanceFigure(A, B),
-        answer: textChoice(
-          '$d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$',
-          ['$d = |x_2 - x_1| + |y_2 - y_1|$', '$d = (x_2 - x_1)^2 + (y_2 - y_1)^2$', '$d = |x_2 - x_1| \\cdot |y_2 - y_1|$'],
-        ),
+        prompt: tex`Melyik kifejezés adja meg az $A(${num(P[0])}; ${num(P[1])})$ és $B(${num(Q[0])}; ${num(Q[1])})$ pontok távolságát?`,
+        figure: distanceFigure(P, Q),
+        answer: textChoice(`$\\sqrt{${ddx}^2 + ${ddy}^2}$`, [`$${ddx} + ${ddy}$`, `$${ddx}^2 + ${ddy}^2$`, `$\\sqrt{${ddx} + ${ddy}}$`]),
         hint: 'A két pont és a segédpont derékszögű háromszöget alkot; a távolság az átfogó.',
         solution: [
-          'A vízszintes befogó hossza $|x_2 - x_1|$, a függőlegesé $|y_2 - y_1|$.',
-          'Pitagorasz tétele szerint $d^2 = (x_2 - x_1)^2 + (y_2 - y_1)^2$, tehát $d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$.',
+          tex`A vízszintes befogó $|${num(Q[0])} - ${num(P[0])}| = ${ddx}$, a függőleges $|${num(Q[1])} - ${num(P[1])}| = ${ddy}$.`,
+          tex`Pitagorasz tétele szerint $d^2 = ${ddx}^2 + ${ddy}^2$, tehát $d = \sqrt{${ddx}^2 + ${ddy}^2}$.`,
+          tex`${Article(ddx)} $${ddx}^2 + ${ddy}^2$ még csak $d^2$, gyököt is kell vonni belőle.`,
         ],
       };
     }
     const [dx, dy] = rng.pick(ROOT_DIFFS);
-    const x = rng.int(-6, -2);
-    const y = rng.int(-6, -2);
-    const A: XY = [x, y];
-    const B: XY = [x + dx, y + dy];
+    const [A, B] = negativePoints(rng, dx, dy);
     const n = dx * dx + dy * dy;
     const root = simplifyRoot(n);
     return {
@@ -291,20 +374,9 @@ const triangleType: GeneratorDef = {
   title: 'Derékszögű vagy egyenlő szárú a háromszög?',
   levels: [1, 2],
   generate(rng, level): Question {
-    const shapes: { A: XY; B: XY; C: XY }[] = [
-      { A: [0, 0], B: [4, 0], C: [0, 3] },
-      { A: [0, 0], B: [4, 0], C: [0, 4] },
-      { A: [0, 0], B: [6, 0], C: [3, 4] },
-      { A: [0, 0], B: [6, 0], C: [2, 3] },
-      { A: [0, 0], B: [5, 0], C: [0, 12] },
-    ];
-    const chosen = level === 1 ? rng.pick(shapes.slice(0, 3)) : rng.pick(shapes);
-    const tx = rng.int(-3, 2);
-    const ty = rng.int(-3, 2);
-    const shift = (p: XY): XY => [p[0] + tx, p[1] + ty];
-    const A = shift(chosen.A);
-    const B = shift(chosen.B);
-    const C = shift(chosen.C);
+    // level 1: one side lies on a grid line; level 2: every side is slanted
+    const kind = rng.pick(['right', 'iso', 'both', 'none'] as const);
+    const [A, B, C] = gridTriangle(rng, level, kind);
     const sq = (p: XY, q: XY) => (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2;
     const ab = sq(A, B);
     const bc = sq(B, C);

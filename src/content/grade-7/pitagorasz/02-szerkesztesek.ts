@@ -114,9 +114,9 @@ function sqrtOnNumberLine(k: number, reveal: boolean): Figure {
   };
 }
 
-/** A static version of the same construction (for questions and examples). */
-function sqrtOnLineStatic(k: number, reveal: boolean): Figure {
-  const n = k * k + 1;
+/** A static version of the same construction; the perpendicular stands at the point a (default 1). */
+function sqrtOnLineStatic(k: number, reveal: boolean, a = 1): Figure {
+  const n = a * a + k * k;
   const root = Math.sqrt(n);
   const max = Math.ceil(root + 0.5);
   const items: GeoItem[] = [
@@ -127,11 +127,11 @@ function sqrtOnLineStatic(k: number, reveal: boolean): Figure {
     items.push({ kind: 'label', at: [t, 0], text: `${t}`, dir: 's' });
   }
   items.push(
-    { kind: 'segment', from: [0, 0], to: [1, 0] },
-    { kind: 'segment', from: [1, 0], to: [1, k], label: `${num(k)}`, color: 'accent' },
-    { kind: 'segment', from: [0, 0], to: [1, k], label: reveal ? rootText(1, n) : '?', color: 'accent' },
-    { kind: 'angle', vertex: [1, 0], from: [1, k], to: [0, 0], right: true },
-    { kind: 'arc', center: [0, 0], radius: root, from: 0, to: (Math.atan2(k, 1) * 180) / Math.PI + 2, color: 'highlight' },
+    { kind: 'segment', from: [0, 0], to: [a, 0] },
+    { kind: 'segment', from: [a, 0], to: [a, k], label: `${num(k)}`, color: 'accent' },
+    { kind: 'segment', from: [0, 0], to: [a, k], label: reveal ? rootText(1, n) : '?', color: 'accent' },
+    { kind: 'angle', vertex: [a, 0], from: [a, k], to: [0, 0], right: true },
+    { kind: 'arc', center: [0, 0], radius: root, from: 0, to: (Math.atan2(k, a) * 180) / Math.PI + 2, color: 'highlight' },
     { kind: 'point', at: [root, 0], label: reveal ? rootText(1, n) : 'P', labelDir: 'n', color: 'highlight' },
   );
   return { type: 'geometry', items, size: 'small' };
@@ -156,12 +156,25 @@ const SMALL_LEG_PAIRS: [number, number][] = [
 ];
 const LARGE_LEG_PAIRS: [number, number][] = [...SMALL_LEG_PAIRS, [1, 4], [2, 4], [4, 4], [2, 5], [3, 5], [4, 5], [5, 5]];
 
+/** n = p² + q² with p ≤ q ≤ maxLeg that have exactly one such pair, and q > minBig. */
+function uniqueLegSums(minBig: number, maxLeg: number): number[] {
+  const count = new Map<number, number>();
+  for (let p = 1; p <= 12; p++) for (let q = p; q <= 12; q++) count.set(p * p + q * q, (count.get(p * p + q * q) ?? 0) + 1);
+  const out: number[] = [];
+  for (let p = 1; p <= maxLeg; p++)
+    for (let q = Math.max(p, minBig + 1); q <= maxLeg; q++) {
+      const n = p * p + q * q;
+      if (count.get(n) === 1 && Math.sqrt(n) % 1 !== 0) out.push(n);
+    }
+  return out;
+}
+
 /** The two integer legs of √n (n has a unique such pair in our pools). */
 function legsFor(n: number): [number, number] {
   for (let p = 1; p * p < n; p++) {
     const q2 = n - p * p;
     const q = Math.round(Math.sqrt(q2));
-    if (q > p && q * q === q2) return [p, q];
+    if (q >= p && q * q === q2) return [p, q];
   }
   throw new Error(`no leg pair for ${n}`);
 }
@@ -204,22 +217,48 @@ const spiralLength: GeneratorDef = {
   levels: [1, 2, 3],
   generate(rng, level): Question {
     if (level === 3) {
-      const target = rng.int(3, 6);
-      const k = target * target - 1;
+      // backwards: which hypotenuse has a given length, or how many are shorter than t
+      const mode = rng.pick(['first', 'which', 'shorter'] as const);
+      if (mode === 'which') {
+        const m = rng.intExcept(10, 60, [16, 25, 36, 49]);
+        return {
+          prompt: tex`A spirál első szakasza $1$ egység. Hányadik átfogó hossza $\sqrt{${num(m)}}$ egység?`,
+          answer: { type: 'number', value: m - 1 },
+          inputLabel: '$k =$',
+          hint: tex`A $k$. átfogó $\sqrt{k + 1}$. Melyik $k$-ra lesz $k + 1 = ${num(m)}$?`,
+          solution: [tex`A $k$. átfogó hossza $\sqrt{k + 1}$.`, tex`$k + 1 = ${num(m)}$, ezért $k = ${num(m - 1)}$.`, tex`A **${num(m - 1)}.** átfogó.`],
+        };
+      }
+      const t = rng.int(3, 9);
+      if (mode === 'shorter') {
+        const count = t * t - 2; // k + 1 < t², k ≥ 1
+        return {
+          prompt: tex`A spirál első szakasza $1$ egység. Hány átfogó rövidebb $${num(t)}$ egységnél?`,
+          answer: { type: 'number', value: count },
+          inputLabel: 'átfogó =',
+          hint: tex`$\sqrt{k + 1} < ${num(t)}$ pontosan akkor, ha $k + 1 < ${num(t * t)}$.`,
+          solution: [
+            tex`$\sqrt{k + 1} < ${num(t)}$, ezért $k + 1 < ${num(t * t)}$, azaz $k \le ${num(t * t - 2)}$.`,
+            tex`A $k = 1, 2, \ldots, ${num(t * t - 2)}$ átfogók rövidebbek: **${num(count)}** darab.`,
+          ],
+        };
+      }
+      const k = t * t - 1;
       return {
-        prompt: tex`A spirál első szakasza $1$ egység. Hányadik átfogó lesz először $${num(target)}$ egység hosszú?`,
+        prompt: tex`A spirál első szakasza $1$ egység. Hányadik átfogó lesz először $${num(t)}$ egység hosszú?`,
         answer: { type: 'number', value: k },
         inputLabel: '$k =$',
-        hint: tex`A $k$. átfogó $\sqrt{k + 1}$, tehát oldd meg a $\sqrt{k + 1} = ${num(target)}$ egyenletet!`,
+        hint: tex`A $k$. átfogó $\sqrt{k + 1}$, tehát oldd meg a $\sqrt{k + 1} = ${num(t)}$ egyenletet!`,
         solution: [
           tex`A $k$. átfogó hossza $\sqrt{k + 1}$.`,
-          tex`$\sqrt{k + 1} = ${num(target)}$, ezért $k + 1 = ${num(target * target)}$.`,
-          tex`$k = ${num(target * target)} - 1 = ${num(k)}$.`,
-          tex`A **${num(k)}.** átfogó lesz először ${num(target)} egység hosszú.`,
+          tex`$\sqrt{k + 1} = ${num(t)}$, ezért $k + 1 = ${num(t * t)}$.`,
+          tex`$k = ${num(t * t)} - 1 = ${num(k)}$.`,
+          tex`A **${num(k)}.** átfogó lesz először ${num(t)} egység hosszú.`,
         ],
       };
     }
-    const k = level === 1 ? rng.pick([2, 3]) : rng.int(7, 15);
+    // level 1: the first few hypotenuses; level 2: further out, written in simplest form
+    const k = level === 1 ? rng.int(1, 12) : rng.int(13, 40);
     const n = k + 1;
     const root = simplifyRoot(n);
     const isInt = root.radicand === 1;
@@ -245,24 +284,26 @@ const spiralLength: GeneratorDef = {
   },
 };
 
-/** √n marked on the number line with a compass. */
+/** √n marked on the number line with a compass: perpendicular of height k at the point a. */
 const numberLine: GeneratorDef = {
   id: 'number-line',
   title: '√n megjelölése a számegyenesen',
   levels: [1, 2],
   generate(rng, level): Question {
+    // level 1: a short perpendicular (1–2); level 2: a tall one (3–5)
+    const a = rng.int(1, 5);
     const k = level === 1 ? rng.int(1, 2) : rng.int(3, 5);
-    const n = k * k + 1;
+    const n = a * a + k * k;
     const root = simplifyRoot(n);
     return {
-      prompt: tex`A számegyenes $1$ pontjában $${num(k)}$ egység magas merőlegest állítunk. Melyik számot jelöli a $P$ pont?`,
-      figure: sqrtOnLineStatic(k, false),
+      prompt: tex`A számegyenes $${num(a)}$ pontjában $${num(k)}$ egység magas merőlegest állítunk, majd az ábra szerint körzőzünk. Melyik számot jelöli a $P$ pont?`,
+      figure: sqrtOnLineStatic(k, false, a),
       answer: { type: 'root', coef: root.coef, radicand: root.radicand, requireSimplified: false, acceptDecimal: 2, unit: 'egység' },
       inputLabel: '$P =$',
-      hint: tex`A derékszögű háromszög befogói $1$ és $${num(k)}$. Számítsd ki az átfogót!`,
+      hint: tex`A derékszögű háromszög befogói $${num(a)}$ és $${num(k)}$. Számítsd ki az átfogót!`,
       solution: [
-        tex`A befogók $1$ és $${num(k)}$ egység.`,
-        tex`$c^2 = 1^2 + ${num(k)}^2 = 1 + ${num(k * k)} = ${num(n)}$`,
+        tex`A befogók $${num(a)}$ és $${num(k)}$ egység.`,
+        tex`$c^2 = ${num(a)}^2 + ${num(k)}^2 = ${num(a * a)} + ${num(k * k)} = ${num(n)}$`,
         tex`$c = ${rootSteps(n)} \approx ${num(Math.sqrt(n), 2)}$`,
         tex`A körzőív ezt a hosszt viszi fel az origóból, tehát $P = ${texRoot(root.coef, root.radicand)}$.`,
       ],
@@ -276,9 +317,8 @@ const chooseLegs: GeneratorDef = {
   title: 'Befogók választása adott gyökhöz',
   levels: [1, 2],
   generate(rng, level): Question {
-    const easy = [5, 10, 13, 17, 20];
-    const hard = [26, 29, 34, 37, 41, 52, 53, 58, 61];
-    const n = rng.pick(level === 1 ? easy : hard);
+    // level 1: legs up to 5; level 2: the longer leg is 6–8 (only sums with a single leg pair)
+    const n = rng.pick(level === 1 ? uniqueLegSums(0, 5) : uniqueLegSums(5, 8));
     const [p, q] = legsFor(n);
     return {
       prompt: tex`Melyik az a két egész befogó, amelynek átfogója $\sqrt{${num(n)}}$ egység? Add meg növekvő sorrendben!`,
@@ -305,14 +345,16 @@ const constructionSteps: GeneratorDef = {
   title: 'A szerkesztés lépéseinek sorrendje',
   levels: [1],
   generate(rng): Question {
+    const a = rng.int(1, 4);
     const k = rng.int(1, 3);
-    const n = k * k + 1;
+    const n = a * a + k * k;
+    const at = tex`${Article(num(a))} $${num(a)}$ pontban`;
     return {
-      prompt: tex`Tedd sorba a $\sqrt{${num(n)}}$ szerkesztésének lépéseit!`,
+      prompt: tex`Tedd sorba a $\sqrt{${num(n)}}$ szerkesztésének lépéseit, ha a merőlegest ${article(num(a))} $${num(a)}$ pontban állítjuk!`,
       answer: {
         type: 'order',
         items: [
-          'Az $1$ pontban merőlegest állítunk.',
+          tex`${at} merőlegest állítunk.`,
           `Felmérünk rá $${num(k)}$ egységet.`,
           tex`Összekötjük az origóval: az átfogó $\sqrt{${num(n)}}$.`,
           'Az átfogó sugarával ívet húzunk.',
@@ -321,9 +363,8 @@ const constructionSteps: GeneratorDef = {
       },
       hint: 'Először a derékszögű háromszög készül el, csak utána kerül elő a körző.',
       solution: [
-        'Az $1$ pontban merőlegest állítunk.',
-        `A merőlegesre felmérünk $${num(k)}$ egységet.`,
-        tex`Az átfogó $\sqrt{${num(n)}}$.`,
+        tex`${at} merőlegest állítunk, és felmérünk rá $${num(k)}$ egységet.`,
+        tex`Az átfogó $\sqrt{${num(a)}^2 + ${num(k)}^2} = \sqrt{${num(n)}}$.`,
         'Az átfogó sugarával ívet húzunk az origó körül.',
         tex`Az ív kimetszi a $\sqrt{${num(n)}}$ pontot.`,
       ],
