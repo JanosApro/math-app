@@ -498,8 +498,13 @@ const mistake: GeneratorDef = {
   title: 'Tipikus hiba: osztás a százalékkal',
   levels: [1, 2],
   generate(rng, level): Question {
-    const q = rng.pick([80, 120, 200, 240, 400, 600]);
-    const p = rng.pick([5, 15, 20, 25, 30, 35, 40, 45, 50]);
+    // the wrong calculation q : p must come out exact, so it looks like a real (wrong) answer
+    let q = 0;
+    let p = 0;
+    do {
+      q = rng.pick([80, 120, 200, 240, 400, 600]);
+      p = rng.pick([5, 15, 20, 25, 30, 35, 40, 45, 50]);
+    } while (q % p !== 0);
     const correct = clean((q * p) / 100);
     const wrong = clean(q / p);
     if (level === 1) {

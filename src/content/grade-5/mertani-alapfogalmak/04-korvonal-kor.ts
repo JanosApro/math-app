@@ -23,8 +23,8 @@ import {
 // ---------------------------------------------------------------------------------------------
 
 const at = (x: number, y: number): XY => [x, y];
-/** "6 cm" → "$6$ cm": the number in math, the unit as text. */
-const ml = (len: string): string => len.replace(/^(.*) (\S+)$/, '$$$1$$ $2');
+/** "6 cm" → "$6$ cm", "r = 4 cm 6 mm" → "$r = 4$ cm $6$ mm": numbers in math, units as text. */
+const ml = (len: string): string => len.replace(/(r = )?(\d[\d,]*)/g, (_m, pre: string | undefined, n: string) => `$${pre ?? ''}${n}$`);
 const deg = (d: number): XY => [3 * Math.cos((d * Math.PI) / 180), 3 * Math.sin((d * Math.PI) / 180)];
 
 /** A circle of radius r around O with one point P and the dashed OP distance. */

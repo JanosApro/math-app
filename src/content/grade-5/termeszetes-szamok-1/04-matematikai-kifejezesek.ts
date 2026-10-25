@@ -506,7 +506,7 @@ const formula: GeneratorDef = {
   generate(rng, level): Question {
     if (level === 1) {
       const a = rng.int(3, 12);
-      const b = rng.int(3, 12);
+      const b = rng.intExcept(3, 12, [a]); // a rectangle, not a square
       const sum = a + b;
       const k = 2 * sum;
       return {

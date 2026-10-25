@@ -161,9 +161,7 @@ const laws: GeneratorDef = {
   title: 'Melyik műveleti tulajdonságot használtuk?',
   levels: [1, 2, 3],
   generate(rng, level): Question {
-    const a = rng.int(2, 9);
-    const b = rng.int(2, 9);
-    const c = rng.int(2, 9);
+    const [a, b, c] = rng.sample([2, 3, 4, 5, 6, 7, 8, 9], 3); // different, so a swap is visible
     // level 3: distributivity, and the other two laws in less obvious forms (three terms, reversed)
     const kind =
       level === 1
@@ -567,7 +565,7 @@ const word: GeneratorDef = {
     if (kind === 'groups') {
       const wordK = { 3: 'hármas', 4: 'négyes', 5: 'ötös', 6: 'hatos' }[k];
       return {
-        prompt: tex`Egy osztályban ${num(n)} tanuló van. ${wordK} csoportokba osztják őket. Hány teljes csoport lesz, és hány tanuló marad ki?`,
+        prompt: tex`Egy osztályban ${num(n)} tanuló van. A tanulókat ${wordK} csoportokba osztják őket. Hány teljes csoport lesz, és hány tanuló marad ki?`,
         answer: {
           type: 'numbers',
           fields: [
