@@ -7,10 +7,12 @@ import { useAppState } from './state/store';
 import { AppShell } from './ui/AppShell';
 import { t } from './i18n/hu';
 import { ToastHost } from './ui/Toast';
+import { SOCIAL_CONFIGURED } from './social/config';
 
 const Onboarding = lazy(() => import('./screens/Onboarding'));
 const MapScreen = lazy(() => import('./screens/MapScreen'));
 const ProfileScreen = lazy(() => import('./screens/ProfileScreen'));
+const FriendsScreen = lazy(() => import('./screens/FriendsScreen'));
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen'));
 const LessonScreen = lazy(() => import('./lesson/LessonScreen'));
 const DailyScreen = lazy(() => import('./lesson/DailyScreen'));
@@ -30,6 +32,16 @@ function useThemeClasses() {
 
 export function App() {
   useThemeClasses();
+  useEffect(() => {
+    if (!SOCIAL_CONFIGURED) return;
+    let cleanup: (() => void) | undefined;
+    void import('./social/sync')
+      .then((m) => {
+        cleanup = m.initSocialSync();
+      })
+      .catch(() => {});
+    return () => cleanup?.();
+  }, []);
   const route = useRoute();
   const grade = useAppState((s) => s.grade);
 
@@ -59,6 +71,9 @@ export function App() {
       break;
     case 'profile':
       screen = <ProfileScreen />;
+      break;
+    case 'friends':
+      screen = <FriendsScreen />;
       break;
     case 'settings':
       screen = <SettingsScreen />;

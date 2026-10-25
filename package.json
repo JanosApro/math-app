@@ -10,11 +10,13 @@
     "typecheck": "tsc --noEmit",
     "check": "tsc --noEmit && tsx scripts/check.ts",
     "status": "tsx scripts/status.ts",
-    "samples": "tsx scripts/samples.ts"
+    "samples": "tsx scripts/samples.ts",
+    "test:social": "tsx --test src/social/*.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/dynapuff": "5.3.0",
     "@fontsource-variable/nunito": "5.3.0",
+    "@supabase/supabase-js": "2.75.0",
     "katex": "0.16.22",
     "react": "18.3.1",
     "react-dom": "18.3.1"

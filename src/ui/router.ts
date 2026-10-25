@@ -7,6 +7,7 @@
  *   #/lesson/<subtopicId>  lesson player
  *   #/daily                daily challenge
  *   #/profile              XP, streak calendar, badges
+ *   #/friends              optional friends, weekly leaderboard, privacy
  *   #/settings             settings, export/import
  *   #/dev                  developer page (dev builds only)
  *   #/dev/gallery          figure gallery (dev builds only)
@@ -20,6 +21,7 @@ export type Route =
   | { name: 'lesson'; subtopicId: string }
   | { name: 'daily' }
   | { name: 'profile' }
+  | { name: 'friends' }
   | { name: 'settings' }
   | { name: 'dev' }
   | { name: 'devGallery' }
@@ -39,6 +41,8 @@ export function parseRoute(hash: string): Route {
       return { name: 'daily' };
     case 'profile':
       return { name: 'profile' };
+    case 'friends':
+      return { name: 'friends' };
     case 'settings':
       return { name: 'settings' };
     case 'dev':
@@ -62,6 +66,8 @@ export function routeToHash(r: Route): string {
       return '#/daily';
     case 'profile':
       return '#/profile';
+    case 'friends':
+      return '#/friends';
     case 'settings':
       return '#/settings';
     case 'dev':

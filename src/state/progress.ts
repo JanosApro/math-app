@@ -19,6 +19,17 @@ import {
   update,
 } from './store';
 import { STREAK_MILESTONES, XP } from './xp';
+import { queueXpEvent } from '../social/queue';
+import {
+  chapterEventKey,
+  dailyAnswerEventKey,
+  dailyEventKey,
+  lessonEventKey,
+  lessonReplayEventKey,
+  partEventKey,
+  partReplayEventKey,
+} from '../social/eventKeys';
+import type { XpEventType } from '../social/types';
 
 function withGrade(s: AppState, grade: number, fn: (g: GradeProgress) => GradeProgress): AppState {
   const key = String(grade);
@@ -51,9 +62,10 @@ export function acknowledgeSkip(grade: number, subtopicId: string): void {
   update((s) => withGrade(s, grade, (g) => withSubtopic(g, subtopicId, (p) => ({ ...p, skipAck: true }))));
 }
 
-export function addXp(grade: number, amount: number): void {
+export function addXp(grade: number, amount: number, eventType?: XpEventType, eventKey?: string): void {
   if (amount <= 0) return;
   update((s) => withGrade(s, grade, (g) => ({ ...g, xp: g.xp + amount })));
+  if (eventType && eventKey) queueXpEvent(eventType, eventKey);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -124,6 +136,13 @@ export function recordTestResult(grade: number, topics: GradeTopics, subtopicId:
       return { ...r.g, xp: r.g.xp + xpGained };
     });
   });
+  if (passed) {
+    queueXpEvent(
+      firstCompletion ? 'lesson' : 'lesson_replay',
+      firstCompletion ? lessonEventKey(subtopicId) : lessonReplayEventKey(subtopicId, today),
+    );
+    if (chapterCompleted) queueXpEvent('chapter', chapterEventKey(chapterCompleted.id));
+  }
   return { passed, percent, firstCompletion, xpGained, chapterCompleted, milestone };
 }
 
@@ -209,6 +228,10 @@ export function recordPartDone(grade: number, subtopicId: string, part: number):
       return { ...r.g, xp: r.g.xp + xpGained };
     }),
   );
+  queueXpEvent(
+    firstTime ? 'part' : 'part_replay',
+    firstTime ? partEventKey(subtopicId, part) : partReplayEventKey(subtopicId, part, today),
+  );
   return { firstTime, xpGained, streak: streakOf(getState(), grade, today), streakExtended, milestone };
 }
 
@@ -237,6 +260,8 @@ export function recordDaily(grade: number, date: string, correct: number, total:
       return { ...g, daily, xp: g.xp + xpGained, streakBadges: [...g.streakBadges, ...reached] };
     }),
   );
+  queueXpEvent('daily', dailyEventKey(date));
+  for (let i = 0; i < correct; i++) queueXpEvent('daily_answer', dailyAnswerEventKey(date, i));
   return { counted: true, xpGained, streak: streakOf(getState(), grade, date), milestone };
 }
 

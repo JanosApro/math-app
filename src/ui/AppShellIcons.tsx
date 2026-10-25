@@ -24,7 +24,7 @@ function Svg({ size = 24, children, className }: { size?: number; children: Reac
   );
 }
 
-export type NavIconName = 'map' | 'daily' | 'profile' | 'settings';
+export type NavIconName = 'map' | 'daily' | 'profile' | 'friends' | 'settings';
 
 export function NavIcon({ name, size = 24 }: { name: NavIconName; size?: number }) {
   switch (name) {
@@ -46,6 +46,14 @@ export function NavIcon({ name, size = 24 }: { name: NavIconName; size?: number 
         <Svg size={size}>
           <circle cx="12" cy="8.5" r="4" fill="currentColor" fillOpacity={0.14} />
           <path d="M4.5 20.5c1-3.8 4-5.6 7.5-5.6s6.5 1.8 7.5 5.6" />
+        </Svg>
+      );
+    case 'friends':
+      return (
+        <Svg size={size}>
+          <circle cx="9" cy="8.5" r="3.3" fill="currentColor" fillOpacity={0.14} />
+          <circle cx="16.5" cy="10" r="2.6" fill="currentColor" fillOpacity={0.14} />
+          <path d="M2.8 19.5c.7-3.2 3.2-4.8 6.2-4.8s5.5 1.6 6.2 4.8M14.2 15.2c2.5.1 4.5 1.5 5.2 4.3" />
         </Svg>
       );
     case 'settings':

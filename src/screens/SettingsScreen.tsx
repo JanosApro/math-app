@@ -144,9 +144,18 @@ export default function SettingsScreen() {
           </button>
           <ImportProgressButton label={`⬆ ${t.settings.importBtn}`} className="btn btn-ghost" />
         </div>
-        <button type="button" className="link-btn st-reset" onClick={() => setResetOpen(true)}>
-          {t.settings.reset}
-        </button>
+        <div className="st-links">
+          <a
+            className="link-btn st-social-link"
+            href={routeToHash({ name: 'friends' })}
+            title={t.social.privacySettings}
+          >
+            👥 {t.social.title} ›
+          </a>
+          <button type="button" className="link-btn st-reset" onClick={() => setResetOpen(true)}>
+            {t.settings.reset}
+          </button>
+        </div>
       </Section>
 
       <p className="st-about">

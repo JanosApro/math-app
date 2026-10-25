@@ -17,6 +17,8 @@ import { recommendedNext } from '../content/catalog';
 import { addXp, isCompleted, recordPartDone, recordTestResult, streakOf, type PartOutcome, type TestOutcome } from '../state/progress';
 import { getState, gradeProgress, useAppState } from '../state/store';
 import { XP } from '../state/xp';
+import { newAttemptId } from '../social/codes';
+import { answerEventKey } from '../social/eventKeys';
 import { Dialog } from '../ui/Dialog';
 import { InfoButton } from '../ui/InfoButton';
 import { Rich, RichInline } from '../ui/Rich';
@@ -85,6 +87,7 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
   const [done, setDone] = useState<Done | null>(null);
   const partXp = useRef(0);
   const lessonXp = useRef(0);
+  const attemptId = useRef(newAttemptId());
 
   useEffect(scrollTop, [phase, part, index]);
 
@@ -99,15 +102,16 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
           ? partsDone.length / (parts.length + 1)
           : 1;
 
-  const onXp = (n: number) => {
+  const onXp = (n: number, usedHint: boolean, eventKey: string) => {
     if (n <= 0) return;
     partXp.current += n;
     lessonXp.current += n;
-    if (saving) addXp(grade!, n);
+    if (saving) addXp(grade!, n, usedHint ? 'answer_hint' : 'answer', eventKey);
   };
 
   const startPart = (p: number) => {
     setNonce(Date.now());
+    attemptId.current = newAttemptId();
     partXp.current = 0;
     setPart(p);
     setIndex(0);
@@ -193,10 +197,10 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
           view = <ExploreView key={key} step={step} onNext={next} />;
           break;
         case 'check':
-          view = <CheckView key={key} step={step} seed={seedOf('check', module.id, nonce, part, index)} onXp={onXp} onNext={next} />;
+          view = <CheckView key={key} step={step} seed={seedOf('check', module.id, nonce, part, index)} eventKey={answerEventKey(module.id, part * 100 + index, 'check', attemptId.current)} onXp={onXp} onNext={next} />;
           break;
         case 'practice':
-          view = <PracticeView key={key} module={module} step={step} stepIndex={part * 100 + index} nonce={nonce} onXp={onXp} onNext={next} onSubProgress={setSub} />;
+          view = <PracticeView key={key} module={module} step={step} stepIndex={part * 100 + index} nonce={nonce} attemptId={attemptId.current} onXp={onXp} onNext={next} onSubProgress={setSub} />;
           break;
       }
       body = (

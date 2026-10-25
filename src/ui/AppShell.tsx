@@ -22,6 +22,7 @@ const NAV: { name: NavIconName; route: Route; label: string }[] = [
   { name: 'map', route: { name: 'map' }, label: t.nav.map },
   { name: 'daily', route: { name: 'daily' }, label: t.nav.daily },
   { name: 'profile', route: { name: 'profile' }, label: t.nav.profile },
+  { name: 'friends', route: { name: 'friends' }, label: t.nav.friends },
   { name: 'settings', route: { name: 'settings' }, label: t.nav.settings },
 ];
 

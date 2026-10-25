@@ -13,6 +13,7 @@ import { Rich, RichInline } from '../ui/Rich';
 import { t } from '../i18n/hu';
 import { LessonFooter, useEnterKey } from './parts';
 import { QuestionRunner, type QuestionResult } from './QuestionRunner';
+import { answerEventKey } from '../social/eventKeys';
 
 // ---------------------------------------------------------------------------------------------
 
@@ -172,12 +173,14 @@ export function ExploreView({ step, onNext }: { step: ExploreStep; onNext: () =>
 export function CheckView({
   step,
   seed,
+  eventKey,
   onXp,
   onNext,
 }: {
   step: CheckStep;
   seed: number;
-  onXp: (n: number) => void;
+  eventKey: string;
+  onXp: (n: number, usedHint: boolean, eventKey: string) => void;
   onNext: () => void;
 }) {
   return (
@@ -185,7 +188,7 @@ export function CheckView({
       question={step.question}
       seed={seed}
       mode="lesson"
-      onChecked={(r) => onXp(r.xp)}
+      onChecked={(r) => onXp(r.xp, r.usedHint, eventKey)}
       onDone={onNext}
     />
   );
@@ -214,6 +217,7 @@ export function PracticeView({
   step,
   stepIndex,
   nonce,
+  attemptId,
   onXp,
   onNext,
   onSubProgress,
@@ -222,7 +226,8 @@ export function PracticeView({
   step: PracticeStep;
   stepIndex: number;
   nonce: number;
-  onXp: (n: number) => void;
+  attemptId: string;
+  onXp: (n: number, usedHint: boolean, eventKey: string) => void;
   onNext: () => void;
   /** 0..1 progress inside this step (for the top bar). */
   onSubProgress?: (p: number) => void;
@@ -269,7 +274,7 @@ export function PracticeView({
       seed={seed}
       mode="lesson"
       willRequeue={!item.requeued}
-      onChecked={(r) => onXp(r.xp)}
+      onChecked={(r) => onXp(r.xp, r.usedHint, answerEventKey(module.id, stepIndex, `p${item.k}`, attemptId))}
       onDone={done}
     />
   );
