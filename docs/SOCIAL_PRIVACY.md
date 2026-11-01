@@ -32,6 +32,16 @@ Only the minimum needed for friends and a friends-only weekly leaderboard:
 - Detailed lesson progress (which question was answered, attempts, mistakes) stays in the
   browser's localStorage and is **not** uploaded.
 
+## Bug reports (separate from the social layer)
+
+The ⚑ "Hiba jelzése" button sends, only when a student presses it: the chosen problem type, the
+student's free text (max. 500 characters in the app), the question on screen, the page address,
+grade, app version, browser user agent, screen size, language, theme, online state and recent
+JavaScript errors, plus a random device id. No name, nickname, account id or IP address is stored.
+Students cannot read reports. The free text may still contain personal data despite the warning
+in the dialog, so handled reports should be deleted regularly (see `docs/BUG_REPORTS.md`), and
+this processing belongs in the same privacy review.
+
 ## Why pseudonyms are not automatically anonymous
 
 A nickname, a persistent random id, a friend code and a recovery hash can single out a child.

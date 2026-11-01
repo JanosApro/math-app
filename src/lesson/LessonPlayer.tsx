@@ -197,7 +197,7 @@ export function LessonPlayer({ module, title, grade, topics, topic, color, previ
           view = <ExploreView key={key} step={step} onNext={next} />;
           break;
         case 'check':
-          view = <CheckView key={key} step={step} seed={seedOf('check', module.id, nonce, part, index)} eventKey={answerEventKey(module.id, part * 100 + index, 'check', attemptId.current)} onXp={onXp} onNext={next} />;
+          view = <CheckView key={key} step={step} seed={seedOf('check', module.id, nonce, part, index)} eventKey={answerEventKey(module.id, part * 100 + index, 'check', attemptId.current)} origin={{ subtopic: module.id, part, step: index }} onXp={onXp} onNext={next} />;
           break;
         case 'practice':
           view = <PracticeView key={key} module={module} step={step} stepIndex={part * 100 + index} nonce={nonce} attemptId={attemptId.current} onXp={onXp} onNext={next} onSubProgress={setSub} />;

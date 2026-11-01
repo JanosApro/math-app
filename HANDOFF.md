@@ -85,6 +85,17 @@ until a Supabase project is configured; the math app works unchanged without it.
 - **Checks:** `npm run test:social`, `npm run check`, `npm run build`; `supabase test db` for the
   SQL/RLS tests (needs a local Supabase stack).
 
+## Bug reports ("Hiba jelzése") — 2026-11-01
+A ⚑ button in the lesson / mini test / daily top bar and a **Hibát találtam** link in settings.
+The report (kind + a few words + the question on screen with lesson, generator, level and seed)
+goes to the Supabase table `bug_reports` through `submit_bug_report()` (anon key, no sign-in).
+Students cannot read any report; the teacher reads them in the dashboard view
+`bug_reports_inbox`, which also gives an `npm run samples` command that reprints the question.
+Reports wait in `localStorage` while offline or while Supabase is not configured.
+Setup and details: `docs/BUG_REPORTS.md`; migration
+`supabase/migrations/202611010001_bug_reports.sql`; code `src/report/**`; tests
+`npm run test:report`.
+
 ### Earlier notes (2026-10-24 evening, Claude Code, lead)
 Five parallel agents (tasks 01, 02, 04, 05, 06) were stopped by a usage limit mid-work. Their work
 is committed in "WIP checkpoint" (91ef4de). `npx tsc --noEmit -p .` passes and `npm run check`

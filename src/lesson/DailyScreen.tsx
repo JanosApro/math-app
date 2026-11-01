@@ -19,11 +19,13 @@ import { LessonMessage } from './LessonScreen';
 import { InfoButton } from '../ui/InfoButton';
 import { LessonFooter, LessonTopBar, scrollTop, StepChip, useEnterKey } from './parts';
 import { QuestionRunner } from './QuestionRunner';
+import type { QuestionOrigin } from '../report/context';
 import './lesson.css';
 
 interface DailyQuestion {
   question: Question;
   seed: number;
+  origin: QuestionOrigin;
   subtopicTitle: string;
   color?: string;
 }
@@ -72,7 +74,7 @@ export default function DailyScreen({ grade }: { grade: number }) {
       try {
         const question = generateQuestion(modules.get(item.subtopicId)!, item.ref, item.seed);
         const f = findSubtopic(topics, item.subtopicId);
-        out.push({ question, seed: item.seed, subtopicTitle: f?.sub.title ?? '', color: f ? topicColor(topics, f.topic) : undefined });
+        out.push({ question, seed: item.seed, origin: { subtopic: item.subtopicId, generator: item.ref.generator, level: item.ref.level }, subtopicTitle: f?.sub.title ?? '', color: f ? topicColor(topics, f.topic) : undefined });
       } catch (e) {
         console.error(e);
       }
@@ -125,6 +127,7 @@ export default function DailyScreen({ grade }: { grade: number }) {
           question={q.question}
           seed={q.seed}
           mode="daily"
+          origin={q.origin}
           onDone={(r) => answered(r.correct)}
         />
       </div>

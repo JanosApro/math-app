@@ -1,0 +1,76 @@
+/* "Hiba jelzése" button and form. Self-contained: it is used on the lesson screens and in settings. */
+
+.rp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.rp-kinds {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.rp-label {
+  padding: 0;
+  margin: 0 0 0.15rem;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.rp-kind {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--outline);
+  border-radius: 14px;
+  background: var(--surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+.rp-kind.is-selected {
+  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  border-color: var(--primary);
+}
+.rp-kind input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--primary);
+  flex: none;
+}
+.rp-text {
+  width: 100%;
+  min-height: 84px;
+  padding: 0.6rem 0.85rem;
+  border: var(--line) solid var(--outline);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  resize: vertical;
+}
+.rp-text::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+.rp-text:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+.rp-note {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+.rp-btn {
+  flex: none;
+}
+.rp-link {
+  white-space: nowrap;
+}

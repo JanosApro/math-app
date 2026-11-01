@@ -15,6 +15,7 @@ import { describeAnswer } from './inputs/draft';
 import { InfoButton } from '../ui/InfoButton';
 import { LessonFooter, useEnterKey } from './parts';
 import { QuestionRunner } from './QuestionRunner';
+import type { QuestionOrigin } from '../report/context';
 
 export interface TestAnswer {
   question: Question;
@@ -31,14 +32,15 @@ export interface TestResult {
   answers: TestAnswer[];
 }
 
-function makeQuestions(module: SubtopicModule, attempt: number): { question: Question | null; seed: number }[] {
+function makeQuestions(module: SubtopicModule, attempt: number): { question: Question | null; seed: number; origin: QuestionOrigin }[] {
   return module.miniTest.items.map((ref, i) => {
     const seed = seedOf('test', module.id, attempt, i);
+    const origin = { subtopic: module.id, generator: ref.generator, level: ref.level };
     try {
-      return { question: generateQuestion(module, ref, seed), seed };
+      return { question: generateQuestion(module, ref, seed), seed, origin };
     } catch (e) {
       console.error(e);
-      return { question: null, seed };
+      return { question: null, seed, origin };
     }
   });
 }
@@ -121,6 +123,7 @@ export function MiniTest({
       question={cur.question}
       seed={cur.seed}
       mode="test"
+      origin={cur.origin}
       onDone={(r) => record({ question: cur.question!, answer: r.answer, correct: r.correct })}
     />
   );

@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { t } from '../i18n/hu';
 import { SoundToggle } from '../ui/SoundToggle';
+import { ReportButton } from '../report/ReportButton';
 
 /** True if animations should be skipped (system setting or the app's "Kevesebb animáció"). */
 export function reducedMotion(): boolean {
@@ -14,7 +15,7 @@ export function reducedMotion(): boolean {
   }
 }
 
-/** Top bar: ✕ (exit) + progress bar in the topic color. */
+/** Top bar: ✕ (exit) + progress bar in the topic color + sound and "Hiba jelzése" buttons. */
 export function LessonTopBar({ progress, onClose, label, children }: { progress: number; onClose: () => void; label?: string; children?: ReactNode }) {
   const pct = Math.round(Math.max(0, Math.min(1, progress)) * 100);
   return (
@@ -29,6 +30,7 @@ export function LessonTopBar({ progress, onClose, label, children }: { progress:
           <div className="lesson-progress-fill" style={{ width: `${pct}%` }} />
         </div>
         <SoundToggle />
+        <ReportButton />
         {children}
       </div>
     </header>
