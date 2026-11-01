@@ -263,3 +263,18 @@ Architectural choices and why. Add new entries at the end of a section.
 - **Privacy review required.** `docs/SOCIAL_PRIVACY.md` documents the child-consent, retention,
   deletion and GDPR points that must be reviewed before enabling this for students. Pseudonymous
   data is still personal data.
+
+## Bug reports (2026-11-01)
+- **Write-only for students.** One SECURITY DEFINER function, `submit_bug_report()`, is the only
+  way in; `bug_reports` has RLS with no policy and no grants for `anon`/`authenticated`, and the
+  `bug_reports_inbox` view is `security_invoker` with no grants. The teacher reads them in the
+  Supabase dashboard; there is no in-app report list to protect.
+- **No sign-in needed.** Reporting must work for every student, not only for those who turned on
+  Barátok, so the function is callable with the anon key. Flood protection is by limits (per
+  random device id and a global hourly cap), not by identity. No user id or IP is stored.
+- **The question travels with the report.** A wrong-answer report is only useful with the exact
+  question, so the report carries subtopic + generator + level + seed (reproducible with
+  `npm run samples`), the task text, the expected and the given answer. The student's words are
+  optional for this kind.
+- **Never lost, never blocking.** Reports go to a small `localStorage` outbox first and are sent
+  when possible (now, on app start, on `online`); invalid ones are dropped, others retried.

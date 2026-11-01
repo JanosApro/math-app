@@ -20,6 +20,7 @@ import { draftToAnswer, emptyDraft, type AnswerDraft } from './inputs/draft';
 import { InfoButton } from '../ui/InfoButton';
 import { Burst, CountUp, LessonFooter, useEnterKey } from './parts';
 import { clearCurrentQuestion, setCurrentQuestion } from './devHook';
+import { clearReportQuestion, setReportQuestion, type QuestionOrigin, type ReportQuestion } from '../report/context';
 
 export type RunnerMode = 'lesson' | 'test' | 'daily';
 
@@ -43,11 +44,13 @@ export interface QuestionRunnerProps {
   onChecked?: (r: QuestionResult) => void;
   /** Called on "Tovább" (or right after checking in test mode). */
   onDone: (r: QuestionResult) => void;
+  /** Which generator made the question; goes with a bug report sent while it is on screen. */
+  origin?: QuestionOrigin;
 }
 
 type Notice = 'notSimplified' | 'wrongForm' | 'parseError' | null;
 
-export function QuestionRunner({ question, seed, mode, header, willRequeue, onChecked, onDone }: QuestionRunnerProps) {
+export function QuestionRunner({ question, seed, mode, header, willRequeue, onChecked, onDone, origin }: QuestionRunnerProps) {
   const spec = question.answer;
   const [draft, setDraft] = useState<AnswerDraft>(() => emptyDraft(spec));
   const [result, setResult] = useState<QuestionResult | null>(null);
@@ -65,6 +68,15 @@ export function QuestionRunner({ question, seed, mode, header, willRequeue, onCh
     setCurrentQuestion(cur);
     return () => clearCurrentQuestion(cur);
   }, [question, seed]);
+
+  // the question on screen (and, once checked, the student's answer) for the "Hiba jelzése" form
+  const originKey = origin ? JSON.stringify(origin) : '';
+  useEffect(() => {
+    const rq: ReportQuestion = { question, seed, mode, origin, student: result?.answer, correct: result?.correct };
+    setReportQuestion(rq);
+    return () => clearReportQuestion(rq);
+    // origin is compared by value (originKey): call sites pass a new object on every render
+  }, [question, seed, mode, originKey, result]);
 
   const onDraft = (d: AnswerDraft) => {
     setDraft(d);

@@ -13,6 +13,7 @@ import { Rich, RichInline } from '../ui/Rich';
 import { t } from '../i18n/hu';
 import { LessonFooter, useEnterKey } from './parts';
 import { QuestionRunner, type QuestionResult } from './QuestionRunner';
+import type { QuestionOrigin } from '../report/context';
 import { answerEventKey } from '../social/eventKeys';
 
 // ---------------------------------------------------------------------------------------------
@@ -174,12 +175,14 @@ export function CheckView({
   step,
   seed,
   eventKey,
+  origin,
   onXp,
   onNext,
 }: {
   step: CheckStep;
   seed: number;
   eventKey: string;
+  origin?: QuestionOrigin;
   onXp: (n: number, usedHint: boolean, eventKey: string) => void;
   onNext: () => void;
 }) {
@@ -188,6 +191,7 @@ export function CheckView({
       question={step.question}
       seed={seed}
       mode="lesson"
+      origin={origin}
       onChecked={(r) => onXp(r.xp, r.usedHint, eventKey)}
       onDone={onNext}
     />
@@ -273,6 +277,7 @@ export function PracticeView({
       question={gen.q}
       seed={seed}
       mode="lesson"
+      origin={{ subtopic: module.id, generator: step.generator, level: step.level }}
       willRequeue={!item.requeued}
       onChecked={(r) => onXp(r.xp, r.usedHint, answerEventKey(module.id, stepIndex, `p${item.k}`, attemptId))}
       onDone={done}

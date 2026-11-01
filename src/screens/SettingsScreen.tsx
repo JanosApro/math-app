@@ -1,6 +1,7 @@
 /**
  * Route #/settings — fits one phone screen: grade (progress is kept per grade) + nickname; sound,
- * reduced motion, dark mode; export / import of the progress file and reset. The "clearing
+ * reduced motion, dark mode; export / import of the progress file and reset; "Hibát találtam"
+ * (bug report) next to the version. The "clearing
  * browser data deletes your progress" warning and the about text are behind ⓘ buttons.
  */
 import { useEffect, useState, type ReactNode } from 'react';
@@ -15,6 +16,7 @@ import { showToast } from '../ui/Toast';
 import { playSound } from '../ui/sound';
 import { navigate, routeToHash } from '../ui/router';
 import { ImportProgressButton } from './ImportProgress';
+import { ReportButton } from '../report/ReportButton';
 import './screens.css';
 import './Settings.css';
 
@@ -163,6 +165,7 @@ export default function SettingsScreen() {
         <InfoButton title={t.settings.about}>
           <p>{t.settings.aboutText}</p>
         </InfoButton>
+        <ReportButton variant="link" />
         {import.meta.env.DEV && (
           <a className="link-btn" href={routeToHash({ name: 'dev' })}>
             {t.settings.devPage} ›

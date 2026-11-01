@@ -405,7 +405,7 @@ export const t = {
     resetConfirm: 'Biztosan törölsz minden haladást ezen az eszközön? Ezt nem lehet visszavonni.',
     resetDone: 'A haladás törölve.',
     about: 'Névjegy',
-    aboutText: 'Gyakorló alkalmazás 5., 7. és 8. osztályos tanulóknak. Nincs regisztráció, nincs adatgyűjtés.',
+    aboutText: 'Gyakorló alkalmazás 5., 7. és 8. osztályos tanulóknak. Nincs regisztráció. Adatot csak akkor küldünk, ha hibát jelzel, vagy bekapcsolod a Barátokat.',
     version: 'Verzió',
     saved: 'Mentve ✓',
     nicknameSave: 'Mentés',
@@ -430,6 +430,27 @@ export const t = {
   sound: {
     on: 'Hang bekapcsolva',
     off: 'Hang kikapcsolva',
+  },
+
+  report: {
+    button: 'Hiba jelzése',
+    link: 'Hibát találtam',
+    title: 'Hibát találtál?',
+    kindLabel: 'Mi a baj?',
+    kinds: {
+      wrong_answer: 'Rossz a feladat vagy a megoldás',
+      bug: 'Valami nem működik',
+      other: 'Egyéb',
+    },
+    messageLabel: 'Írd le röviden!',
+    messagePlaceholder: 'Mit vártál, és mi történt?',
+    messageOptional: 'Írd le röviden! (nem kötelező)',
+    privacy: 'Ne írd bele a neved, címed vagy telefonszámod.',
+    attached: 'A képernyőn lévő feladatot is elküldjük, így a tanár megtalálja a hibát.',
+    send: 'Küldés',
+    sending: 'Küldés…',
+    sent: 'Köszönjük! Elküldtük a tanárnak.',
+    queued: 'Köszönjük! Elmentettük, és amint lehet, elküldjük.',
   },
 } as const;
 

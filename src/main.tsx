@@ -6,6 +6,8 @@ import './styles/theme.css';
 import { App } from './App';
 import { registerServiceWorker } from './pwa';
 import { installClickSounds } from './ui/sound';
+import { installErrorCapture } from './report/context';
+import { initReportSync } from './report/send';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,5 +15,7 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 );
 
+installErrorCapture();
 registerServiceWorker();
 installClickSounds();
+initReportSync(); // bug reports saved offline go out now and when the device is back online

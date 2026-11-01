@@ -46,7 +46,10 @@ The version-controlled migration is:
 supabase/migrations/202610250001_social_layer.sql
 ```
 
-It creates:
+A second migration, `supabase/migrations/202611010001_bug_reports.sql`, adds the bug report
+table used by the ⚑ button (`docs/BUG_REPORTS.md`). `supabase db push` applies both.
+
+The social-layer migration creates:
 
 - `profiles` (pseudonymous profile, friend code, recovery hash, shared XP/streak),
 - `friendships` (pending / accepted),
